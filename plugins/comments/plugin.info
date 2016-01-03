@@ -1,0 +1,8 @@
+{
+	"title": "$:/plugins/sukima/comments",
+  "version": "0.0.1",
+	"description": "TriTarget.org Commenting",
+	"author": "Sukima",
+	"core-version": ">=5.0.0",
+	"list": "readme"
+}

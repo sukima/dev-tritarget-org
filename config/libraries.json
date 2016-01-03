@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    {
+      "srcfile": "node_modules/babel-polyfill/dist/polyfill.min.js",
+      "destpath": "babel-polyfill/files"
+    }
+  ],
+  "scripts": []
+}

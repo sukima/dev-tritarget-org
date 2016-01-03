@@ -1,0 +1,16 @@
+modified: 20160120034743000
+created: 20160112131215000
+title: $:/plugins/sukima/comments/CommentsHeader
+type: text/vnd.tiddlywiki
+
+\define new-comment-title() Comment for $(tiddlerName)$
+\define new-comment-tooltip() Create a new comment for $(tiddlerName)$
+
+! Comments
+
+<$set name="tiddlerName" value={{!!title}}>
+<$button tooltip=<<new-comment-tooltip>> aria-label="new comment" class="tc-btn-big-green" style="background-color:#5E9FCA;">
+<$action-sendmessage $message="tm-new-tiddler" $param=<<new-comment-title>> tags="$:/tags/Comment Unsent" comment-for=<<tiddlerName>> author-name={{$:/status/UserName}}/>
+{{$:/core/ui/Buttons/new-here}} New Comment
+</$button>
+</$set>

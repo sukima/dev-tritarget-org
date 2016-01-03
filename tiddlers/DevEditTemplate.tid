@@ -1,0 +1,11 @@
+created: 20160114221659190
+modified: 20160114232553383
+tags: 
+title: DevEditTemplate
+type: text/vnd.tiddlywiki
+
+|tc-edit-comment-fields|k
+|''Your Name*''  |<$edit-text field="commentor-name" size="40" class="tc-edit-comment-input"/> |
+|''Your Email*'' | <$edit-text field="commentor-email" size="40" class="tc-edit-comment-input"/> |
+|Website | <$edit-text field="commentor-url" size="40" class="tc-edit-comment-input"/> |
+|''*required''|c

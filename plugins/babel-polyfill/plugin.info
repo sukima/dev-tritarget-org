@@ -1,0 +1,6 @@
+{
+	"title": "$:/plugins/sukima/babel-polyfill",
+	"description": "ES2015 Polyfills",
+	"author": "Sukima",
+	"core-version": ">=5.0.0"
+}

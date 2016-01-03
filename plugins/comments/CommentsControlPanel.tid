@@ -1,0 +1,9 @@
+modified: 20160120014352000
+created: 20160112131231
+title: $:/plugins/sukima/comments/CommentsControlPanel
+type: text/vnd.tiddlywiki
+tags: $:/tags/ControlPanel
+caption: Comments
+
+|Comment Post URL |<$edit-text tiddler="$:/config/comments/host" tag="input" default=""/> |
+|Terms of Use Tiddler |<$edit-text tiddler="$:/config/comments/TermsOfUseTiddler" tag="input" default=""/> |

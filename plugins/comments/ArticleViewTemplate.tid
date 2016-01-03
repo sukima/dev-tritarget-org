@@ -1,0 +1,14 @@
+modified: 20160112132327
+created: 20160112131144
+title: $:/plugins/sukima/comments/ArticleViewTemplate
+type: text/vnd.tiddlywiki
+tags: $:/tags/ViewTemplate
+list-after: $:/core/ui/ViewTemplate/body
+
+\define comment-tiddler() $:/comments/$(articletitle)$
+<$list filter="[all[current]tag[Article]]">
+<$transclude tiddler="$:/plugins/sukima/comments/CommentsHeader" mode="block"/>
+<$set name="articletitle" value={{!!title}}>
+<$transclude tiddler=<<comment-tiddler>> mode="block"/>
+</$set>
+</$list>

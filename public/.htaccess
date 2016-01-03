@@ -1,0 +1,14 @@
+Action cgi-node /cgi-bin/cgi-node.cgi
+AddHandler cgi-node .jss
+
+<Files .htaccess>
+  order allow,deny
+  deny from all
+</Files>
+
+<ifmodule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript
+  BrowserMatch ^Mozilla/4 gzip-only-text/html
+  BrowserMatch ^Mozilla/4\.0[678] no-gzip
+  BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+</ifmodule>

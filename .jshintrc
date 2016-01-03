@@ -1,0 +1,8 @@
+{
+  "predef": [
+    "$tw"
+  ],
+  "browser": true,
+  "node": true,
+  "esnext": true
+}

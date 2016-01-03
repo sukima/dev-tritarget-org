@@ -1,0 +1,13 @@
+{
+  "tiddlers": [
+    {
+      "file": "polyfill.min.js",
+      "fields": {
+        "title": "$:/plugins/sukima/babel-polyfill/babel-polyfill.js",
+        "type": "application/javascript",
+        "module-type": "library",
+        "global-module": "true"
+      }
+    }
+  ]
+}

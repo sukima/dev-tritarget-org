@@ -1,0 +1,9 @@
+{
+  "production": {},
+  "development": {
+    "plugins": [
+      "tiddlywiki/tiddlyweb",
+      "tiddlywiki/filesystem"
+    ]
+  }
+}
