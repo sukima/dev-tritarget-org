@@ -31,6 +31,7 @@ class CommentSubmitter {
       .then(this.validateAll.bind(this, comments))
       .then(this.displayTermsOfUse.bind(this))
       .then(this.waitForSubmissions.bind(this, comments))
+      .then(this.updateArticles.bind(this))
       .then(this.notifyFinished.bind(this))
       .catch(this.notifyError.bind(this));
   }
@@ -47,10 +48,16 @@ class CommentSubmitter {
     return Promise.all(comments.map(comment => comment.submit()));
   }
 
+  updateArticles(submissions) {
+    submissions.forEach(comment => comment.updateArticle());
+    return submissions;
+  }
+
   notifyFinished(submissions) {
     if (submissions.length > 0) {
       $tw.notifier.display(COMMENTS_SAVED_MESSAGE);
     }
+    return submissions;
   }
 
   notifyError(error) {

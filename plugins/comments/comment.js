@@ -7,6 +7,7 @@ module-type: utils
 Represents a comment.
 
 \*/
+import md5 from '$:/plugins/sukima/md5/md5.js';
 import CommentService, { ValidationError } from
   '$:/plugins/sukima/comments/comment-service.js';
 
@@ -17,6 +18,7 @@ const NoComment = {
   sent: true,
   validate() { throw new TypeError('Not a comment'); },
   canSubmit() { return false; },
+  updateArticle() {},
   submit() {}
 };
 
@@ -51,7 +53,20 @@ export default class Comment {
     return Promise.resolve()
       .then(this.validate.bind(this))
       .then(() => new CommentService(this).submit())
-      .then(this.removeUnsentTag.bind(this));
+      .then(this.removeUnsentTag.bind(this))
+      .then(() => this);
+  }
+
+  updateArticle() {
+    const title = this.commentTiddlerTitle;
+    const text = [
+      ($tw.wiki.getTiddlerText(title) || ''),
+      '<$set name="inReview" value="true">',
+      ...this.commentLines,
+      '</$set>'
+    ].join('\n');
+    $tw.wiki.setText(title, 'text', null, text);
+    return this;
   }
 
   removeUnsentTag() {
@@ -63,13 +78,81 @@ export default class Comment {
     $tw.wiki.addTiddler(this.tiddler);
   }
 
+  get commentTiddlerTitle() {
+    return `$:/comments/${this.article}`;
+  }
+
+  get tidFilename() {
+    let filename = this.article.replace(/<|>|\:|\"|\/|\\|\||\?|\*|\^|\s/g,"_");
+    if (filename.length > 200) {
+      filename = filename.substr(0, 200);
+    }
+    return `tiddlers/comments/${filename}.tid`;
+  }
+
+  get gravatarHash() {
+    const gravatarEmail = this.author.email.trim().toLowerCase();
+    return md5(gravatarEmail);
+  }
+
+  get datetime() {
+    return new Date().toISOString();
+  }
+
+  get commentLines() {
+    return [
+      `<$comment name="${this.author.name}" gravatar="${this.gravatarHash}" date="${this.datetime}" url="${this.author.url}">`,
+      '',
+      ...this.tiddler.getFieldString('text').split('\n'),
+      '',
+      '</$comment>'
+    ];
+  }
+
+  getCommentsTidFile(currentTiddler = this.commentTiddlerTitle) {
+    if (!$tw.wiki.getTiddler(currentTiddler)) {
+      return '';
+    }
+    const renderArgs = [
+      'text/plain',
+      '$:/core/templates/tid-tiddler',
+      {variables: {currentTiddler}}
+    ];
+    this.logger.log(`Rendering current comments for ${this.article}.`);
+    return $tw.wiki.renderTiddler(...renderArgs);
+  }
+
+  createPatch() {
+    const filePath = this.tidFilename;
+    const oldLines = this.getCommentsTidFile().split('\n');
+    const newLines = this.commentLines.map(line => `+${line}`);
+    const firstComment = oldLines.length === 1 && oldLines[0] === '';
+    const startIndex = firstComment ? 0 : oldLines.length;
+    if (firstComment) {
+      this.logger.log(`First comment for ${this.article} creating comments tiddler.`);
+      newLines.unshift(`+title: ${this.commentTiddlerTitle}`, '+type: text/vnd.tiddlywiki', '+');
+    }
+    return [
+      `From: ${this.author.name} <${this.author.email}>`,
+      '',
+      `${this.author.name} has requested to add the following comment.`,
+      this.author.url ? `URL: ${this.author.url}` : null,
+      '',
+      `diff --git a/${filePath} b/${filePath}`,
+      firstComment ? 'new file mode 100644' : null,
+      firstComment ? '--- /dev/null' : `--- a/${filePath}`,
+      `+++ b/${filePath}`,
+      `@@ -${startIndex},0 +${oldLines.length},${newLines.length} @@`,
+      ...newLines
+    ].filter(line => line !== null).join('\n');
+  }
+
   toJSON() {
     return {
-      tiddler:        `$:/comments/${this.article}`,
-      'author-name':  this.author.name,
-      'author-email': this.author.email,
-      'author-url':   this.author.url,
-      body:           this.tiddler.getFieldString('text')
+      name:    this.author.name,
+      email:   this.author.email,
+      subject: `[PATCH] Add comment to ${this.article}`,
+      message: this.createPatch()
     };
   }
 

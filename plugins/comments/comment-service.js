@@ -13,17 +13,16 @@ function message(msg) {
   return `${msg}. Please edit and save the tiddler to try again.`;
 }
 
-export class ServerError extends Error {
+export class ServerError {
   constructor(msg) {
-    super();
     this.name = 'ServerError';
     this.message = message(msg);
   }
 }
+ServerError.prototype = Object.create(Error.prototype);
 
-export class ValidationError extends Error {
+export class ValidationError {
   constructor(errors) {
-    super();
     this.name = 'ValidationError';
     this.errors = errors;
     const messages = Object.keys(errors)
@@ -32,6 +31,7 @@ export class ValidationError extends Error {
     this.message = message(messages);
   }
 }
+ValidationError.prototype = Object.create(Error.prototype);
 
 function createResponse(err, result) {
   try {

@@ -1,4 +1,4 @@
-modified: 20160119221857000
+modified: 20160306053742000
 title: $:/plugins/sukima/comments/comments.css
 tags: $:/tags/Stylesheet
 type: text/vnd.tiddlywiki
@@ -7,18 +7,30 @@ type: text/vnd.tiddlywiki
 \define comment(suffix) .tc-widget-comment$suffix$
 \define edit-comment(suffix) .tc-edit-comment$suffix$
 \define banner() <<edit-comment "-banner">>
-\define () <<edit-comment "-banner">>
 
 <pre>
 <<comment>> {
   background-color: <<colour tiddler-background>>;
   padding:          10px;
-  margin:           0;
+  margin:           5px 0;
   border:           thin solid <<colour modal-border>>;
 }
   
 <<comment>> .clearfix {
   clear: both;
+}
+
+<<comment>><<comment "-pending">>::before {
+  content: "Pending Review";
+  padding: 5px 10px;
+  float: right;
+  color: <<colour message-foreground>>;
+  border: thin solid <<colour message-border>>;
+  background-color: <<colour message-background>>;
+}
+
+<<comment>><<comment "-pending">> {
+  background-color: <<colour notification-background>>;
 }
 
 <<comment>> <<comment "-header">> {

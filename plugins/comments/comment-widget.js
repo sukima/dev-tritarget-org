@@ -17,6 +17,7 @@ class CommentWidget extends Widget {
     this.execute();
 
     const headerNode = $tw.utils.domMaker('div', {
+      document: this.document,
       class: 'tc-widget-comment-header',
       innerHTML: `
         <a href="${this.profileUrl}" target="_blank" class="tc-tiddlylink-external">
@@ -27,10 +28,13 @@ class CommentWidget extends Widget {
         <div class="clearfix"></div>`
     });
     const bodyNode = $tw.utils.domMaker('div', {
+      document: this.document,
       class: 'tc-widget-comment-body'
     });
+    const inReview = this.getVariable('inReview') === 'true';
     const domNode = $tw.utils.domMaker('div', {
-      class: 'tc-widget-comment',
+      document: this.document,
+      class: `tc-widget-comment ${inReview ? 'tc-widget-comment-pending' : ''}`,
       children: [headerNode, bodyNode]
     });
 
@@ -41,7 +45,7 @@ class CommentWidget extends Widget {
 
   refresh(changedTiddlers) {
     const changedAttributes = this.computeAttributes();
-    const attrs = ['name', 'email', 'date'];
+    const attrs = ['name', 'date', 'gravatar', 'url'];
     const hasChanges = attrs.some(attr => changedAttributes[attr]);
     if (hasChanges) {
       this.refreshSelf();
@@ -51,8 +55,6 @@ class CommentWidget extends Widget {
   }
 
   get displayName() { return this.getAttribute('name'); }
-
-  get email() { return this.getAttribute('email'); }
 
   get datetime() { return this.getAttribute('date'); }
 
@@ -64,11 +66,11 @@ class CommentWidget extends Widget {
 
   get profileUrl() {
     return this.getAttribute('url') ||
-      `http://gravatar.com/${this.getAttribute('gravatar')}`;
+      `//gravatar.com/${this.getAttribute('gravatar')}`;
   }
 
   get avatarUrl() {
-    return `http://gravatar.com/avatar/${this.getAttribute('gravatar')}`;
+    return `//gravatar.com/avatar/${this.getAttribute('gravatar')}.png`;
   }
 }
 

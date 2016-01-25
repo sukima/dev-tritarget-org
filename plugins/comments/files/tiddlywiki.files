@@ -1,0 +1,13 @@
+{
+  "tiddlers": [
+    {
+      "file": "md5.js",
+      "fields": {
+        "title": "$:/plugins/sukima/md5/md5.js",
+        "type": "application/javascript",
+        "module-type": "library",
+        "global-module": "true"
+      }
+    }
+  ]
+}
