@@ -1,0 +1,8 @@
+{
+  "title": "$:/plugins/sukima/pannellum",
+  "version": "2.2.0",
+  "description": "A lightweight, free, and open source panorama viewer for the TiddlyWiki. https://pannellum.org/",
+  "author": "sukima",
+  "core-version": ">=5.0.0",
+  "list": "readme"
+}

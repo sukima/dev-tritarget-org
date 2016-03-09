@@ -1,0 +1,21 @@
+{
+  "tiddlers": [
+    {
+      "file": "pannellum.css",
+      "fields": {
+        "title": "$:/plugins/sukima/pannellum/pannellum.css",
+        "type": "text/css",
+        "tags": "$:/tags/Stylesheet"
+      }
+    },
+    {
+      "file": "pannellum.js",
+      "fields": {
+        "title": "$:/plugins/sukima/pannellum/pannellum.js",
+        "type": "application/javascript",
+        "module-type": "library",
+        "global-module": "true"
+      }
+    }
+  ]
+}

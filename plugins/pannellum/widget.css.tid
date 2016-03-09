@@ -1,0 +1,16 @@
+modified: 20160310214921000
+title: $:/plugins/sukima/pannellum/widget.css
+type: text/vnd.tiddlywiki
+tags: $:/tags/Stylesheet
+
+\rules only filteredtranscludeinline transcludeinline macrodef macrocallinline html
+
+<pre>
+.tc-pannellum {
+  width: {{$:/themes/tiddlywiki/vanilla/metrics/tiddlerwidth}};
+  height: calc({{$:/themes/tiddlywiki/vanilla/metrics/tiddlerwidth}} / 2);
+  margin: auto;
+  text-align: center;
+  position: relative;
+}
+</pre>
