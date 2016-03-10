@@ -1,0 +1,6 @@
+modified: 20160310150425000
+created: 20160310150346000
+author: Devin
+title: Panoramas
+
+<<list-thumbnails filter:"[tag[PanoThumbnail]]">>
