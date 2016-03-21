@@ -1,0 +1,54 @@
+modified: 20160313194639000
+created: 20160313142325000
+author: Devin
+title: getopt.sh
+tags: code snippets
+source: https://gist.github.com/sukima/5409618
+
+```shell
+#!/bin/bash
+while test $# -gt 0
+do
+  case $1 in
+
+  # Normal option processing
+    -h | --help)
+      # usage and help
+      ;;
+    -v | --version)
+      # version info
+      ;;
+  # ...
+
+  # Special cases
+    --)
+      break
+      ;;
+    --*)
+      # error unknown (long) option $1
+      ;;
+    -?)
+      # error unknown (short) option $1
+      ;;
+
+  # FUN STUFF HERE:
+  # Split apart combined short options
+    -*)
+      split=$1
+      shift
+      set -- $(echo "$split" | cut -c 2- | sed 's/./-& /g') "$@"
+      continue
+      ;;
+
+  # Done with options
+    *)
+      break
+      ;;
+  esac
+
+  # for testing purposes:
+  echo "$1"
+
+  shift
+done
+```
