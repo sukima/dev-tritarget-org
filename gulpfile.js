@@ -4,7 +4,6 @@ var Promise    = require('bluebird');
 var fs         = Promise.promisifyAll(require('fs'));
 var spawn      = require('child_process').spawn;
 var http       = require('http');
-var httpProxy  = require('http-proxy');
 var del        = require('del');
 var path       = require('path');
 var gulp       = require('gulp');
@@ -17,8 +16,6 @@ var libs       = require('./config/libraries');
 
 var runningProcess;
 var babelrc = JSON.parse(fs.readFileSync('./.babelrc'));
-var COMMENT_SERVER_RESPONSE = {status: 201, res: {status: 'success', data: null}};
-// var COMMENT_SERVER_RESPONSE = {status: 501, res: {status: 'error', message: 'Not implemented yet'}};
 
 function loadJson(file) {
   debug('loading JSON file %s', file);
@@ -161,28 +158,14 @@ gulp.task('server', ['config-development', 'themes', 'plugins', 'tiddlers'], fun
     debug('Restarting currently running server…');
     runningProcess.kill('SIGINT');
   }
-  runningProcess = spawnProcess('./node_modules/.bin/tiddlywiki', ['wiki', '--server']);
+  runningProcess = spawnProcess('./node_modules/.bin/tiddlywiki', ['wiki', '--server', '', '', '', '', '', '', '0.0.0.0']);
   return Promise.delay(800).then(function() { livereload.reload(); });
 });
 
-gulp.task('watch', ['proxy', 'server'], function() {
+gulp.task('watch', ['server'], function() {
   livereload.listen();
   debug('Live Reload server started');
   gulp.watch(['plugins/**/*', 'themes/**/*', 'config/**/*'], ['server']);
-});
-
-gulp.task('proxy', function() {
-  var proxy = httpProxy.createProxyServer();
-  var commentServer = http.createServer(function(req, res) {
-    if (req.method === 'POST' && /\/comments(\?.*)?$/.test(req.url)) {
-      res.writeHead(COMMENT_SERVER_RESPONSE.status, {'Content-Type': 'application/json'});
-      res.end(JSON.stringify(COMMENT_SERVER_RESPONSE.res));
-    } else {
-      proxy.web(req, res, {target: 'http://127.0.0.1:8080'});
-    }
-  });
-  console.log('Proxy server listening on http://localhost:8888');
-  return commentServer.listen(8888);
 });
 
 gulp.task('build', ['tiddlywiki', 'scripts'], function() {
