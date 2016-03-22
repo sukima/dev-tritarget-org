@@ -10,7 +10,7 @@ generator command to prep and create media tiddlers
 /*globals Promise:true*/
 let Promise, util, fs, path, mktemp, child_process, del, gm, generateTiddlerFilename;
 const CDN_DOMAIN = 'photos.tritarget.org';
-const RSYNC_COMMAND = 'rsync -rzv %s ktohg@tritarget.org:photos.tritarget.org';
+const RSYNC_COMMAND = 'rsync -rzv --progress %s ktohg@tritarget.org:photos.tritarget.org';
 const PANO_TYPE = 'image/prs.panorama';
 
 // Can not use import because requires must be dynamic so it doesn't
@@ -53,6 +53,22 @@ function isMediaPrepError(e) {
   return e.name === 'MediaPrepError';
 }
 
+function spawnAsync(command, args, progress) {
+  return new Promise((resolve, reject) => {
+    const cp = child_process.spawn(command, args, {stdio: 'inherit'});
+    cp.on('exit', code => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new MediaPrepError(`${command} had non zero exit code: ${code}.`));
+      }
+    });
+    if (progress) {
+      cp.on('data', stdout => progress(stdout.toString()));
+    }
+  });
+}
+
 class Editor {
   constructor(editor) {
     this.editor = editor || process.env.EDITOR || 'vi';
@@ -76,21 +92,13 @@ class Editor {
   editFile(file) {
     const postLogs = [];
     const origLog = console.log;
-    return new Promise((resolve, reject) => {
-      console.log = (...args) => postLogs.push(args);
-      child_process.spawn(this.editor, [file], {stdio: 'inherit'})
-        .on('exit', code => {
-          if (code === 0) {
-            resolve(file);
-          } else {
-            reject(new MediaPrepError(`${this.editor} had non zero exit code: ${code}.`));
-          }
-        });
-    })
-    .finally(() => {
-      console.log = origLog;
-      postLogs.forEach(args => console.log(...args));
-    });
+    console.log = (...args) => postLogs.push(args);
+    return spawnAsync(this.editor, [file])
+      .return(file)
+      .finally(() => {
+        console.log = origLog;
+        postLogs.forEach(args => console.log(...args));
+      });
   }
 
   editContent(origContent) {
@@ -120,7 +128,14 @@ class Media {
     return this.outputDirPromise;
   }
   processImages() {
-    return Promise.join(this.makeImage(), this.makeThumb());
+    return Promise.join(
+      this.makeImage().then(() => {
+        console.log(`Completed image processing: ${this.outputFile}`);
+      }),
+      this.makeThumb().then(() => {
+        console.log(`Completed thumbnail processing: ${this.outputThumb}`);
+      })
+    );
   }
   saveTiddlers(wiki) {
     return Promise.join(
@@ -357,8 +372,12 @@ export class Command {
   }
 
   uploadMedia(tempDir) {
-    return child_process.execAsync(util.format(RSYNC_COMMAND, `${tempDir}/`))
-      .then(stdout => console.log(stdout.toString()));
+    console.log('Uploading media...');
+    const [command, ...args] = RSYNC_COMMAND.split(' ')
+      .map(arg => (arg === '%s') ? `${tempDir}/` : arg);
+    return spawnAsync(command, args, progress => {
+      console.log(progress);
+    });
   }
 
   execute() {
