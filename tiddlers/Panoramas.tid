@@ -1,6 +1,8 @@
-modified: 20160310150425000
-created: 20160310150346000
 author: Devin
+created: 20160310150346000
+modified: 20160322223041957
+tags: TableOfContents
 title: Panoramas
+type: text/vnd.tiddlywiki
 
 <<list-thumbnails filter:"[tag[PanoThumbnail]]">>
