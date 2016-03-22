@@ -1,0 +1,18 @@
+color: 
+created: 20160322232707257
+modified: 20160323020027319
+tags: $:/tags/Stylesheet
+title: $:/plugins/sukima/tritarget/styles
+type: text/vnd.tiddlywiki
+
+.tc-alert.tc-alert-info {
+  background-color: #ccf;
+  border-color: #99c;
+}
+
+.tc-alert.tc-toc-box {
+  margin: 0;
+  color: #000;
+  max-width: 350px;
+  text-shadow: none;
+}

@@ -1,0 +1,33 @@
+created: 20160323020453475
+modified: 20160323020531900
+tags: 
+title: TocPretext
+type: text/vnd.tiddlywiki
+
+<div class="tc-alert tc-alert-info tc-toc-box">
+{{AboutMe}}
+</div>
+
+<style>
+.social-links {
+color: #000;
+fill: #000;
+}
+.social-links .link {
+margin: -10px 20px 0;
+}
+.social-links svg {
+width: 16px;
+height: 16px;
+margin: 0;
+padding: 0;
+}
+</style>
+<div class="social-links">
+
+!!! Social Links
+
+<span class="link"> {{$:/core/images/github}} [[GitHub|https://github.com/sukima]] </span><br>
+<span class="link"> {{$:/core/images/twitter}} [[Twitter|https://twitter.com/sukima]] </span>
+
+</div>

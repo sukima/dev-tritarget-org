@@ -1,0 +1,16 @@
+caption: {{$:/language/SideBar/Contents/Caption}}
+created: 20160322205825768
+list: Panoramas
+list-before: $:/core/ui/SideBar/Open
+modified: 20160323020543560
+tags: $:/tags/SideBar
+title: TableOfContents
+type: text/vnd.tiddlywiki
+
+{{TocPretext}}
+
+<div class="tc-table-of-contents">
+
+<<toc-selective-expandable 'TableOfContents'>>
+
+</div>

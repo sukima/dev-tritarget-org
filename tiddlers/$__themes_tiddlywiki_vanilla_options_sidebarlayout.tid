@@ -1,7 +1,7 @@
 created: 20160104151728693
-modified: 20160322133516975
+modified: 20160322222716170
 modifier: Sukima
 title: $:/themes/tiddlywiki/vanilla/options/sidebarlayout
 type: text/vnd.tiddlywiki
 
-fluid-fixed
+fixed-fluid
