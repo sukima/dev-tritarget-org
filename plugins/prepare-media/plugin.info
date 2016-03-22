@@ -1,0 +1,6 @@
+{
+	"title": "$:/plugins/sukima/prepare-media",
+	"description": "Command to prepare photo media",
+	"author": "Sukima",
+	"core-version": ">=5.0.0"
+}

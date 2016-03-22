@@ -172,6 +172,8 @@ gulp.task('build', ['tiddlywiki', 'scripts'], function() {
   return gulp.src('public/*').pipe(gulp.dest('wiki/output'));
 });
 
+gulp.task('prepare-wiki', ['config-development', 'themes', 'plugins', 'tiddlers']);
+
 gulp.task('clean', function() {
   return del(['wiki', 'public/scripts']);
 });
