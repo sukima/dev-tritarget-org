@@ -69,6 +69,10 @@ function spawnAsync(command, args, progress) {
   });
 }
 
+function trimSlash(str) {
+  return str.replace(/(?:^\/+|\/+$)/, '');
+}
+
 class Editor {
   constructor(editor) {
     this.editor = editor || process.env.EDITOR || 'vi';
@@ -119,7 +123,7 @@ class Media {
   constructor(data, tempDir) {
     $tw.utils.extend(this, data);
     this.tempDir = tempDir;
-    this.output = this.output.replace(/(?:^\/+|\/+$)/, '');
+    this.output = trimSlash(this.output);
   }
   mkdir() {
     if (!this.outputDirPromise) {
@@ -227,13 +231,15 @@ class Photo extends Media {
     super(...args);
     const baseDir = path.join(this.tempDir, 'photos');
     const parts = path.parse(this.output);
-    const thumbName = `${parts.name}_t${parts.ext}`;
+    const thumbName = `${trimSlash(parts.name)}_t${parts.ext}`;
     this.basePath = path.join('photos', this.output);
     this.outputDir = path.join(baseDir, parts.dir);
     this.outputFile = path.join(baseDir, this.output);
     this.outputThumb = path.join(baseDir, parts.dir, thumbName);
     this.mediaUrl = `//${CDN_DOMAIN}/${this.basePath}`;
-    this.mediaThumbUrl = `//${CDN_DOMAIN}/photos/${parts.dir}/${thumbName}`;
+    this.mediaThumbUrl = [
+      `//${CDN_DOMAIN}`, 'photos', trimSlash(parts.dir), thumbName
+    ].filter(item => item && item !== '').join('/');
     this.logger = new $tw.utils.Logger('prepare-media-photo');
   }
   makeImage() {
@@ -258,7 +264,7 @@ class Photo extends Media {
   saveImgTiddler(wiki) {
     const title = this.title;
     const fileName = generateTiddlerFilename(title, '.tid', []);
-    return this.addNewTiddler(wiki, fileName, {
+    return this.addNewTiddler(wiki, path.join('photos', fileName), {
       title,
       tags: ['Photography'],
       type: this.type,
@@ -268,7 +274,7 @@ class Photo extends Media {
   saveThumbImgTiddler(wiki) {
     const title = `${this.title} Thumbnail Image`;
     const fileName = generateTiddlerFilename(title, '.tid', []);
-    return this.addNewTiddler(wiki, fileName, {
+    return this.addNewTiddler(wiki, path.join('photos', fileName), {
       title,
       tags: ['PhotoThumbnail'],
       type: this.type,
