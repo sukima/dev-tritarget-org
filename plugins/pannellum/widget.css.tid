@@ -1,16 +1,60 @@
-modified: 20160310214921000
+modified: 20160322133350000
 title: $:/plugins/sukima/pannellum/widget.css
-type: text/vnd.tiddlywiki
-tags: $:/tags/Stylesheet
+tags: [[$:/tags/Stylesheet]]
 
 \rules only filteredtranscludeinline transcludeinline macrodef macrocallinline html
 
-<pre>
+\define case-fluid-fixed-sidebar(isfluid,notfluid,nosidebar)
+<$reveal state="$:/state/sidebar" type="match" text="yes" default="yes">
+<$reveal state="$:/themes/tiddlywiki/vanilla/options/sidebarlayout" type="match" text="fluid-fixed">
+$isfluid$
+</$reveal>
+<$reveal state="$:/themes/tiddlywiki/vanilla/options/sidebarlayout" type="nomatch" text="fluid-fixed">
+$notfluid$
+</$reveal>
+</$reveal>
+<$reveal state="$:/state/sidebar" type="nomatch" text="yes" default="yes">
+$nosidebar$
+</$reveal>
+\end
+
 .tc-pannellum {
-  width: {{$:/themes/tiddlywiki/vanilla/metrics/tiddlerwidth}};
-  height: calc({{$:/themes/tiddlywiki/vanilla/metrics/tiddlerwidth}} / 2);
   margin: auto;
   text-align: center;
   position: relative;
 }
-</pre>
+
+@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+
+  .tc-pannellum {
+    width: 280px;
+    height: 157px;
+  }
+
+}
+
+@media (min-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+
+<<case-fluid-fixed-sidebar isfluid:"""
+
+  .tc-pannellum {
+    height: calc({{$:/themes/tiddlywiki/vanilla/metrics/tiddlerwidth}} / 2);
+  }
+
+""" notfluid:"""
+
+  .tc-pannellum {
+    width: calc({{$:/themes/tiddlywiki/vanilla/metrics/tiddlerwidth}} * 0.8);
+    height: calc({{$:/themes/tiddlywiki/vanilla/metrics/tiddlerwidth}} * 0.4);
+  }
+
+""" nosidebar:"""
+
+  .tc-pannellum {
+    width: calc({{$:/themes/tiddlywiki/vanilla/metrics/tiddlerwidth}} * 1.5);
+    height: calc({{$:/themes/tiddlywiki/vanilla/metrics/tiddlerwidth}} * 0.75);
+  }
+
+""">>
+
+}
