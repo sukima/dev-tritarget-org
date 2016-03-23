@@ -1,5 +1,5 @@
 created: 20160323020453475
-modified: 20160323020531900
+modified: 20160323131446042
 tags: 
 title: TocPretext
 type: text/vnd.tiddlywiki
@@ -28,6 +28,7 @@ padding: 0;
 !!! Social Links
 
 <span class="link"> {{$:/core/images/github}} [[GitHub|https://github.com/sukima]] </span><br>
-<span class="link"> {{$:/core/images/twitter}} [[Twitter|https://twitter.com/sukima]] </span>
+<span class="link"> {{$:/core/images/twitter}} [[Twitter|https://twitter.com/sukima]] </span><br>
+<span class="link"> {{$:/core/images/locked-padlock}} [[Keybase|https://keybase.io/sukima]] </span>
 
 </div>

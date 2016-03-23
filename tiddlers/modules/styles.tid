@@ -1,6 +1,5 @@
-color: 
-created: 20160322232707257
-modified: 20160323020027319
+created: 20160323140817474
+modified: 20160323144210728
 tags: $:/tags/Stylesheet
 title: $:/plugins/sukima/tritarget/styles
 type: text/vnd.tiddlywiki
@@ -15,4 +14,11 @@ type: text/vnd.tiddlywiki
   color: #000;
   max-width: 350px;
   text-shadow: none;
+}
+
+.img-thumbnail {
+  padding: 4px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }

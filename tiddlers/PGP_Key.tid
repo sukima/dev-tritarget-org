@@ -1,0 +1,14 @@
+created: 20160323130207728
+fingerprint: FA9F 1400 8BA5 A847 B097  7C06 EBD9 9C92 DE76 7C8A
+id: DE767C8A
+modified: 20160323131156993
+tags: 
+title: PGP Key
+type: text/vnd.tiddlywiki
+
+;PGP key:
+:<code>{{!!id}}</code>
+;Fingerprint:
+:<code>{{!!fingerprint}}</code>
+;Keybase.io
+:http://keybase.io/sukima
