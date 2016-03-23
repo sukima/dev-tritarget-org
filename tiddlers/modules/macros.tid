@@ -1,0 +1,29 @@
+created: 20160323003123862
+modified: 20160323013707265
+tags: $:/tags/Macro
+title: $:/plugins/sukima/tritarget/macros
+type: text/vnd.tiddlywiki
+
+\define photo(title)
+<$link to="$title$">
+[img[$title$ Thumbnail Image]]
+</$link>
+\end
+
+\define pano(title)
+<$macrocall $name="list-thumbnails" filter="[[$title$ Thumbnail]]"/>
+\end
+
+\define currentThumb() $(currentTiddler)$ Thumbnail Image
+
+\define gallery(filter)
+<div class="my-gallery">
+<$list filter="$filter$">
+<$set name="tv-wikilink-tooltip" value=<<currentTiddler>>>
+<$link to=<<currentTiddler>>>
+<$transclude tiddler=<<currentThumb>>/>
+</$link>
+</$set>
+</$list>
+</div>
+\end
