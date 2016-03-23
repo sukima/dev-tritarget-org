@@ -266,7 +266,7 @@ class Photo extends Media {
     const fileName = generateTiddlerFilename(title, '.tid', []);
     return this.addNewTiddler(wiki, path.join('photos', fileName), {
       title,
-      tags: ['Photography'],
+      tags: ['Photography', 'Photos'],
       type: this.type,
       _canonical_uri: this.mediaUrl
     });
