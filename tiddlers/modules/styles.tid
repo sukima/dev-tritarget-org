@@ -1,8 +1,16 @@
 created: 20160323140817474
-modified: 20160324031043166
+modified: 20160324162909473
 tags: $:/tags/Stylesheet
 title: $:/plugins/sukima/tritarget/styles
 type: text/vnd.tiddlywiki
+
+@media print {
+  a.tc-tiddlylink-external:after {
+    content: " (" attr(href) ") ";
+    font-size: 0.8em;
+    font-weight: normal;
+  }
+}
 
 .tc-alert.tc-alert-info {
   background-color: #ccf;

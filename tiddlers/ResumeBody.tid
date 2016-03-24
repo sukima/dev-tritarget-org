@@ -1,0 +1,106 @@
+created: 20160324133130224
+creator: Sukima
+modified: 20160324165715351
+modifier: Sukima
+title: Devin Weaver's Résumé
+type: text/vnd.tiddlywiki
+
+\define tv-wikilinks() no
+\define work-history(title,where,dates) !!! $dates$<br>$title$, $where$
+
+! Devin Weaver
+
+I am a highly passionate software developer and fast learner, with interests in mobile and web technologies, security, leadership, teamwork, and teaching. I have a child like sense of wonder to programming and enjoy discovering new ideas.
+
+I strive for quality. I believe the code I write should have a degree of prose akin to the kind of user experiences I expect end users to have. I feel fellow developers and my future self are as much an ''end user'' as anyone else.
+
+In my free time I enjoy contributing to open source projects, and exploring photography.
+
+!! Proficiency
+
+JavaScript, Node, Ember, Backbone, jQuery, CSS, HTML5, CoffeeScript, Appcelerator Titanium, Ruby on Rails, Node.js, JSON, PHP, Java, iOS, Android, Shell scripting, SQL, XML, PostGIS, Git, BDD/TDD, Unix/Linux, Mac OS X, Windows
+
+Very proficient on command line using tmux, bash, and Vim
+
+!! Experience
+
+<!-- TODO: Add Resume ready projects
+!!! Mobile App Development
+
+* Cross platform mobile application [http://tritarget.org/s/#p1 ­ JavaScript, CoffeeScript, jQuery­mobile]
+* Equipment tracking web app with mobile features [http://tritarget.org/s/#p2 ­ Ruby on Rails, jQuery­mobile, Redmine]
+* Web Application Development Event scheduling, notification, and submission software [http://tritarget.org/s/#p3 ­ Ruby on Rails, jQuery­ui]
+* Partner Relationship Management software [Channelwave ­ Java, JSP]
+-->
+
+!!! JavaScript Development
+
+* [[SkiQuery|https://github.com/sukima/skiQuery]] A clone of a text based game [JavaScript, jQuery]
+
+!!! System Administration
+
+* Webmaster, backups, helpdesk ticketing, equipment tracking, and networking [Linux, Apache, RoR, Bash]
+
+!! Work History
+
+<<work-history title:"Software Developer" where:"""[ext[SeeClickFix, Inc.|https://seeclickfix.com/]]""" dates:"04/2012 - Present">>
+
+I maintain an iOS application written in Appcelerator Titanium (JavaScript → native). I've written several Node based build system using Gulp, Browserify, Ember. I've written several (in-house) stream based plugins for Gulp. I help maintain our Native Android application. I actively maintain and enhance our main system with Ruby on Rails. I wrote a test suite frame work in Jasmine for Titanium code and later ported the same system to Mocha. Wrote web application in Ember, socket.io, and Node express to manage and build 30 different flavors of our Titanium iOS app.
+
+* iOS / Appcelerator Titanium developer
+* Ruby on Rails developer.
+* Resident Node expert
+* Bash and Vim guru
+* Git master
+
+<<work-history title:"Simulation Specialist" where:"Yale New Haven Health System" dates:"03/2010 - 04/2012">>
+
+* Linux system administration
+* Document technical manuals, process and procedures
+* Fix computer hardware and software installs
+* Develop flowchart based programs for medical simulations
+* Developed scheduling software (see above)
+* Developed equipment tracking software (see above)
+* Administer bug tracking and issue tracking software.
+* Management experience
+
+<<work-history title:"Emergency Medical Tech ­ Paramedic" where:"AMR and American Ambulance" dates:"09/2003 - 03/2011">>
+
+* Provided medical care to patients
+* Leadership skills
+* Studied computer programming (Ruby on Rails, JavaScript, Objective­C, and more) in between calls
+
+<<work-history title:"Software Contractor" where:"Mr. Joy, Inc." dates:"11/2007 - 12/2007">>
+
+* Ruby on Rails Development
+* Code review
+* Develop PayPal integration
+
+<<work-history title:"Electrician" where:"Weaver Electric" dates:"09/2000 - 09/2003">>
+
+* Wired commercial builds for electricity, phone, and computer networking
+* Designed and built small office networks
+
+<<work-history title:"Software Contractor" where:"Newcastle, Inc." dates:"03/2003 - 06/2003">>
+
+* Java Developer
+* Product Design
+* Developed Java Media Framework video codec
+* Ported remote desktop solution written in C to Java
+
+<<work-history title:"Java Developer" where:"ChannelWave, Inc." dates:"09/2000 - 05/2001">>
+
+* Code review
+* Web based software using J2EE, Java Servlets and JSP
+* Version control management
+* Leveraged HTML, CSS, and XML for data binding and presentation
+* Researched and implemented software version control and bug tracking software
+
+!! Education
+
+* Associate of Computer Science Degree, Three Rivers Community Technical College, 2006
+
+!! Associations
+
+* Treasurer of Groton Ambulance Association
+* Contributing Member to [[NewHaven.io Meetup|http://newhaven.io/]]

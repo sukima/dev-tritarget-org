@@ -1,0 +1,17 @@
+caption: Résumé
+created: 20160323135855597
+creator: Sukima
+modified: 20160324161820630
+modifier: Sukima
+position: 50
+tags: NavBar
+title: Resume
+type: text/vnd.tiddlywiki
+
+<$tiddler tiddler="Devin Weaver's Résumé">
+<$button message="tm-open-window" class="tc-float-right">
+{{$:/core/images/export-button}} open printable version
+</$button>
+</$tiddler>
+
+{{Devin Weaver's Résumé}}
