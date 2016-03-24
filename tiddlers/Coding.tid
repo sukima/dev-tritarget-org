@@ -1,0 +1,27 @@
+created: 20160323135701033
+modified: 20160324030752764
+position: 20
+tags: NavBar
+title: Coding
+type: text/vnd.tiddlywiki
+
+<$button to="CodingArticles" class="tc-summary-button">
+<<tag-summary "Coding">>
+</$button>
+
+! Projects
+
+<$list filter="[tag[Projects]sort[modified]]">
+
+!!! <<currentTiddler>>
+
+<<<
+<$transclude/>
+
+<<<
+
+</$list>
+
+!  Not-so-random fortune quote
+
+{{CodePoem}}

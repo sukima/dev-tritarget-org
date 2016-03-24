@@ -1,0 +1,13 @@
+created: 20160324023103599
+modified: 20160324023424546
+tags: Projects
+title: ember-promise-talk
+type: text/vnd.tiddlywiki
+
+An example demo on having fun with EmberJS… promise.
+
+It is a fully working (graphical) slot machine written in the EmberJS framework.
+
+This is the result of wanting a working ember application to use during a talk about [[Promises]]. It is in progress but the game portion is working. Try it out!.
+
+''Demo:'' https://sukima.github.io/ember-promise-talk

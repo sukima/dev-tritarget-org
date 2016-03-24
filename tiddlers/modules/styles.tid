@@ -1,5 +1,5 @@
 created: 20160323140817474
-modified: 20160323144210728
+modified: 20160324031043166
 tags: $:/tags/Stylesheet
 title: $:/plugins/sukima/tritarget/styles
 type: text/vnd.tiddlywiki
@@ -48,4 +48,24 @@ type: text/vnd.tiddlywiki
 
 .tc-topbar-left li a:hover {
   color: #fff;
+}
+
+.tc-summary-button {
+  width: 100%;
+  padding: 10px 20px;
+  border: solid thin #000;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #000;
+  text-align: center;
+  font-size: 1.1em;
+}
+
+.tc-summary-button:hover {
+  background-color: #eee;
+}
+
+
+.tc-summary-button:active {
+  background-color: #ccc;
 }
