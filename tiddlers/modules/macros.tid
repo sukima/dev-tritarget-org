@@ -1,5 +1,5 @@
 created: 20160323003123862
-modified: 20160324030853144
+modified: 20160324115426304
 tags: $:/tags/Macro
 title: $:/plugins/sukima/tritarget/macros
 type: text/vnd.tiddlywiki
@@ -28,4 +28,4 @@ type: text/vnd.tiddlywiki
 </div>
 \end
 
-\define tag-summary(tagname) There are <$count filter="[tag[$tagname$]]"/> articles about {{$tagname$||$:/core/ui/TagTemplate}}
+\define tag-summary(tagname) There are <$count filter="[tag[$tagname$]]"/> articles about <<tag "$tagname$">>

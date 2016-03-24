@@ -1,0 +1,44 @@
+created: 20160323135744566
+modified: 20160324115553540
+position: 30
+tags: NavBar
+title: Photography
+type: text/vnd.tiddlywiki
+
+<$button to="PhotographyArticles" class="tc-summary-button">
+<<tag-summary "Photography">>
+</$button>
+
+<$button to="Photos" class="tc-summary-button">
+There are <$count filter="[tag[Photos]]"/> <<tag "Photos">>
+</$button>
+
+<$button to="Panoramas" class="tc-summary-button">
+There are <$count filter="[tag[Panoramas]]"/> <<tag "Panoramas">>
+</$button>
+
+I am a bit of photography buff. I am an enthusiast of panoramas. Especially the Virtual Tours you find on [[360cities|http://360cities.net/]].
+
+A lot of my knowledge came from the following tutorials:
+
+* [[How To Get Started on 360° Panoramic Photography - 360cities.net|http://help.360cities.net/taking-panoramic-pictures/how-to-get-started]]
+* [[Panorama Tutorial Series by FloTube and elfloz|http://www.youtube.com/playlist?list=PL15B8C737F69319BE]]
+
+!! What I use
+
+My camera equipment consists of the [[Canon EOS Rebel XS|http://www.usa.canon.com/cusa/support/consumer/eos_slr_camera_systems/eos_digital_slr_cameras/eos_rebel_xs_18_55is_kit]] with a [[Bower 8mm Fisheye|http://www.photozone.de/canon-eos/526-samyang8f35eos]] lens (known with many other names like Samyang). I also use a Panoramic Tripod Head called [[the Panosaurus|http://gregwired.com/pano/Pano.htm]] to minimizing the parallax errors.
+
+After this is done I use a lot of tools. The most prominent tools are:
+
+* [[Hugin|http://hugin.sourceforge.net/]] - A panorama stitcher.
+* [[GIMP|http://www.gimp.org/]] - An image editor.
+
+After I developed a finish product I will deploy it by converting it to several
+formats. The following are tools I use in the background but are not needed for
+making a panorama.
+
+* [[PanoTools|http://panotools.sourceforge.net/]] - Command line tools to convert panoramas
+* [[GrapicsMagick|http://www.graphicsmagick.org/]] - Command line tool to convert images
+* [[Pannellum|https://pannellum.org/]] - An HTML5/~WebGL Panorama viewer
+
+I develop these on either a Linux machine running Ubuntu or a Mac with Mac OS X.
