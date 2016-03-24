@@ -203,7 +203,7 @@ class Pano extends Media {
   saveImgTiddler(wiki) {
     return this.addNewTiddler(wiki, `${this.basePath}/panorama.tid`, {
       title: this.title,
-      tags: ['Photography', 'Panoramas'],
+      tags: ['Panoramas'],
       text: `<$panorama url="${this.mediaUrl}"/>\n`
     });
   }
@@ -266,7 +266,7 @@ class Photo extends Media {
     const fileName = generateTiddlerFilename(title, '.tid', []);
     return this.addNewTiddler(wiki, path.join('photos', fileName), {
       title,
-      tags: ['Photography', 'Photos'],
+      tags: ['Photos'],
       type: this.type,
       _canonical_uri: this.mediaUrl
     });
