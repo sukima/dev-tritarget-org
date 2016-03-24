@@ -1,0 +1,29 @@
+caption: About
+created: 20160323135449961
+modified: 20160324020852268
+position: 10
+tags: NavBar
+title: AboutTriTarget
+type: text/vnd.tiddlywiki
+
+This site is built with TiddlyWiki. You can view the source code for this site on GitHub.
+
+{{SiteLicense}}
+
+This site was cobbled together with the following technologies:
+
+* JavaScript
+* TiddlyWiki
+* [[Node.js]]
+* [[Gulp]]
+* [[Git]]
+
+!! About Me
+
+''~TriTarget.org'' is a name I came up with in high school. I was big into computer programming and wanted a company name that was kinda catchy. When I made a few programs in BASIC I would brand them with //~TriTarget// as a way to show off my company (Even though I didn't have one).
+
+After high school I began college as a computer scientist. Part way through I scored a job as a computer programmer and continued that path for about 6 years. During the dot com burst I was laid off and left to fend in a world were software development was not a valued commodity anymore (too many fish in the sea). I began work as an electrician for about 3 years while I trained to be an EMT. I began that career in the medical field where I eventually became a Paramedic. I finished my associates degree and after 10 years in the medical field I found a job at a top hospital as a medical simulation technician.
+
+I developed my technical as well as my software development skills. Becoming a active member in the development community, I studied modern web and mobile technologies such as JavaScript, RubyOnRails, and iPhone development. I now work in this field and am excited to continue my childhood dreams of creating great software for everyone to enhance their lives with.
+
+{{PGP Key}}

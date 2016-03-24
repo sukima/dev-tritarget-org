@@ -1,0 +1,17 @@
+caption: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
+created: 20160323181858909
+modified: 20160324014842197
+tags: 
+title: SiteLicense
+type: text/vnd.tiddlywiki
+url: http://creativecommons.org/licenses/by-nc-nd/4.0/
+
+<center>
+
+<a rel="license" href="{{!!url}}">
+[img align="center" [Creative Commons License|CC-by-nc-nd-4.png]]
+</a>
+
+This work is licensed under a <a rel="license" href="{{!!url}}">{{!!caption}}</a>.
+
+</center>
