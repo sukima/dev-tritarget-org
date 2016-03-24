@@ -1,0 +1,10 @@
+created: 20160324182929371
+modified: 20160324190515604
+title: JavaScript
+type: text/vnd.tiddlywiki
+
+[img [JavaScriptLogo.jpg]]
+
+<<<
+JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles.
+<<< [[What is JavaScript? - MDN|https://developer.mozilla.org/en-US/docs/Web/JavaScript/About_JavaScript]] <small>(fetched 2016-03-24)</small>
