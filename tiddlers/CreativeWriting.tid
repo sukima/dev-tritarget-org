@@ -1,7 +1,10 @@
 caption: Creative Writing
-created: 20160323135807535
+color: #ccccff
+created: 20160324192108742
 creator: Sukima
-modified: 20160324182738374
+icon: $:/core/images/spiral
+list-after: All Articles
+modified: 20160324193230150
 modifier: Sukima
 position: 40
 tags: NavBar TableOfContents
@@ -14,7 +17,7 @@ type: text/vnd.tiddlywiki
 
 Here are some Interactive Fiction works I did [[Myself|Sukima]]:
 
-<$list filter="[tag[IF]]">
+<$list filter="[tag[InteractiveFiction]]">
 
 !! <a href={{!!url}}>{{!!title}}</a>
 

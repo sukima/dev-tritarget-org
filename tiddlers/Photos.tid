@@ -1,6 +1,7 @@
 color: #3333ff
 created: 20160324115900635
-modified: 20160324115901699
+icon: $:/core/images/palette
+modified: 20160324192803183
 title: Photos
 type: text/vnd.tiddlywiki
 

@@ -1,9 +1,10 @@
-modified: 20160313194639000
-created: 20160313142325000
 author: Devin
-title: getopt.sh
-tags: code snippets
+created: 20160313142325000
+modified: 20160324192915108
 source: https://gist.github.com/sukima/5409618
+tags: snippets
+title: getopt.sh
+type: text/vnd.tiddlywiki
 
 ```shell
 #!/bin/bash

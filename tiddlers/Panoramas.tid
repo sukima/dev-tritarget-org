@@ -1,7 +1,9 @@
 author: Devin
 color: #00cc33
 created: 20160310150346000
-modified: 20160324115848986
+icon: $:/core/images/video
+list-after: CreativeWriting
+modified: 20160324192743476
 tags: TableOfContents
 title: Panoramas
 type: text/vnd.tiddlywiki
