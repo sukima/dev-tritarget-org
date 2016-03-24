@@ -1,0 +1,25 @@
+caption: Creative Writing
+created: 20160323135807535
+creator: Sukima
+modified: 20160324121238566
+modifier: Sukima
+position: 40
+tags: NavBar
+title: CreativeWriting
+type: text/vnd.tiddlywiki
+
+! Interactive Fiction
+
+{{Interactive Fiction}}
+
+Here are some Interactive Fiction works I did [[Myself|Sukima]]:
+
+<$list filter="[tag[IF]]">
+
+!! <a href={{!!url}}>{{!!title}}</a>
+
+<<<
+<$transclude/>
+<<<
+
+</$list>
