@@ -1,0 +1,32 @@
+created: 20160324015728482
+modified: 20160324020534301
+tags: 
+title: SocialLinks
+type: text/vnd.tiddlywiki
+
+<style>
+.social-links {
+color: #000;
+fill: #000;
+}
+.social-links li {
+margin-left: -16px;
+list-style: none;
+}
+.social-links svg {
+width: 16px;
+height: 16px;
+margin: 0;
+padding: 0;
+}
+</style>
+<div class="social-links">
+
+!!! Social Links
+
+* {{$:/core/images/github}} [[GitHub|https://github.com/sukima]]
+* {{$:/core/images/twitter}} [[Twitter|https://twitter.com/sukima]]
+* {{$:/core/images/locked-padlock}} [[Keybase|https://keybase.io/sukima]]
+* {{$:/core/images/plugin-generic-language}} <a target="_blank" class="tc-tiddlylink-external" herf="https://twitter.com/intent/tweet?text=DM%20sukima%20Are%20you%20interested%20in%20pairing%20on%20%3CDESCRIPTION%3E%3F">Pair with me</a>
+
+</div>
