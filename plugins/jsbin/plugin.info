@@ -1,0 +1,6 @@
+{
+	"title": "$:/plugins/sukima/jsbin",
+	"description": "Macro to embed a JS Bin",
+	"author": "Sukima",
+	"core-version": ">=5.0.0"
+}

@@ -1,0 +1,5 @@
+title: $:/plugins/sukima/jsbin/macro
+type: text/vnd.tiddlywiki
+tags: [[$:/tags/Macro]]
+
+\define jsbin(link text:"JS Bin") <a class="jsbin-embed" href="$link$">$text$ on jsbin.com</a>
