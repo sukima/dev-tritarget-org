@@ -1,5 +1,5 @@
 created: 20160323140817474
-modified: 20160325171523553
+modified: 20160325173817438
 tags: $:/tags/Stylesheet
 title: $:/plugins/sukima/tritarget/styles
 type: text/vnd.tiddlywiki
@@ -9,6 +9,12 @@ type: text/vnd.tiddlywiki
     content: " (" attr(href) ") ";
     font-size: 0.8em;
     font-weight: normal;
+  }
+}
+
+@media (max-width: 768px) {
+  .tc-topbar {
+    display: none;
   }
 }
 
