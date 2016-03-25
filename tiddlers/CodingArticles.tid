@@ -1,6 +1,10 @@
 created: 20160324104441870
-modified: 20160324104506814
+modified: 20160325004336182
 title: CodingArticles
 type: text/vnd.tiddlywiki
 
-<<list-links filter:"[tag[Coding]]">>
+<ul>
+<$list filter="[tag[Coding]]">
+<li><$link to={{!!title}}>{{!!title}}</$link> - <$view field="created" format="date" template="MMM DD, YYYY"/></li>
+</$list>
+</ul>
