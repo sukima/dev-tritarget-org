@@ -1,7 +1,8 @@
 color: #3333ff
 created: 20160324115900635
 icon: $:/core/images/palette
-modified: 20160324192803183
+modified: 20160325184424985
 title: Photos
 type: text/vnd.tiddlywiki
 
+<<list-links filter:"[tag[Photos]]">>
