@@ -1,5 +1,5 @@
 created: 20160323140817474
-modified: 20160324162909473
+modified: 20160325171523553
 tags: $:/tags/Stylesheet
 title: $:/plugins/sukima/tritarget/styles
 type: text/vnd.tiddlywiki
@@ -10,6 +10,21 @@ type: text/vnd.tiddlywiki
     font-size: 0.8em;
     font-weight: normal;
   }
+}
+
+/* TODO: Remove after https://github.com/Jermolene/TiddlyWiki5/pull/2341 */
+pre>code {
+  white-space: pre;
+  overflow-y: scroll;
+}
+
+.tc-pullquote {
+  text-align: center;
+  font-size: 1.6em;
+  width: 200px;
+  float: right;
+  padding: 5px 0 5px 10px;
+  margin: 5px 0 5px 5px;
 }
 
 .tc-alert.tc-alert-info {

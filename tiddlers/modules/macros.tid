@@ -1,5 +1,5 @@
 created: 20160323003123862
-modified: 20160324115426304
+modified: 20160325170924170
 tags: $:/tags/Macro
 title: $:/plugins/sukima/tritarget/macros
 type: text/vnd.tiddlywiki
@@ -29,3 +29,5 @@ type: text/vnd.tiddlywiki
 \end
 
 \define tag-summary(tagname) There are <$count filter="[tag[$tagname$]]"/> articles about <<tag "$tagname$">>
+
+\define pullquote() <div class="tc-pullquote">$(quote)$</div>

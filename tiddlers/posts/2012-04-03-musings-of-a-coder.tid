@@ -1,0 +1,31 @@
+created: 20120403000000000
+modified: 20160325104824000
+creator: Sukima
+title: Musings of a Coder
+tags: Coding Article
+
+Lately I've had some insperation to try my hand at some coding homework. I was introduced to a site called [[The Codecademy|http://www.codecademy.com/]]. This site teaches people how to program. They started with [[JavaScript|http://en.wikipedia.org/wiki/JavaScript]] and recently added [[HTML|http://en.wikipedia.org/wiki/Html]] and [[CSS|http://en.wikipedia.org/wiki/Css]].
+
+Here are a two I enjoyed playing with:
+
+!! Black Jack
+
+One of the big challenges was to make a Black Jack game. I was a little carried away and spent the time subitting [[this code|https://gist.github.com/2294904]] as my final version.
+
+''Update:'' Upgraded to use promises and no more `confirm()`.
+
+<<jsbin "http://jsbin.com/xifupo/2/edit?output" text:"~BlackJack in ~JavaScript">>
+
+!! Number Crunching
+
+While I was ridding home on a train I got the inspiration to wonder just how many computer bits it took to represent a [[googol|http://en.wikipedia.org/wiki/Googol]] (one followed by 100 zeros):
+
+`10, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000, 000`
+
+Because of the size of this value there is no computer that could do the math with basic binary arithmetic. Instead you have to rely on the kindergarten method of long hand addition.
+
+So I wrote a program to do this in JavaScript. Check it out:
+
+<<jsbin "http://jsbin.com/diyoxe/1/edit?output" text:"Number crunching example">>
+
+Suffice it to say, it take ''334'' bits to represent a googol.

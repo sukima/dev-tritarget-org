@@ -1,0 +1,86 @@
+created: 20120503000000000
+modified: 20160325152224000
+creator: Sukima
+title: More efficient git downloads with a USB repository
+tags: Coding Article
+
+I had a unique situation were my website (chock-full of photos) was about 100MiB large! Well to access and clone the repository took some time. And watching the counter seemed silly. I was lucky that I had a backup of the repository on an external USB drive. And that's the key! I simply cloned from the backup and then set the tracking branches to the real network origin.
+
+This saved me a good half hour of downloading. And It provided off line access. Here's how I did it.
+
+I have three computers. My Home development (A), my home server (B), and my work development (C).
+
+!! Initial setup
+
+So since my home computer had the first git repo on it I pushed it to the server and my USB drive:
+
+```
+$ git init my_project
+Initialized empty Git repository in /home/suki/tmp/my_project/.git/
+$ cd my_project
+# Create a big file.
+$ git add big_file
+$ git ci -m "Initial commit"
+```
+
+Now we send the repository to our server:
+
+```
+# Create an initial bare repo on server
+$ ssh suki@my_server.org git init --bare /path/to/repos/my_project.git
+Initialized empty Git repository in /path/to/repos/my_project.git
+$ git remote add origin suki@my_server.org:/path/to/repos/my_project.git
+$ git push -u origin master
+```
+
+The `-u` makes the repository track origin's master branch so future `git push` and `git pull` work without further assistance.
+
+!! The backup
+
+Then we create a backup repo on the USB Drive:
+
+```
+# Create empty repo on backup drive
+$ git init --bare /path/to/usb/my_project.git
+Initialized empty Git repository in /path/to/usb/my_project.git
+$ git remote add usb /path/to/usb/my_project.git
+$ git push usb master
+```
+
+Now Computer A has two remotes ''origin'' and ''usb'' and computer B has the official copy. A backup was placed on the USB Drive.
+
+!! The slow network work-around
+
+On computer C at work it would be a nightmare to then
+
+```
+git clone suki@my_server.org:/path/to/repos/my_project.git
+```
+
+because the network would be too slow. However we still wish to retain that the `my_server` is the official place for the repository.
+
+Best to clone from the USB backup. Set your remotes correctly. And the sync with the server which would only update the changes since the back up repository was pushed to.
+
+```
+# create empty repository with no remotes
+$ git init my_project
+Initialized empty Git repository in /home/suki/tmp/my_project/.git/
+$ cd my_project
+$ git remote add origin suki@my_server.org:/path/to/repos/my_project.git
+$ git remote add usb /path/to/usb/my_project.git
+$ git pull usb master
+remote: Counting objects: 955, done.
+remote: Compressing objects: 100% (637/637), done.
+remote: Total 955 (delta 414), reused 452 (delta 246)
+Receiving objects: 100% (955/955), 522.10 KiB, done.
+Resolving deltas: 100% (414/414), done.
+From /home/suki/source/dev-tritarget-org/
+* branch            master     -> FETCH_HEAD
+$ git pull origin master
+Everything up-to-date
+$ git push -u origin master
+Branch master set up to track remote branch master from origin.
+Everything up-to-date
+```
+
+There now you have a working tree as if you did a simple clone without the nasty affect of downloading a large repository. And you have a back up which you can use to transfer and store when you can't use the network to send deltas.
