@@ -7,6 +7,6 @@ type: text/vnd.tiddlywiki
 
 <ul>
 <$list filter="[tag[Article]!sort[created]]">
-<li><$link to={{!!title}}>{{!!title}}</$link> - <$view field="created" format="date" template="MMM DD, YYYY"/></li>
+<li><$link to={{!!title}}><$view field="title" format="text"/></$link> - <$view field="created" format="date" template="MMM DD, YYYY"/></li>
 </$list>
 </ul>
