@@ -1,12 +1,12 @@
 created: 20160324191115060
 list-before: Coding
-modified: 20160325011755550
+modified: 20160326032005309
 tags: TableOfContents
 title: All Articles
 type: text/vnd.tiddlywiki
 
 <ul>
-<$list filter="[tag[Article]]">
+<$list filter="[tag[Article]!sort[created]]">
 <li><$link to={{!!title}}>{{!!title}}</$link> - <$view field="created" format="date" template="MMM DD, YYYY"/></li>
 </$list>
 </ul>
