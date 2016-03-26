@@ -1,0 +1,11 @@
+created: 20120702000000000
+modified: 20160325230533000
+creator: Sukima
+title: Static CoffeeScript classes
+tags: Coding Article
+
+I have been doing a lot of study into [[CoffeeScript|http://coffeescript.com/]] and found the ease of class definitions fantastic. But As most of my code used [[static classes|http://en.wikipedia.org/wiki/Static_method#Static_methods]] (methods) I had a bit of trouble figuring out howe it is done in ~CoffeScript.
+
+I found [[this article|http://arcturo.github.com/library/coffeescript/03_classes.html]] in the docs that explained most of it. And so I developed an example:
+
+<<jsbin "http://jsbin.com/goseri/1/edit?js">>

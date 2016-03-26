@@ -1,0 +1,112 @@
+created: 20120613000000000
+creator: Sukima
+modified: 20160325212026886
+tags: Article
+title: The Sugar Conspiracy
+type: text/vnd.tiddlywiki
+
+\define ok() <span class="status ok">OK</span>
+\define probably() <span class="status probably">Probably OK</span>
+\define bad() <span class="status bad">BAD</span>
+
+<style>
+.status { font-weight: bold; }
+.ok { color: green; }
+.probably { color: orange; }
+.bad { color: red; }
+</style>
+
+I'd like to discuss a bit of frustration I'm having concerning the recent popularity of vilifying sugar and High Fructose Corn Syrup. But to do so I have to take you on a long journey to get there.
+
+So why //Yet Another Blog Post About Sugar//? Well simply the information I have gathered didn't make much sense for me. The very idea of //what do you do// didn't seem to follow the //your gonna die// propaganda. So I figured I would take a stab at it and bring it down to normal understanding levels. And hopefully how to implement a change.
+
+My investigation (although paliminary) started with a jaw dropping ~YouTube Video called [[Sugar: The Bitter Truth|http://www.youtube.com/watch?v=dBnniua6-oM]] which was a speech given by Dr. Lustig who developed a [[video series|http://www.uctv.tv/skinny-on-obesity]] called "The Skinny on Obesity".
+
+The subject was quite technical and offered an intense look into biochemistry. He established the grounds that [[Fructose|http://en.wikipedia.org/wiki/Fructose]] is a poison simular (identical with the liver) to [[Ethenol|http://en.wikipedia.org/wiki/Ethanol]] (Alcohol).
+
+I'd like to dive into what I've learned and what I have concluded about sugar and how it effects our bodies.
+
+!! Energy of Life: Glucose, Dextrose and Maltose
+
+[[Glucose|http://en.wikipedia.org/wiki/Glucose]] is the fuel that our bodies run on. It is what the cells use to create their energy. The cells are very efficient in converting the Glucose to energy with little or manageable waste product.
+
+[img[Glucose Chem Figure|http://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Glucose_chain_structure.svg/200px-Glucose_chain_structure.svg.png]]
+
+You don't see Glucose in many products because it doesn't package well in it's pure form. You will see it usually packaged as Dextrose or [[Maltose|http://en.wikipedia.org/wiki/Maltose]]. Dextrose is just two Glucose packaged together (1 Dextrose = 2 Glucose). Maltose is another Glucose pair that uses a different bond (AKA malt sugar).
+
+[img[Maltose Chem Figure|http://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Maltose2.svg/200px-Maltose2.svg.png]]
+
+Glucose, Dextrose and Maltose are <<ok>>.
+
+A note about [[Corn Syrup|http://en.wikipedia.org/wiki/Corn_syrup]]: To the best of my knowledge based on [[the WikiPedia article|http://en.wikipedia.org/wiki/Corn_syrup]] Corn Syrup is based on Glucose (Maltose) bonded together to form a syrup. Unlike [[High Fructose Corn Syrup|http://en.wikipedia.org/wiki/High-fructose_corn_syrup]] which is processed further to develop a Glucose/Fructose mix. Based on that I rate Corn Syrup as <<probably>>.
+
+!! The Poison: Sucrose and Fructose
+
+[[Sucrose|http://en.wikipedia.org/wiki/Sucrose]] is Table Sugar. The white stuff you put into your coffee or tea. Guess what… Sucrose is 50% Glucose //(hexagon on left in figure)// and 50% Fructose //(pentagon on riht in figure)//. Which means when you ingest Sucrose, Sugar, Cane Sugar, Beat Sugar, Agave Nectar, and Honey are a mix of Glucose and ''Fructose''. So when we talk about Fructose we are talking about these as well.
+
+[img[Sucrose Chem Figure|http://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Saccharose2.svg/200px-Saccharose2.svg.png]]
+
+[[Fructose|http://en.wikipedia.org/wiki/Fructose]] is the focus on a lot of controversy. And the reasons is mostly political but also miss interpretations. Fructose is found naturally in many foods (most notably in fruits).
+
+[img[Fructose Chem Figure|http://upload.wikimedia.org/wikipedia/commons/6/61/D-Fructose_cyclic.png]]
+
+!!! What's so bad about Fructose?
+
+According the [[video above|http://www.youtube.com/watch?v=dBnniua6-oM]] Fructose is metabolized in the liver the exact same way [[Ethenol|http://en.wikipedia.org/wiki/Ethanol]] (Alcohol) is. Which means the side effects are pretty sever. We know what chronic alcoholism does to the body. Well Fructose does the same thing (mostly). So a can of soda (which has Fructose in it) is about the same as drinking a beer except you don't get a buzz.
+
+Count how many cans of soda you drink a day. Now imagine if each one was a beer or glass of wine. Now add in all the other things you eat that has Fructose in it. Pizza, Coffee (sweetened), juice, Bread, etc. Each one can roughly equate to a glass of wine or a beer (roughly for this exercise, amounts vary in practise). Add that all up and you are very drunk. Now take away the buzz / delirium and side effects and imagine what your liver is processing this amount. Is the visual enough for you to imagine hepatic failure (liver disease)?
+
+Granted that is an extreme case however the cumulative effects can be seen in the side effects: weight gain, Insulin resistance, hunger suppressant, addiction. These effects are the by product of Fructose metabolism.
+
+To dumb it down: ''the body metabolises Glucose cleanly, Fructose is dirty''. The by product of Fructose metabolism is a slew of reactions and chemicals that you just don't see with Glucose.
+
+<!--
+
+volume issue
+
+## The Antidote: Fiber ##
+
+## Sugar Substitutes ##
+
+#### Sucralose and Aspertame ####
+
+#### Stevia ####
+
+## Ketosis ##
+-->
+
+!! Summary
+
+Using the metabolism ratings table below you can quickly get an idea of what to look for in the ingredients portion of the food labels.
+
+!!!! Metabolism Ratings
+
+|!Ingredient |!Rating |
+|[[Glucose|http://en.wikipedia.org/wiki/Glucose]] |<<ok>> |
+|[[Dextrose|http://en.wikipedia.org/wiki/Glucose]] |<<ok>> |
+|[[Maltose|http://en.wikipedia.org/wiki/Maltose]] |<<ok>> |
+|[[Fructose|http://en.wikipedia.org/wiki/Fructose]] &diams; |<<bad>> |
+|[[Sucrose|http://en.wikipedia.org/wiki/Sucrose]] &diams; |<<bad>> |
+|[[Sucralose|http://en.wikipedia.org/wiki/Sucralose]] |<<bad>> |
+|[[Aspertame|http://en.wikipedia.org/wiki/Aspartame]] |<<bad>> |
+|[[Stevia|http://en.wikipedia.org/wiki/Stevia]] |<<ok>> |
+|[[Lactose|http://en.wikipedia.org/wiki/Lactose]] |<<ok>> |
+|[[Galatose|http://en.wikipedia.org/wiki/Galactose]] |<<ok>> |
+|[[Milk|http://en.wikipedia.org/wiki/Lactose]] |<<ok>> |
+|[[Whey|http://en.wikipedia.org/wiki/Lactose]] |<<ok>> |
+|[[Corn Syrup|http://en.wikipedia.org/wiki/Corn_syrup]] |<<probably>> |
+|[[HFCS|http://en.wikipedia.org/wiki/High-fructose_corn_syrup]] &diams; |<<bad>> |
+|[[Ethenol|http://en.wikipedia.org/wiki/Ethanol]] &diams; |<<bad>> |
+|[[Sugar|http://en.wikipedia.org/wiki/Sucrose]] &diams; |<<bad>> |
+|Cane Sugar &diams;|<<bad>> |
+|Beat Sugar &diams; |<<bad>> |
+|Agave Nectar &diams; |<<bad>> |
+|Honey &diams; |<<bad>> |
+
+&diams;: Metabolized the same as Fructose, Dealt with the same way.
+
+<!--
+#### Bundling Poison and Antidote ####
+
+#### Moderation ####
+-->

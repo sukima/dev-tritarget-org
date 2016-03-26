@@ -24,13 +24,24 @@ pre>code {
   overflow-y: scroll;
 }
 
+.tc-footnotes {
+  font-size: 0.8em;
+}
+
+.tc-float-left {
+  float: left;
+}
+
+.tc-float-right: {
+  float: right;
+}
+
 .tc-pullquote {
   text-align: center;
   font-size: 1.6em;
   width: 200px;
-  float: right;
-  padding: 5px 0 5px 10px;
-  margin: 5px 0 5px 5px;
+  padding: 5px;
+  margin: 5px;
 }
 
 .tc-alert.tc-alert-info {

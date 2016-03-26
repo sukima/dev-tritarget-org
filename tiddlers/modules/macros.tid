@@ -30,4 +30,4 @@ type: text/vnd.tiddlywiki
 
 \define tag-summary(tagname) There are <$count filter="[tag[$tagname$]]"/> articles about <<tag "$tagname$">>
 
-\define pullquote() <div class="tc-pullquote">$(quote)$</div>
+\define pullquote(float:"right") <div class="tc-pullquote tc-float-$float$">$(quote)$</div>

@@ -1,0 +1,181 @@
+created: 20121114000000000
+modified: 20160326020641000
+creator: Sukima
+title: How I understand JavaScript Object Oriented Programming
+tags: Coding Article
+
+One of the great things about [[CoffeeScript|http://www.coffeescript.org/]] is that it compiles into JavaScript. I found that when addressing several problems in JavaScript I would often attempt to address it using CoffeeScript in an Object Oriented way so that I could examine the JavaScript output.
+
+The affect of this is that I learned a lot about how JavaScript approaches Object Oriented Programming. So I though I would share those insights here.
+
+!! The Why
+
+I know your first question is "why another blog post about JavaScript Objects?" Well because I haven't seen many posts that walk through this in an incremented by example form. I have to address that there is a much more detailed explanation in [[this article|https://developer.mozilla.org/en-US/docs/JavaScript/Introduction_to_Object-Oriented_JavaScript]] and [[this article|http://killdream.github.com/blog/2011/10/understanding-javascript-oop/]]. Oh, and lets not forget Douglas Crawford's [[JavaScript: The Good Parts|http://www.amazon.com/JavaScript-Good-Parts-Douglas-Crockford/dp/0596517742]]. I read both of these and gained a ton of understanding but remembering how to implement the concepts and the best practise on form and style is still left to be desired.
+
+Giving myself a walk through my understanding with the style that I found delightful from CoffeeScripts' translations.
+
+!! Objects
+
+Objects are easy and you'll see them everywhere. In JavaScript Objects and Functions are somewhat interchangeable. We will get a sense of this later. For now I'll show two ways to define objects:
+
+```javascript
+// Object Literal
+var object = {
+  foo: "Foo",
+  'bar': "Bar"
+};
+
+// Dynamic Objects
+var object2 = {};
+object2.foo = "Foo";
+object2['bar'] = "Bar";
+
+object.foo;     // "Foo"
+object['bar'];  // "Bar"
+object2.foo;    // "Foo"
+object2['bar']; // "Bar"
+```
+
+!! Classes
+
+Classes provide a logical representation of objects that you define once then create instances of that object as you need them. It starts by making a self calling function which returns the object definition. It includes a constructor function and any logic needed to create the object.
+
+```javascript
+var MyObject = (function() {
+  function MyObject() {}
+  return MyObject;
+})();
+
+var instance = new MyObject();
+```
+
+!! Static methods and attributes
+
+Static methods and attributes are accessible to the object itself not instances of that object. In other words you access it by the Class name not using the `new` keyword:
+
+```javascript
+var MyObject = (function() {
+  function MyObject() {}
+
+  MyObject.foo = function() { return "Foo"; };
+
+  return MyObject;
+})();
+
+MyObject.foo(); // "Foo"
+var bar = new MyObject();
+bar.foo(); // Error: no such method foo
+```
+
+As you see above that the method foo is static. Obviously this is quite verbose for what you could use as an object literal for:
+
+```javascript
+var MyObject = {
+  foo: function() { return "Foo"; }
+};
+```
+
+However, if you want to have dual use (say in a Factory Pattern) it might look like this:
+
+```javascript
+var MyObject = (function() {
+  function MyObject() {}
+  
+  MyObject.factory = function(message) {
+    var theObject = new MyObject();
+    theObject.message = message;
+    return theObject;
+  };
+
+  return MyObject;
+}).call(this); // Notice the explicit scoping here.
+
+var obj = MyObject.factory();
+```
+
+''Don't forget the `call(this)` above.''
+
+!! Instance attributes
+
+Instance attributes are referenced with the `this` keyword.
+
+```javascript
+var MyObject = (function() {
+  function MyObject(value) {
+    this.value = value;
+  }
+  return myObject;
+})();
+
+var foo = new MyObject("Foo");
+var bar = new MyObject("Bar");
+
+foo.value; // "Foo"
+bar.value; // "Bar"
+```
+
+!! Instance methods
+
+This is where `prototype` comes in handy.
+
+```javascript
+var MyObject;
+
+MyObject = (function() {
+  function MyObject(value) {
+    this.value = value;
+  }
+
+  MyObject.prototype.getValue = function() {
+    return this.value;
+  };
+
+  return MyObject;
+})();
+
+var foo = new MyObject("Foo");
+var bar = new MyObject("Bar");
+
+foo.getValue(); // "Foo"
+bar.getValue(); // "Bar"
+```
+
+!! Private methods and attributes (closures)
+
+First things in JavaScript there are no true private attributes. But you can make variables that are private using closures. You can also make private methods the same way.
+
+```javascript
+var MyObject = (function() {
+
+  var private_attribute = null;
+
+  function private_method() {}
+
+  function MyObject() {}
+  return MyObject;
+})();
+```
+
+This can be usefull in a Singleton Pattern:
+
+```javascript
+var Singleton = (function() {
+  var instance, PrivateClass, SingletonClass;
+  instance = null;
+
+  PrivateClass = (function() {
+    function PrivateClass() { }
+    return PrivateClass;
+  })();
+
+  SingletonClass = {
+    getInstance: function() {
+      return (instance != null) ? instance : instance = new PrivateClass();
+    }
+  };
+
+  return SingletonClass;
+})();
+
+Singleton.getInstance();
+```

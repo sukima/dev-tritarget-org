@@ -1,8 +1,8 @@
 created: 20160104151714004
 creator: Sukima
-modified: 20160325122756411
+modified: 20160326001915497
 modifier: Sukima
 title: $:/DefaultTiddlers
 type: text/vnd.tiddlywiki
 
-[tag[Article]!sort[created]limit[20]]
+[tag[Article]!sort[created]limit[10]]
