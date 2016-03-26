@@ -11,7 +11,7 @@
     "build": "gulp build",
     "media": "gulp prepare-wiki && tiddlywiki wiki --prepare-media",
     "deploy": "npm run clean && npm run build && npm run rsync-wiki",
-    "rsync-wiki": "rsync -rlvz --delete --exclude-from ./config/rsync-exclude wiki/output/ ktohg@tritarget.org:sandbox.tritarget.org"
+    "rsync-wiki": "rsync -rlvz --delete --exclude-from ./config/rsync-exclude wiki/output/ ktohg@tritarget.org:tritarget.org"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.3.13",
