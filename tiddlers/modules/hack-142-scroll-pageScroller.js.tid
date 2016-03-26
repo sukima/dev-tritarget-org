@@ -27,6 +27,7 @@ exports.params = [{}];
 Run the macro
 */
 exports.run = function() {
+	if (!$tw.browser) { return; }
 
 	if(!this.hackOnce){
 		this.hackOnce = true;

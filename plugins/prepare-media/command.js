@@ -15,7 +15,8 @@ const PANO_TYPE = 'image/prs.panorama';
 
 // Can not use import because requires must be dynamic so it doesn't
 // execute when included in the browser.
-if ($tw.node) {
+function loadModules() {
+  if (!$tw.node) { return; }
   Promise = require('bluebird');
   util = require('util');
   fs = Promise.promisifyAll(require('fs-extra'));
@@ -292,6 +293,7 @@ export const info = {
 
 export class Command {
   constructor(params, commander, callback) {
+    loadModules();
     this.params = params;
     this.commander = commander;
     this.callback = callback;
