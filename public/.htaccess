@@ -1,5 +1,4 @@
-Action cgi-node /cgi-bin/cgi-node.cgi
-AddHandler cgi-node .jss
+RedirectMatch 302 ^/devin /#TableOfContents
 
 <Files .htaccess>
   order allow,deny
