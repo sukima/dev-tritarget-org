@@ -1,0 +1,45 @@
+created: 20130301000000000
+modified: 20160326022212000
+creator: Sukima
+title: Private Variables in CoffeeScript
+tags: Coding Article
+
+I had a discussion concerning the lack of private variables in JavaScript objects. As it turns out you can //fake// this using closures and some tracking code. I'm going to illustrate this using CoffeeScript.
+
+!! Static Private Variables
+
+By adding an assignment inside a class definition you can make a variable that is scoped inside the class as a static private variable:
+
+```coffeescript
+class Foo
+  private_static_variable = "foobar"
+  constructor: ->
+    @public_variable = "baz"
+  public_method: ->
+    console.log private_static_variable
+  @public_static_method: ->
+    console.log private_static_variable
+```
+
+!! A possible private instance variable solution
+
+A possible solution for instance variables is to collect them into an object which you keep track of for each instance using a private static array.
+
+Here is the example code and I'll walk through it after:
+
+```coffeescript
+class Foo
+  privates = []
+  constructor: ->
+    @_pid = privates.length
+    privates.push
+      foo: "foo"
+  getFoo: -> privates[@_pid].foo
+  setFoo: (val) -> privates[@_pid].foo = val
+```
+
+The `privates` variable is a static variable that is encapsulated in the class closure. When a new instance is created and the constructor is executed it grabs the last index value plus one and saves it to a public variable. Then it adds an object to the `privates` array. By using the stored id the prototype methods can access the private object from the array and each instance gets it's own object.
+
+The plus one is a trick because the length of an array is the size (1 based) but the indexes are 0 based therefor by storing the length //then// adding to the array the two will match.
+
+To see this in action check out [[this jsbin|http://jsbin.com/ufufig/1/edit]].

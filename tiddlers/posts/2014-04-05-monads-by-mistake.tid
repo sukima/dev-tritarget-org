@@ -1,0 +1,230 @@
+created: 20140405000000000
+modified: 20160326025628000
+creator: Sukima
+title: Monads by Mistake
+tags: Coding Article
+
+<<<
+The wonders of monads are finally revealed without resorting to Category Theory or Haskell. It turns out that monads are trivially expressed in JavaScript, and are one of the key enablers of Ajax. Monads are amazing. They are simple things, almost trivially implemented, with enormous power to manage complexity. But understanding them is surprisingly difficult, and most people, once they have that ah-ha moment, seem to lose the ability to explain them to others.
+<<< [[Douglas Crockford Monads and Gonads|http://www.yuiblog.com/blog/2012/12/13/yuiconf-2012-talk-douglas-crockford-on-monads-and-gonads-evening-keynote/]]
+
+Well I'm not going to try. I do, however, wish to convey my realizations about monads.
+
+First let me just offer this piece of [[Underscore|http://underscorejs.org/]] code:
+
+```javascript
+var x = [ [1, 2], [3, 4], [null, 5], [6, false] ];
+x = _.flatten(x);
+x = _.compact(x);
+x = _.map(x, function(y) { return y * 2; });
+_.forEach(x, function(y) { console.log(y); });
+```
+
+Basically take the input and perform a series of computations on them with each step returning the result of the computation ready for the next. But that code looks… well… yucky. Lets try again:
+
+```javascript
+var x = [ [1, 2], [3, 4], [null, 5], [6, false] ];
+_.forEach(
+  _.map(
+    _.compact(
+      _.flatten(x)
+    ),
+    function(y) { return y * 2; }
+  ),
+  function(y) { console.log(y); }
+);
+```
+
+Holy [[Pyramid of Doom|The Pyramid of Doom: A javaScript Style Trap]] Batman! Lets not do that again. Thank goodness Underscore offers such better expressive syntax. Using the `chain()` method wraps a variable in a special Underscore object. When you call a methods on that object the return value of the method is the same wrapped object.
+
+```javascript
+var x = [ [1, 2], [3, 4], [null, 5], [6, false] ];
+_(x).chain()
+  .flatten()
+  .compact()
+  .map(function(y) { return y * 2; })
+  .forEach(function(y) { console.log(y); });
+```
+
+Much better. It's readable, concise, and guess what… That's a monad! Yes it is a way to represent data with a wrapper around that data that exposes a way to do computations on the data. This opens up the opportunity to expressively compose those computations in a human readable way. There are many other advantages as well which are out of scope for this post. Oh, and in case you hadn't made the connection, jQuery is also a monad!
+
+!! My monad discovery
+
+I came to understand monads only after I accidentally created one. I was working on a piece of browser code. A plug-in for text fields. I needed to create and modify DOM elements. I wanted to do this without jQuery, and support IE8 (don't ask). I realized that there was a lot of complexity supporting IE8 with [[Vanilla JS|http://vanilla-js.com/]] so I wanted to write a simple abstraction around it.
+
+Going with the chaining pattern above I created a wrapping object to facilitate this:
+
+```javascript
+function DOMBuilder(element) {
+  // See rules section below for why these are here
+  // Left identity rule:
+  if (!(this instanceof DOMBuilder) { return new DOMBuilder(element); }
+  // Right identity rule:
+  if (element instanceof DOMBuilder) { return element; }
+
+  this.domElement = element;
+}
+
+DOMBuilder.wrapper = function() {
+  return DOMBuilder(document.createElement('div'));
+};
+
+DOMBuilder.input = function() {
+  return DOMBuilder(document.createElement('input'));
+};
+```
+
+Now I added methods to manipulate the element:
+
+```javascript
+DOMBuilder.prototype.addClass = function(classname) {
+  this.domElement.className = (this.domElement.className + ' ' + className).trim();
+  // Associativity rule:
+  return this;
+};
+
+DOMBuilder.prototype.setAttr = function(attribute, value) {
+  this.domElement[attribute] = value;
+  // Associativity rule:
+  return this;
+};
+```
+
+Simple, yes. But we can add more. In the case of my needs I used this monad to develop my own domain specific language for the DOM objects. I added a `proxyEvent()` for attaching cross-browser DOM events, a `setText()` for changing the `innerHTML` and `title` attribute in one method, and some `prepend()` and `append()` methods for attaching elements. For example:
+
+```javascript
+var el = DOMBuilder.wrapper()
+  .setText('baz', 'froboz')
+  .addClass('foobar')
+  .append(DOMBuilder.input())
+```
+
+Turns out that this style is a monad! I wrote this not even knowing what a monad was. Once I watched [[Douglas Crockford's Monads and Gonads speach|http://www.yuiblog.com/blog/2012/12/13/yuiconf-2012-talk-douglas-crockford-on-monads-and-gonads-evening-keynote/]] I was astounded that my home grown solution was essentially a monad. Although many on the net would argue that he got it wrong and therefore my understanding is wrong, then again, that could just be FUD (beware the [[monad curse]]).
+
+!! Rules of a monad
+
+So monads have [[three laws|http://www.haskell.org/haskellwiki/Monad_laws]] (avoid reading that page, it was incomprehensible to me, Haskell looks scary to me):
+
+# Left identity
+# Right identity
+# Associativity
+
+These rule names came from, I believe, some operator notation you use in Haskell. Either that, or from mathematics, I don't know. Regardless, they are odd in the context of JavaScript. I'm going to describe ''my'' interperitation of the rules as I am not familiar with category theory.
+
+!!! Left identity
+
+This is the idea that when you construct the monad that the value you pass in is converted (read: wrapped) to a monad:
+
+```javascript
+function Monad(wrapped_object) {
+  this.object_ = wrapped_object;
+}
+
+Monad.makeMonad = function(wrapped_object) {
+  return new Monad(wrapped_object);
+}
+```
+
+What this is doing is when you pass in a variable to the `makeMonad` function it will return a monad. Because of the prototypical nature of JavaScript it can easily be represented as an `instanceof` check instead:
+
+```javascript
+function Monad(wrapped_object) {
+
+  if (!(this instanceof Monad)) { return new Monad(wrapped_object); }
+
+  this.object_ = wrapped_object;
+}
+
+var myMonad = Monad("foo");
+// OR
+var myMonad = new Monad("foo");
+```
+
+An example of the power of this rule is the ability to force the result of a function into a monad. A deterministic way of representing data (promises and jQuery wrapping are good examples of this). For example say you had a monad with a function that does a computation and returns a number. But you want to exercise the functions of a monad on the returned value… You can wrap the function call in another monad with this rule: `Monad(myMonad.myFunction())`. This is how some promise libraries wrap other *thenables* to normalize the expected results. [[Q|http://documentup.com/kriskowal/q/]] and [[when|https://github.com/cujojs/when]] do this.
+
+!!! Right identity
+
+Passing in any value to be wrapped is nice but what if you pass in a Monad into the constructor. You probably would not want to wrap the Monad in a Monad. So the right identity rule is for unwrapping a pass in monad and re-wrapping it. You could do this by re-wrapping the internal data storage:
+
+```javascript
+function Monad(wrapped_object) {
+  if (!(this instanceof Monad)) { return new Monad(wrapped_object); }
+
+  if (wrapped_object instanceof Monad) {
+    return new Monad( wrapped_object.object_; );
+  }
+
+  this.object_ = wrapped_object;
+}
+```
+
+But this is awkward and is exploiting the fact that in JavaScript properties are public and is not very object oriented. In languages like Java or Haskell this isn't even allowed. It is also confusing to the user. A beter way is to re-purpose the `wrapped_object` monad:
+
+```javascript
+function Monad(wrapped_object) {
+  if (!(this instanceof Monad)) { return new Monad(wrapped_object); }
+
+  if (wrapped_object instanceof Monad) { return wrapped_object; }
+
+  this.object_ = wrapped_object;
+}
+```
+
+!!! Associativity
+
+The real power in my mind is the expressive nature of chain-able functions. And in JavaScript it is very easy to implement this by just returning `this` for all the functions.
+
+```javascript
+function Monad(wrapped_object) {
+  if (!(this instanceof Monad)) { return new Monad(wrapped_object); }
+  if (wrapped_object instanceof Monad) { return wrapped_object; }
+  this.object_ = wrapped_object;
+}
+
+Monad.prototype.myFunction = function() {
+  return this;
+};
+```
+
+!! The meta philosophy of a Monad
+
+If you do a search on monads you'll find a lot of information describing monads through the use of a `bind()` function. Typically these postings start with this concept. I felt it was better to end with this instead. Up till now you've seem the rules of a monad implemented manually by directly writing the code for the rules one at a time. For example every function you add to the monad's `prototype` will have to have a `return this;` in it. Most object oriented languages would frown on that instead opting for a meta object capable of handling that need for you. This //meta object// is what you will typically see referred to as a Monad and correctly so.
+
+The variation comes down to offering specific functions designed to manage compositions without any domain knowledge on the type or the composition. In contrast all the examples in this post up till now assumed the monad had domain knowledge on both the wrapped object and the compositions used on it.
+
+An alternative would be a function that takes a function as an argument, runs it on the wrapped value, then returns the monad instead. We will use `bind()` as a name for this to keep in lines with the examples you see elsewhere but it is //not// the JavaScript `Function.prototype.bind()`, so try not to confuse them.
+
+```javascript
+function Monad(wrapped_object) {
+  if (!(this instanceof Monad)) { return new Monad(wrapped_object); }
+  if (wrapped_object instanceof Monad) { return wrapped_object; }
+  this.object_ = wrapped_object;
+}
+
+Monad.prototype.bind = function(compose_function) {
+  this.wrapped_object = compose_function(this.wrapped_object);
+  return this;
+};
+
+var myMonad = Monad("foo")
+  .bind(function(x) { return x + ' '; })
+  .bind(function(x) { return x + 'bar'; })
+  .bind(function(x) { return x + ' '; })
+  .bind(function(x) { return x + 'baz'; })
+
+console.log(myMonad.wrapped_object); // => "foo bar baz"
+```
+
+An astute student might notice that this is //mutating// the `wrapped_object`. That is not very friendly. In the case of the `DOMBuilder` above mutating the original wrapped DOM element was appropriate for the need. In the case of promises and many Underscore functions immutability is more necessary. In fact in languages like Java and especially Haskell immutability is a cornerstone of monads. Luckily that can easily be achieved because of the above monad laws/rules. I'll re-write the `bind()` function for immutability:
+
+```javascript
+Monad.prototype.bind = function(compose_function) {
+  return Monad(compose_function(this.wrapped_object));
+};
+```
+
+Oh and this has the added advantage of always returning a monad, allowing you to reference any monad object at any step of the computation chain, and not needing to modify the original value.
+
+I hope that perhaps this helped you understand this amazing and powerful programming pattern. Even if it didn't help you understand monads. Perhaps it at least helped you to understand the functional style / chain-ability that you can do in JavaScript. (This is also possible in Ruby, Java, C#, and many others just to get your head thinking). Next time your writing an object or function think about how much happier it would be to interface with your code with functional / chain-able interfaces. Open up the possibilities and be expressive!
+
+For a reference JavaScript Monad object check out [[my gist|https://gist.github.com/10010921]] on the matter.
