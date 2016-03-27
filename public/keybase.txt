@@ -1,0 +1,73 @@
+==================================================================
+https://keybase.io/sukima
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://tritarget.org
+  * I am sukima (https://keybase.io/sukima) on keybase.
+  * I have a public key with fingerprint FA9F 1400 8BA5 A847 B097  7C06 EBD9 9C92 DE76 7C8A
+
+To do so, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "eldest_kid": "0101422472510667bc651627f9f80159dd1f01d2b512893657b8cda072a6a462b8ab0a",
+            "fingerprint": "fa9f14008ba5a847b0977c06ebd99c92de767c8a",
+            "host": "keybase.io",
+            "key_id": "ebd99c92de767c8a",
+            "kid": "0101422472510667bc651627f9f80159dd1f01d2b512893657b8cda072a6a462b8ab0a",
+            "uid": "c348d61a0409b291702a6a3b15de9f19",
+            "username": "sukima"
+        },
+        "service": {
+            "hostname": "tritarget.org",
+            "protocol": "http:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "ctime": 1443822274,
+    "expire_in": 157680000,
+    "prev": "83b3d2047fcb81a736e9d618e6d5512d789099f9170e58ce5bd098fcefb896cb",
+    "seqno": 4,
+    "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+Comment: GPGTools - http://gpgtools.org
+
+owGtUm1QVGUUXrbdZgCXwIGRkH50JQZ0o3vv3s9VjBkyomTH+JAmh9b73vve5bKw
+u+xeVpAPP4ClNmAMFCyJSHPUdCgpJGmiaZjEGRKzgEBwbeJDs0kbAwqk6F7G/vWz
+98+Z95znec55zpxDhkc02qBfxtuaAt4Kf9Dgz0CzM2xpsRwBTqEMMZcjdrgaYKEA
+PbLVLgmIGUExFCNwnKBxEkMpigY8RWIUTousyKAYyQoCJqKYgAMSwxnWRJE0YHiB
+Q2mcoziCwgHDAZRDjIgoOWzQ7XJLDlmRFTlWxAgUZQBHcgxBA5SlaR6lIBBYlmdx
+AdIUzTMqMd/pURnKcIDzwCTJqeSUj3V1vP/A/89zl6zK8SaCESiMQwmUBTiL0aiK
+MwGMFKDihFWBHuh2cEVQQXtK7FIRh1QaESXnlXiorlX18bAuuyWZc9ugnOR02xSq
+y+2UnbyzUCnly7LLrDLlMpcK3QOB9aGIFUgOQdmiQvBCt0dyOhAzpiB5WVJVMYIw
+MTiO04QRgaUuyQ2tkoogaYpBlae2gV5FkjEBk4CjBL1T5AGDcbSJgqxijoGUQCrr
+EGiGRVlWVF1CkuEhCQSUZUQeioBhKR4gqq9ihxMxK61kzqY6lmwOTi5xQ6Qy5A1t
+rE4TpNU8qteq96UJCQ7/9+jme8I17Q27E7Na379x/NhXps26NcSOd/OOvzp25ZsX
+tCAisp/+ayn+zdbAAd+0PUubOxxTfeterrUp8+RK93A9KIwwpoeGDW7/o2njyBPV
+UR+dwPY9VteV8ZShf7bq187XDIGBifGSpJHZnuZ1X0aXp35wsOxY59bxprzv9CkT
+md2nvBFVF4bSkoZf6r1ataydumlZ/21QIHnv2sV9u45+mt13KbD4eMVn0T/8VHq+
+Y2ycPhq1ZcvylNfY8uJSdaUxr+Xt5vkLZwO+Kb3+zN7T+qkvfHOeos2TzyTOGEct
+G3o/tqdFc20bBiJKvaefb883GObm6nXFvuQu/cm4G+lDPjbGep6Fn2/t4Q4lBPoy
+Zkz+8LSLtYfjmq/31IQOTW7j6kWdvzeic782PrYZP+C4xyWQtSNt/KVruicbr2XX
+ZfDtHaNrl18Jfu8y+nLxREG19elNjTOuPbcW6uIHbh/2x5ZpQ4R0a3LqTW/LGY9c
+4Btka7gru4Pve0Y2rvz4YY69oS51zvJ1bsxg+fbZT3Y0TP55JC3EaDs1H3a1L7U1
+Jydq29jt3tjA2YLfTkw/N+13rY9pvbNgsWTf/3shv/aBBbWcK1pzfVdm8Ciykhe6
+7q1+XVy3P1I4stQK73a9E1cRmUAPYVmXU/b3aWtrDj74vfT7iamGxJmkivKLz94J
+X04cERNSOl5v9G66e+4f
+=z0xA
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/sukima
+
+==================================================================
