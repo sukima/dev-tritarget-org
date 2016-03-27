@@ -28,6 +28,7 @@ Run the macro
 */
 exports.run = function() {
 	if (!$tw.browser) { return; }
+	var ignoreScrolling = (window.location.hash === '');
 
 	if(!this.hackOnce){
 		this.hackOnce = true;
@@ -40,6 +41,11 @@ exports.run = function() {
 		Handle a scroll event DIFFERENTLY hitting the page document
 		*/
 		$tw.pageScroller.scrollIntoView = function(element) {
+			if (ignoreScrolling) {
+				ignoreScrolling = false;
+				window.scrollTo(0, 0);
+				return;
+			}
 			var duration = $tw.utils.getAnimationDuration();
 			// Now get ready to scroll the body
 			this.cancelScroll();
