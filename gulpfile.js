@@ -169,7 +169,7 @@ gulp.task('watch', ['server'], function() {
 });
 
 gulp.task('build', ['tiddlywiki', 'scripts'], function() {
-  return gulp.src('public/*').pipe(gulp.dest('wiki/output'));
+  return gulp.src(['public/**/*', 'public/.htaccess']).pipe(gulp.dest('wiki/output'));
 });
 
 gulp.task('prepare-wiki', ['config-development', 'themes', 'plugins', 'tiddlers']);
