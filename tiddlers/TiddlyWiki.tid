@@ -1,0 +1,19 @@
+created: 20130822170700000
+modified: 20160327221914197
+tags: Concepts
+title: TiddlyWiki
+type: text/vnd.tiddlywiki
+
+\define main-link(text,tiddler) [[$text$|http://tiddlywii.com/#$tiddler$]]
+
+<a href={{Tiddler Poster.png!!source}} target="_blank">
+[img width=232 [Tiddler Poster.png]]
+</a>
+
+~TiddlyWiki is a rich, interactive tool for manipulating complex data with structure that doesn't easily fit into conventional tools like spreadsheets or wordprocessors.
+
+~TiddlyWiki is designed to fit around your brain, helping you deal with the things that won't fit. The <<main-link "fundamental idea" "Philosophy of Tiddlers">> is that information is more useful and reusable if we cut it up into the smallest semantically meaningful chunks -- <<main-link "tiddlers" "Tiddlers">> -- and give them titles so that they can be <<main-link "structured" "Structuring TiddlyWiki">> with <<main-link "links" "TiddlerLinks">>, <<main-link "tags" "Tagging">>, <<main-link "lists" "ListField">> and <<main-link "macros" "Macros">>.  Tiddlers use a <<main-link "WikiText" "WikiText">> notation that concisely represents a wide range of text formatting and hypertext features. ~TiddlyWiki aims to provide a fluid interface for working with tiddlers, allowing them to be aggregated and composed into longer narratives.
+
+People love using ~TiddlyWiki. Because it can be used without any complicated server infrastructure, and because it is <<main-link "open source" "OpenSource">>, it has bought unprecedented freedom to everyone to keep their precious information under their own control.
+
+~TiddlyWiki was originally created by <<main-link "JeremyRuston" "JeremyRuston">> and is now a thriving open source project with a busy <<main-link "Community" "Community">> of independent developers.
