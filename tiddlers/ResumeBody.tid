@@ -1,6 +1,6 @@
 created: 20160324133130224
 creator: Sukima
-modified: 20160324165715351
+modified: 20160329200021973
 modifier: Sukima
 title: Devin Weaver's Résumé
 type: text/vnd.tiddlywiki
@@ -18,7 +18,7 @@ In my free time I enjoy contributing to open source projects, and exploring phot
 
 !! Proficiency
 
-JavaScript, Node, Ember, Backbone, jQuery, CSS, HTML5, CoffeeScript, Appcelerator Titanium, Ruby on Rails, Node.js, JSON, PHP, Java, iOS, Android, Shell scripting, SQL, XML, PostGIS, Git, BDD/TDD, Unix/Linux, Mac OS X, Windows
+JavaScript (ES2015), Node, Ember, Backbone, jQuery, CSS, HTML5, CoffeeScript, Appcelerator Titanium, Ruby on Rails, Node.js, JSON, PHP, Java, iOS, Android, Shell scripting, SQL, XML, PostGIS, Git, BDD/TDD, Unix/Linux, Mac OS X, Windows
 
 Very proficient on command line using tmux, bash, and Vim
 
@@ -33,9 +33,13 @@ Very proficient on command line using tmux, bash, and Vim
 * Partner Relationship Management software [Channelwave ­ Java, JSP]
 -->
 
-!!! JavaScript Development
+!!! Portfolio
 
-* [[SkiQuery|https://github.com/sukima/skiQuery]] A clone of a text based game [JavaScript, jQuery]
+<ul>
+<$list filter="[tag[Portfolio]!has[draft.of]]">
+<li><a href={{!!url}} class="tc-tiddlylink-external" target="_blank">{{!!title}}</a> {{!!description}} [{{!!terms}}]</li>
+</$list>
+</ul>
 
 !!! System Administration
 
