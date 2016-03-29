@@ -1,0 +1,8 @@
+created: 20160329002836553
+icon: $:/core/images/github
+modified: 20160329003029333
+title: GitHub
+type: text/vnd.tiddlywiki
+url: https://githu.com/sukima/dev-tritarget-org/
+
+The source for this website is available at <a href={{!!url}}>{{!!url}}</a>
