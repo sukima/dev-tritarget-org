@@ -1,0 +1,20 @@
+created: 20160406210236869
+modified: 20160406231626141
+tags: 
+title: Devin Weaver's Résumé
+type: text/vnd.tiddlywiki
+
+@@.img-thumbnail
+@@float:right;
+[img width=64 [SelfPicSqLookLeft.jpg]]
+@@
+
+! Devin Weaver
+
+<div class="contact-info">
+
+<$transclude tiddler="ContactInfo"/>
+
+</div>
+
+{{ResumeBody}}

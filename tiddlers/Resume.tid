@@ -1,7 +1,7 @@
 caption: Résumé
 created: 20160323135855597
 creator: Sukima
-modified: 20160324161820630
+modified: 20160406214703970
 modifier: Sukima
 position: 50
 tags: NavBar
@@ -14,4 +14,6 @@ type: text/vnd.tiddlywiki
 </$button>
 </$tiddler>
 
-{{Devin Weaver's Résumé}}
+! Devin Weaver
+
+{{ResumeBody}}

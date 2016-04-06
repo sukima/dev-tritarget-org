@@ -2,13 +2,11 @@ created: 20160324133130224
 creator: Sukima
 modified: 20160329200021973
 modifier: Sukima
-title: Devin Weaver's Résumé
+title: ResumeBody
 type: text/vnd.tiddlywiki
 
 \define tv-wikilinks() no
 \define work-history(title,where,dates) !!! $dates$<br>$title$, $where$
-
-! Devin Weaver
 
 I am a highly passionate software developer and fast learner, with interests in mobile and web technologies, security, leadership, teamwork, and teaching. I have a child like sense of wonder to programming and enjoy discovering new ideas.
 

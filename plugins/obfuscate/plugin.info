@@ -1,0 +1,8 @@
+{
+	"title": "$:/plugins/sukima/obfuscate",
+  "version": "0.0.1",
+	"description": "TriTarget.org Obfuscate Parser",
+	"author": "Sukima",
+	"core-version": ">=5.0.0",
+	"list": "readme"
+}
