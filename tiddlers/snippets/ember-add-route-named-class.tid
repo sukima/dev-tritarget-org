@@ -1,9 +1,9 @@
-modified: 20160407190833000
+modified: 20160408142750000
 created: 20160407190833000
 modifier: Sukima
 creator: Sukima
 title: Add route named class to body in Ember
-tags: snippets Ember
+tags: snippets Ember JavaScript
 type: text/vnd.tiddlywiki
 
 ```javascript
