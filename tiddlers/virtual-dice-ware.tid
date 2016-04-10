@@ -1,0 +1,14 @@
+modified: 20160410042942000
+created: 20160410042942000
+description: Create human readable secure passwords with dice and EmberJS
+creator: Sukima
+modifier: Sukima
+tags: Projects Portfolio
+terms: EmberJS, JavaScript, Bootstrap, Random numbers, Entropy
+title: Virtual Diceware
+type: text/vnd.tiddlywiki
+url: https://sukima.github.io/virtual-dice-ware
+
+Roll virtual dice to construct human readable passcodes. Uses a safisticated [[Ultra High Entropy Pseudo Random Number Generator|https://www.grc.com/otg/uheprng.htm]] and good Bootstrap visuals.
+
+''Demo:'' {{!!url}}

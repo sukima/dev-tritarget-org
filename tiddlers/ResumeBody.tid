@@ -1,6 +1,6 @@
 created: 20160324133130224
 creator: Sukima
-modified: 20160329200021973
+modified: 20160410043039144
 modifier: Sukima
 title: ResumeBody
 type: text/vnd.tiddlywiki
@@ -34,7 +34,7 @@ Very proficient on command line using tmux, bash, and Vim
 !!! Portfolio
 
 <ul>
-<$list filter="[tag[Portfolio]!has[draft.of]]">
+<$list filter="[tag[Portfolio]!has[draft.of]!sort[created]]">
 <li><a href={{!!url}} class="tc-tiddlylink-external" target="_blank">{{!!title}}</a> {{!!description}} [{{!!terms}}]</li>
 </$list>
 </ul>
