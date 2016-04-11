@@ -15,7 +15,7 @@ type: text/vnd.tiddlywiki
 
 ! Projects
 
-<$list filter="[tag[Projects]sort[modified]]">
+<$list filter="[tag[Projects]!sort[modified]]">
 
 !!! <<currentTiddler>>
 

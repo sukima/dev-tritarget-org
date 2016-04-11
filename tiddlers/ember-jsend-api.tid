@@ -1,6 +1,6 @@
-created: 20160329195521900
+modified: 20160411012415000
+created: 20160411012415000
 description: Ember addon for working with jsend API endpoint without ember-data
-modified: 20160329195850805
 tags: Portfolio Projects
 terms: EmberJS, JavaScript
 title: ember-jsend-api
