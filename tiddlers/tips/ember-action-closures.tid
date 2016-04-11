@@ -1,0 +1,34 @@
+modified: 20160411131530000
+created: 20160411131530000
+modifier: Sukima
+creator: Sukima
+title: Closure actions with helpers in Ember
+tags: Coding Tips Ember
+
+I found there are times when you can perform the following with components:
+
+```handlebars
+{{my-component data=data
+               shouldShow=showMyComponent
+               action=(action (mut showMyComponent) false)}}
+```
+
+But it gets more complex in a helper like so:
+
+```handlebars
+<a href="#" {{action "myAction"}}>
+  Open My Component
+</a>
+```
+
+So how do you use the same trick above? Here is how:
+
+```handlebars
+<a href="#" {{action (action (mut showMyComponent) true)}}>
+  Open My Component
+</a>
+
+{{my-component data=data
+               shouldShow=showMyComponent
+               action=(action (mut showMyComponent) false)}}
+```

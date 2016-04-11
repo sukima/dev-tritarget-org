@@ -1,9 +1,9 @@
-modified: 20160409003542000
 color: #663399
-creator: Sukima
-modifier: Sukima
 created: 20160324192415096
+creator: Sukima
 icon: $:/core/images/file
+modified: 20160411133225455
+modifier: Sukima
 position: 20
 tags: NavBar TableOfContents
 title: Coding
@@ -11,6 +11,10 @@ type: text/vnd.tiddlywiki
 
 <$button to="CodingArticles" class="tc-summary-button">
 <<tag-summary "Coding">>
+</$button>
+
+<$button to="CodingTips" class="tc-summary-button">
+There are <$count filter="[tag[Coding]tag[Tips]]"/> <<tag "Tips">> about <<tag "Coding">>.
 </$button>
 
 ! Projects
