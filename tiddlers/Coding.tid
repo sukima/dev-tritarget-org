@@ -2,7 +2,7 @@ color: #663399
 created: 20160324192415096
 creator: Sukima
 icon: $:/core/images/file
-modified: 20160411133225455
+modified: 20160411164251102
 modifier: Sukima
 position: 20
 tags: NavBar TableOfContents
@@ -14,12 +14,12 @@ type: text/vnd.tiddlywiki
 </$button>
 
 <$button to="CodingTips" class="tc-summary-button">
-There are <$count filter="[tag[Coding]tag[Tips]]"/> <<tag "Tips">> about <<tag "Coding">>.
+There are <$count filter="[tag[Coding]tag[Tips]]"/> <<tag "Tips">> about <<tag "Coding">>
 </$button>
 
 ! Projects
 
-<$list filter="[tag[Projects]!sort[modified]]">
+<$list filter="[tag[Projects]!sort[created]]">
 
 !!! <<currentTiddler>>
 
@@ -28,6 +28,7 @@ There are <$count filter="[tag[Coding]tag[Tips]]"/> <<tag "Tips">> about <<tag "
 
 <<<
 
+<div style="clear:both;"></div>
 </$list>
 
 !  Not-so-random fortune quote

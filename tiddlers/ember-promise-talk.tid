@@ -1,11 +1,13 @@
-modified: 20160411012358000
 created: 20160411012358000
 description: A slot machine using EmberJS, Promises, and Timers
+modified: 20160411163703050
 tags: Projects Portfolio
 terms: EmberJS, Promises, JavaScript
 title: ember-promise-talk
 type: text/vnd.tiddlywiki
 url: https://sukima.github.io/ember-promise-talk
+
+<a href={{!!url}}><<preview-right "ember-promise-talk Preview.png">></a>
 
 An example demo on having fun with EmberJS… promise.
 

@@ -1,11 +1,13 @@
-modified: 20160411012415000
 created: 20160411012415000
 description: Ember addon for working with jsend API endpoint without ember-data
+modified: 20160411163454599
 tags: Portfolio Projects
 terms: EmberJS, JavaScript
 title: ember-jsend-api
 type: text/vnd.tiddlywiki
 url: https://github.com/sukima/ember-jsend-api
+
+<a href={{!!url}}><<preview-right "ember-jsend-api Preview.png">></a>
 
 {{!!description}}.
 
