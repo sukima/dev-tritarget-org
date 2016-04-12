@@ -1,10 +1,12 @@
 created: 20150201000000000
-modified: 20160326031512000
 creator: Sukima
-title: A Promising Functional Utility
+modified: 20160412124504120
+modifier: Sukima
 tags: Coding Article
+title: A Promising Functional Utility
+type: text/vnd.tiddlywiki
 
-I was playing around with promises in JavaScript and an idea hit. How would [[Node.js|http://nodejs.org/]] work as a web scrapper? Turns out quite well actually. In my experimentation I found that [[promises|https://github.com/petkaantonov/bluebird#what-are-promises-and-why-should-i-use-them]] and some simple [[functional style|http://en.wikipedia.org/wiki/Functional_programming]] made for a nice program and surprisingly require little debugging. I wanted to walk through a possible scenario to illustrate a though process and code style that I've come to really like.
+I was playing around with promises in JavaScript and an idea hit. How would [[Node.js]] work as a web scrapper? Turns out quite well actually. In my experimentation I found that [[promises|Promises]] and some simple [[functional style|http://en.wikipedia.org/wiki/Functional_programming]] made for a nice program and surprisingly require little debugging. I wanted to walk through a possible scenario to illustrate a though process and code style that I've come to really like.
 
 ! The Scenario
 
