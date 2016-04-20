@@ -1,0 +1,12 @@
+created: 20160420122549405
+modified: 20160420122616777
+tags: Concepts
+title: Pannellum
+type: text/vnd.tiddlywiki
+url: https://pannellum.org/
+
+A Lightweight Panorama Viewer for the Web
+
+<<<
+Pannellum is a lightweight, free, and open source panorama viewer for the web. Built using HTML5, CSS3, JavaScript, and WebGL, it is plug-in free.
+<<< {{!!url}}

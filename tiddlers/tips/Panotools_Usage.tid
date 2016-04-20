@@ -1,0 +1,29 @@
+created: 20160420121906065
+modified: 20160420123202560
+tags: Tips
+title: Panotools Usage
+type: text/vnd.tiddlywiki
+
+!! Installing
+
+```console
+$ cpan
+cpan[1]> install Panotools::Script
+```
+
+!! Convert equirectangular pano into cube faces
+
+```console
+$ erect2cubic --erect=MyPano.tif --ptofile=cubic.pto
+$ nona -o cube_ cubic.pto
+```
+
+Will create five numbered cube files (for example `cube_0002.tif`).
+
+`nona` is part of the [[Hugin]] package. [[This bash script|https://github.com/sukima/dotfiles/blob/master/bash/modules.d/macpanotools]] shows how to capture the path on a Mac.
+
+!! Convert cube faces to ecrirectangular pano
+
+```console
+$ cubic2erect cube_{0,1,2,3,4,5}.tif MyPanoFinal.tif
+```

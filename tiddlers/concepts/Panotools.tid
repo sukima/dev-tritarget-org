@@ -1,0 +1,11 @@
+created: 20160420121707150
+modified: 20160420122033838
+tags: Concepts
+title: Panotools
+type: text/vnd.tiddlywiki
+
+* https://sourceforge.net/p/panotools/Panotools-Script/ci/default/tree/README
+
+These are PERL scripts that help manage panoramas on the command line. I use them to split an equirectangular images into cubes and back again.
+
+{{Panotools Usage}}

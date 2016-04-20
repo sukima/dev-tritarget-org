@@ -1,0 +1,12 @@
+created: 20160420122101715
+modified: 20160420122202862
+tags: Concepts
+title: GrapicsMagick
+type: text/vnd.tiddlywiki
+url: http://www.graphicsmagick.org/
+
+!! Image Processing System
+
+<<<
+~GraphicsMagick is the swiss army knife of image processing.
+<<< {{!!url}}

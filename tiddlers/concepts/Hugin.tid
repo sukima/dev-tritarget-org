@@ -1,0 +1,14 @@
+created: 20160420120845457
+modified: 20160420122354427
+tags: Concepts
+title: Hugin
+type: text/vnd.tiddlywiki
+url: http://hugin.sourceforge.net/
+
+!! Panorama photo stitcher
+
+[img width=500 [http://hugin.sourceforge.net/screenshot-600.jpg]]
+
+<<<
+An easy to use cross-platform panoramic imaging toolchain. With Hugin you can assemble a mosaic of photographs into a complete immersive panorama, stitch any series of overlapping pictures and much more.
+<<< {{!!url}}
