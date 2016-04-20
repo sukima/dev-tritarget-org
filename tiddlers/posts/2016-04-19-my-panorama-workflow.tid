@@ -1,0 +1,63 @@
+created: 20160420023505000
+creator: Sukima
+modified: 20160420131848071
+modifier: Sukima
+tags: Article Photography
+title: My Panorama Workflow
+type: text/vnd.tiddlywiki
+
+I often thought my workflow was a bit unique. Though recently I found that it is not that unusual. I wanted to document the workflow for reference and because I've been running into some difficult results in my final panoramas and having the steps I took to get there might allow myself to get better feedback from others. At the bottom of this post is the final output. For those interested I am also [[offering my original images|https://photos.tritarget.org/panoramas/MillPano/MillPanoOriginals.zip]] (in RAW format) to see if anyone might be willing to offer advise. I don't know if my troubles stem from my Lens, my Camera, my software, or my workflow. Any advice would be greatly appreciated.
+
+!! Taking the pictures
+
+I am using a [[Canon EOS Rebel XS]] (A.K.A. EOS 1000D) with a [[Bower 8mm Fisheye]] lens (A.K.A Pro-Optic, Samyang, or Rokinon). I mount my camera on a [[Panosaurus]] panoramic head on a tripod. I believe I've calibrated the parallax correctly to the best I could through the view finder and by taking several pictures with a close object and far object and rotating back and forth.
+
+I setup the tripod and start taking photos every ''60 degrees'' (six images) around, one zenith, two nadir images 180 degrees from each other, and a final hand held nadir //just in case//.
+
+I use a wired remote shutter to lessen the jitter. I try to sample several angles before picking the final settings I use in manual mode. Since the lens doesn't have any communication with the camera I manually dial in the F-stop. I set the focus to infinity. I use the ''Raw format''.
+
+!! Pre-processing photos
+
+I used [[RawTherapee]] to pre-process the Raw files I downloaded from the camera. Since the auto settings seemed pretty good I kept them except I set the white balance to ''Shade''. I batch saved all the images to ''16 bit TIFF''s (Uncompressed).
+
+!! Stitching
+
+I used [[Hugin]] set to the ''Expert'' mode. I'm using version 2014 on the Mac because (at the time of this article) it is the only version available for the Mac. In Expert mode I add all the images including the hand held nadir. I used the ''Full Frame Fisheye'' with the Focal Length of '8' which in the past seemed like it worked. Mostly guess work here. Anyway Hugin auto populates the field of view for me and I go with it.
+
+Than I opened up the mask section and carefully draw exclusion masks around the tripod in all three nadir shots. Finally I click optimize and then open the //GL Previw// window. And everything looked great. I then opened the stitcher view and selected a width of ''1024'' so the rendering would be super fast while I previewed. I found that the GL Preview glossed over some artifacts that you don't notice till the final renders.
+
+I noticed that the hand held nadir shot (although almost aligned) had parallax issues. Mainly since the nadir was a set of wood boards. So I gave up on the idea that the hand help nadir image was worth anything and deleted it from the image list in [[Hugin]]. I went back to the stitcher and selected ''Calculate optimal size'' and created a final version. Now with a gaping hole where the mask for the tripod was.
+
+!! Editing the nadir
+
+Since I use the [[GIMP]] to edit photos I have to convert the ''16 bit TIFF'' to an ''8 bit TIFF'' using [[GraphicsMagick]]:
+
+```console
+$ gm convert MillPano.tiff -depth 8 MillPano8.tif
+```
+
+Then I use the [[Panotools]] scripts to create my set of cubes:
+
+```console
+$ erect2cubic --erect=MillPano8.tif --ptofile=cubic.pto
+$ nona -o cube cubic.pto
+```
+
+In the [[GIMP]] I edited `cube0005.tif` and used the ''clone tool'' to carefully reconstruct the wood planks from the sides (this was challenging using a touchpad). Saved it to `cube0005a.tif`.
+
+Finally I reconstructed the panorama:
+
+```console
+$ cubic2erect cube000{0,1,2,3,4,5a}.tif MillPanoFinal.tif
+```
+
+And this is the result:
+
+<<pano "Ye Olde Town Mill">>
+
+!! Questions
+
+# Is there a way to get [[Hugin]] to use a hand held nadir shot when the shot doesn't line up well with the shots taken via the tripod head? Would make nadir editing easier.
+# Why is the final output blurry? Is it chromatic abrasion? Bad stitching? Crappy camera/lens?
+
+''Download the [[Original Images|https://photos.tritarget.org/panoramas/MillPano/MillPanoOriginals.zip]].'' (100MB Zip)
