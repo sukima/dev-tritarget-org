@@ -1,6 +1,6 @@
+modified: 20160421014142000
 created: 20160324133130224
 creator: Sukima
-modified: 20160410043039144
 modifier: Sukima
 title: ResumeBody
 type: text/vnd.tiddlywiki
@@ -47,10 +47,11 @@ Very proficient on command line using tmux, bash, and Vim
 
 <<work-history title:"Software Developer" where:"""[ext[SeeClickFix, Inc.|https://seeclickfix.com/]]""" dates:"04/2012 - Present">>
 
-I maintain an iOS application written in Appcelerator Titanium (JavaScript → native). I've written several Node based build system using Gulp, Browserify, Ember. I've written several (in-house) stream based plugins for Gulp. I help maintain our Native Android application. I actively maintain and enhance our main system with Ruby on Rails. I wrote a test suite frame work in Jasmine for Titanium code and later ported the same system to Mocha. Wrote web application in Ember, socket.io, and Node express to manage and build 30 different flavors of our Titanium iOS app.
+I maintain an iOS application written in Appcelerator Titanium (JavaScript → native). I've written several Node based build system using Gulp, Browserify, Ember. I've written several (in-house) stream based plugins for Gulp. I help maintain our Native Android application. I actively maintain and enhance our main system with Ruby on Rails. I wrote a test suite frame work in Jasmine for Titanium code and later ported the same system to Mocha. Wrote web application in Ember, socket.io, and Node express to manage and build 30 different flavors of our Titanium iOS app. Develop and maintain our primary web application in Ember.
 
+* Ember expert
 * iOS / Appcelerator Titanium developer
-* Ruby on Rails developer.
+* Ruby on Rails developer
 * Resident Node expert
 * Bash and Vim guru
 * Git master
