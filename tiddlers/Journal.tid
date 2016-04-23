@@ -1,0 +1,16 @@
+color: #008080
+created: 20160423154502392
+creator: Sukima
+icon: $:/core/images/edit-button
+modified: 20160423162523632
+modifier: Sukima
+tags: 
+title: Journal
+type: text/vnd.tiddlywiki
+
+<$list filter="[tag[Journal]!has[draft.of]!sort[created]limit[25]]">
+<$link to={{!!title}}>
+<div class="tc-flowing-list-item">
+{{!!title}}<br><$view field="created" format="date" template="MMM DDth"/></div>
+</$link>
+</$list>
