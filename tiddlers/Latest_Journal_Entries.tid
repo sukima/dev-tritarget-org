@@ -1,0 +1,14 @@
+created: 20160424095001943
+creator: Sukima
+modified: 20160424095134244
+modifier: Sukima
+tags: 
+title: Latest Journal Entries
+type: text/vnd.tiddlywiki
+
+<$list filter="[tag[Journal]!has[draft.of]!sort[created]limit[6]]">
+<$link to={{!!title}}>
+<div class="tc-flowing-list-item">
+{{!!title}}<br><$view field="created" format="date" template="MMM DDth"/></div>
+</$link>
+</$list>
