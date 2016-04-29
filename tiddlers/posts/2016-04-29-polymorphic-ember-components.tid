@@ -1,0 +1,70 @@
+modified: 20160523115425000
+created: 20160429210548000
+modifier: Sukima
+creator: Sukima
+title: Polymorphic Ember Components
+tags: Article Coding EmberJS
+
+\rules except transcludeblock
+
+[img[ForrestGumpPolymorphism.jpg]]
+
+I recently stumbled upon an interesting Ember component refactoring. Ember provides a means to [[dynamically render components|https://spin.atomicobject.com/2015/03/26/emberjs-dynamically-render-components/]]. What this means is that instead of hard coding the name of the component in your template you can use a property to pick it. With this it is possible to conditionally ''swap out'' a component based on a computed property. If the components were organized as a hierarchy then you would have polymorphism. And this is exactly the solution I used to solve an annoying problem I had with one of my projects.
+
+First, I thought I should walk through the stepping stones I've gone through to understand the power of ''polymorphism''. Back in the day it was just a word. Then after some working in Java I gathered that it was a fancy way of saying one object can //override// behavior from its parent object. Turns out there is much more to it.
+
+!! Example one
+
+```javascript
+function statusLabelTextFor(person) {
+  switch (person.status) {
+    case 'infant':   return 'Just a baby';
+    case 'minor':    return 'Underage';
+    case 'teen':     return 'Teenager';
+    case 'ya':       return 'Young Adult';
+    case 'ma':       return 'Middle aged';
+    case 'retired':  return 'Retired';
+    case 'senior':   return 'Senior';
+    case 'advanced': return 'Elderly';
+    default:         return 'Deceased';
+  }
+}
+```
+
+We have all probably seen something like this before. And the common mantra is //never use `switch` statements//. Can this be done without conditionals? Yup:
+
+```javascript
+const STATUS_LABELS = {
+  infant:   'Just a baby',
+  minor:    'Underage',
+  teen:     'Teenager',
+  ya:       'Young Adult',
+  ma:       'Middle aged',
+  retired:  'Retired',
+  senior:   'Senior',
+  advanced: 'Elderly',
+  _default: 'Deceased'
+};
+
+function statusLabelTextFor(person) {
+  return STATUS_LABELS[person.status] || STATUS_LABELS._default;
+}
+```
+
+This version is much easier to change and reason with. Now imagine something similar but with classes that have behavior attached. I wrote a neat ''~FizzBuzz'' example for this:
+
+!! Example two
+
+<<jsbin "http://jsbin.com/dixobu/edit?js,output">>
+
+Ok so that was a bit more of a thought experiment; but it does illustrate how polymorphism can be leverage to simplify conditionals. In fact I found the following list of benefits to be quite enlightening when it comes to this pattern:
+
+<<<
+* This technique adheres to the //Tell-Don't-Ask// principle: instead of asking an object about its state and then performing actions based on this, it is much easier to simply tell the object what it needs to do and let it decide for itself how to do that.
+* Removes duplicate code. You get rid of many almost identical conditionals.
+* If you need to add a new execution variant, all you need to do is add a new subclass without touching the existing code (//Open/Closed Principle//).
+<<< [[Replace Conditional with Polymorphism|https://sourcemaking.com/refactoring/replace-conditional-with-polymorphism]]
+
+How does this equate in Ember? Turns out there are several way it can be used in Ember. For example I had
+
+I had a complex form which gathered data about a user, like an email, and based on the value being entered the form needed to react. Originally this was implemented with a plethora of computed properties testing the actual data to determine the type of user and consequentially change the template accordingly. It even had all the inverse computed properties. I got very confused with it. And the more I looked at the relationship between the data, the computed properties, and the template logic I realized that their was too much information leaking going on. The template didn't need to know that the user in question was an unregistered one. Instead all it cared about was if it should display the terms of service or not.
