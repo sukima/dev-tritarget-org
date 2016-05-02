@@ -1,13 +1,13 @@
 created: 20160323130207728
 fingerprint: FA9F 1400 8BA5 A847 B097  7C06 EBD9 9C92 DE76 7C8A
 id: DE767C8A
-modified: 20160323131156993
+modified: 20160502211004619
 tags: 
 title: PGP Key
 type: text/vnd.tiddlywiki
 
 ;PGP key:
-:<code>{{!!id}}</code>
+:<code>{{!!id}}</code> <small>([[no known shared factors|http://phuctor.nosuchlabs.com/gpgkey/CE7D973914C9BFD6B8AB50693B23DFCC421A01338FBCFE96786E1D1AC3214CB1]])</small>
 ;Fingerprint:
 :<code>{{!!fingerprint}}</code>
 ;Keybase.io
