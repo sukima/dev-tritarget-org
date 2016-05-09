@@ -1,0 +1,25 @@
+modified: 20160509000202000
+created: 20160509000202000
+modifier: Sukima
+creator: Sukima
+title: maybe.js
+tags: snippets JavaScript
+
+A simple maybe / optional snippet in JavaScript. For a more feature full ''monad'' look at https://gist.github.com/sukima/d117a0223a9884f2c860
+
+```javascript
+function maybe(value) {
+  var obj = null;
+  function isEmpty() { return value === undefined || value === null }
+  function nonEmpty() { return !isEmpty() }
+  obj = {
+    map: function (f) { return isEmpty() ? obj : maybe(f(value)) },
+    getOrElse: function (n) { return isEmpty() ? n : value },
+    isEmpty: isEmpty,
+    nonEmpty: nonEmpty
+  }
+  return obj;
+}
+```
+
+<small>Source: https://gist.github.com/andyhd/1618403</small>
