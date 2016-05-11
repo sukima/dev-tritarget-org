@@ -45,11 +45,11 @@ Very proficient on command line using tmux, bash, and Vim
 
 !! Work History
 
-<<work-history title:"Software Developer" where:"""[ext[SeeClickFix, Inc.|https://seeclickfix.com/]]""" dates:"04/2012 - Present">>
+<<work-history title:"Software Engineer" where:"""[ext[SeeClickFix, Inc.|https://seeclickfix.com/]]""" dates:"04/2012 - Present">>
 
-I maintain an iOS application written in Appcelerator Titanium (JavaScript → native). I've written several Node based build system using Gulp, Browserify, Ember. I've written several (in-house) stream based plugins for Gulp. I help maintain our Native Android application. I actively maintain and enhance our main system with Ruby on Rails. I wrote a test suite frame work in Jasmine for Titanium code and later ported the same system to Mocha. Wrote web application in Ember, socket.io, and Node express to manage and build 30 different flavors of our Titanium iOS app. Develop and maintain our primary web application in Ember.
+I am a lead EmberJS engineer. I maintain and develop our backend client facing web application written entirely in EmberJS and interfaces with our Ruby on Rails API. I maintain an iOS application written in Appcelerator Titanium (JavaScript → native). I've written several Node based build system using Gulp, Browserify, Ember. I've written several (in-house) stream based plugins for Gulp. I help maintain our Native Android application. I actively maintain and enhance our main system with Ruby on Rails. I wrote a test suite frame work in Jasmine for Titanium code and later ported the same system to Mocha.
 
-* Ember expert
+* Senior EmberJS Engineer
 * iOS / Appcelerator Titanium developer
 * Ruby on Rails developer
 * Resident Node expert
