@@ -1,4 +1,4 @@
-RedirectMatch 302 ^/devin /#TableOfContents
+RedirectMatch 302 ^/devin /#ContactInfo:ContactInfo%20SocialLinks
 
 <Files .htaccess>
   order allow,deny
