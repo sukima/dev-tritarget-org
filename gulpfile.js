@@ -149,7 +149,7 @@ gulp.task('plugins', ['babel-plugins', 'files-plugins', 'plugin-libraries']);
 gulp.task('scripts', ['babel-scripts', 'files-scripts', 'script-libraries']);
 
 gulp.task('tiddlywiki', ['config-production', 'themes', 'plugins', 'tiddlers'], function() {
-  var args = 'wiki --build index favicon static'.split(' ');
+  var args = 'wiki --build index favicon static feed'.split(' ');
   return waitForProcess(spawnProcess('./node_modules/.bin/tiddlywiki', args));
 });
 
