@@ -1,0 +1,6 @@
+created: 20160519014147449
+modified: 20160519134656466
+title: $:/config/atomfilter
+type: text/vnd.tiddlywiki
+
+[tag[Article]][tag[Journal]]+[!sort[modified]limit[10]]

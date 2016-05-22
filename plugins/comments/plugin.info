@@ -4,5 +4,5 @@
 	"description": "TriTarget.org Commenting",
 	"author": "Sukima",
 	"core-version": ">=5.0.0",
-	"list": "readme"
+	"list": "readme config"
 }
