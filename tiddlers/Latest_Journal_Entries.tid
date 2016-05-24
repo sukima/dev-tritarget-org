@@ -1,6 +1,6 @@
 created: 20160424095001943
 creator: Sukima
-modified: 20160424095134244
+modified: 20160524020540005
 modifier: Sukima
 tags: 
 title: Latest Journal Entries
@@ -12,3 +12,5 @@ type: text/vnd.tiddlywiki
 {{!!title}}<br><$view field="created" format="date" template="MMM DDth"/></div>
 </$link>
 </$list>
+
+<$link to="Journal">All <$count filter="[tag[Journal]]"/> entries</$link>
