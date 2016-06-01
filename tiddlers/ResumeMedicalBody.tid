@@ -1,0 +1,56 @@
+created: 20160601015759322
+modified: 20160601022301108
+tags: 
+title: ResumeMedicalBody
+type: text/vnd.tiddlywiki
+
+\define tv-wikilinks() no
+\define work-history(title,where,dates) !!! $dates$<br>$title$, $where$
+
+!! Objective
+
+Work in Emergency Medicine as a Paramedic licensed in the state of Connecticut.
+
+!! Education
+
+* Paramedic, American Professional Education Service, 2002
+* Associate of Computer Science Degree, Three Rivers Community Technical College, 2006
+
+!! Work History
+
+<<work-history title:"Software Engineer" where:"""[ext[SeeClickFix, Inc.|https://seeclickfix.com/]]""" dates:"04/2012 - Present">>
+
+Software development provides daily opportunities for leadership, mentoring, and teaching. I excel at problem solving and critical thinking.
+
+* Project management
+* Mentor
+* Teacher
+* Public Speaker
+* Team Collaboration
+* Problem solving
+* Critical thinking
+
+<<work-history title:"Simulation Specialist" where:"Yale New Haven Health System" dates:"03/2010 - 04/2012">>
+
+I maintained and facilitated the Yale Hospital Simulation Department. Supervisor and technical lead. Collaborated with nurses, doctors, and co-workers on medical simulations and student involvement.
+
+* Leadership
+* Provided medical training
+* Problem solving
+* Critical thinking
+* Supervising
+* Management experience
+
+<<work-history title:"Emergency Medical Tech ­ Paramedic" where:"AMR and American Ambulance" dates:"09/2003 - 03/2011">>
+
+* Provided medical care to patients
+* Assessed patients and developed proper and timely treatment strategies
+* Leadership skills
+* Continued good rapport with patients, co-workers, and other agencies
+* Prioritized personal safety for myself, the patients, and all responders
+* Performed life saving procedures correctly and efficiently
+* Communicated effectively with first responders, hospital staff, and medical control
+
+!! Associations
+
+* Treasurer of Groton Ambulance Association

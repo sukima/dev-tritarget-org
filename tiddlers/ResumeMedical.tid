@@ -1,0 +1,15 @@
+created: 20160601015518847
+modified: 20160601015753528
+tags: 
+title: Resume (Medical)
+type: text/vnd.tiddlywiki
+
+<$tiddler tiddler="Devin Weaver's Health Care Résumé">
+<$button message="tm-open-window" class="tc-float-right">
+{{$:/core/images/export-button}} open printable version
+</$button>
+</$tiddler>
+
+! Devin Weaver
+
+{{ResumeMedicalBody}}
