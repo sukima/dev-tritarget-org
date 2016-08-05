@@ -1,0 +1,15 @@
+modified: 20160726120331000
+created: 20160726120331000
+modifier: Sukima
+creator: Sukima
+title: Single Responsibility Reasoning
+tags: Article Coding
+
+In Object Oriented Programming there is a acronym called S.O.L.I.D.
+MISSING_CONTENT
+
+To illustrate some of this I have a story about a recent dive into one of the projects I work on. Our application had a module which made network requests and returned the response as a parse JSON object. There is another object responsible for taking any error and inspecting it so the `CustomError` can be used elsewhere for debugging, displaying to the user, analytics, etc. Everything seemed like it was abstracted into an object with one responsibility. What I learned later on that there was a glaring violation of the rule.
+
+This happened when I attempted to change the underlying network module. Moving from an old version of the API to a new one revealed that the `CustomError` knew too much. The new API performed its own error sanitization when the old one didn't. My `CustomError` knew how to perform its own sanitization of the error when it was using the old API which did no sanitization. In short it meant that changing things in this application was difficult because the changes leaked to other objects.
+
+You might think that is just the way it is in programming but I'd like to view this from a slightly different perspective. If at the time we had had a deeper focus on the //single responsibility// of each object we would have seen the sanitization as a separate responsibility. In truth there should have been three objects. One for the network result, one for the sanitization of the error, and a third for the actual `CustomError` for use thought the app.
