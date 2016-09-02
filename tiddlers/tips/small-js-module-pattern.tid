@@ -1,0 +1,44 @@
+modified: 20160902181444000
+created: 20160902181444000
+modifier: Sukima
+creator: Sukima
+title: Simple JavaScript module pattern
+tags: Tips Coding JavaScript
+
+There are times when you want to modulerize your code (perhaps to manage non-poluting namespaces) but your use case is so small that something like RequireJS is overkill. In this case you can use this 14 line system.
+
+Original Source: https://gist.github.com/creationix/926811
+
+```javascript
+define.defs = {};
+define.modules = {};
+function define(name, fn) {
+  define.defs[name] = fn;
+}
+function require(name) {
+  if (define.modules.hasOwnProperty(name)) return define.modules[name];
+  if (define.defs.hasOwnProperty(name)) {
+    var fn = define.defs[name];
+    define.defs[name] = function () { throw new Error("Circular Dependency"); };
+    return define.modules[name] = fn();
+  }
+  throw new Error("Module not found: " + name);
+}
+```
+
+And you can use it like so:
+
+```javascript
+define('foo', function () {
+  return 42;
+});
+
+define('mymod', function () {
+  return {
+    stuff: "goes here",
+    "and here": require('foo')
+  };
+});
+
+var MyMod = require('mymod');
+```
