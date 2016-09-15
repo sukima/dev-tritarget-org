@@ -206,7 +206,8 @@ class Pano extends Media {
     });
   }
   makeIndexHtml(wiki, editor) {
-    let template = wiki.getTiddlerText(HTML_TEMPLATE_TIDDLER);
+    let template = wiki.getTiddlerText(HTML_TEMPLATE_TIDDLER)
+      .replace(/{{title}}/g, this.title);
     return this.mkdir().then(() => {
       this.logger.log(`Creating index file ${this.outputHtml}`);
       return editor.writeFile(this.outputHtml, template);
