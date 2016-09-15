@@ -1,0 +1,11 @@
+{
+  "tiddlers": [
+    {
+      "file": "template.html",
+      "fields": {
+        "title": "$:/plugins/sukima/prepare-media/template.html",
+        "type": "text/html"
+      }
+    }
+  ]
+}

@@ -12,6 +12,7 @@ let Promise, util, fs, path, mktemp, child_process, del, gm, generateTiddlerFile
 const CDN_DOMAIN = 'photos.tritarget.org';
 const RSYNC_COMMAND = 'rsync -rzv --progress %s ktohg@tritarget.org:photos.tritarget.org';
 const PANO_TYPE = 'image/prs.panorama';
+const HTML_TEMPLATE_TIDDLER = '$:/plugins/sukima/prepare-media/template.html';
 
 // Can not use import because requires must be dynamic so it doesn't
 // execute when included in the browser.
@@ -132,16 +133,18 @@ class Media {
     }
     return this.outputDirPromise;
   }
-  processImages() {
+  processImages(wiki, editor) {
     return Promise.join(
-      this.makeImage().then(() => {
+      this.makeImage(editor).then(() => {
         console.log(`Completed image processing: ${this.outputFile}`);
       }),
-      this.makeThumb().then(() => {
+      this.makeThumb(editor).then(() => {
         console.log(`Completed thumbnail processing: ${this.outputThumb}`);
-      })
+      }),
+      this.makeIndexHtml(wiki, editor)
     );
   }
+  makeIndexHtml() {}
   saveTiddlers(wiki) {
     return Promise.join(
       this.saveImgTiddler(wiki),
@@ -174,6 +177,7 @@ class Pano extends Media {
     this.outputDir = path.join(this.tempDir, this.basePath);
     this.outputFile = path.join(this.outputDir, 'panorama.jpg');
     this.outputThumb = path.join(this.outputDir, 'preview.jpg');
+    this.outputHtml = path.join(this.outputDir, 'index.html');
     this.mediaUrl = `//${CDN_DOMAIN}/${this.basePath}/panorama.jpg`;
     this.mediaThumbUrl = `//${CDN_DOMAIN}/${this.basePath}/preview.jpg`;
     this.logger = new $tw.utils.Logger('prepare-media-pano');
@@ -199,6 +203,13 @@ class Pano extends Media {
           .extent(280, 157)
           .write(this.outputThumb, resolver);
       });
+    });
+  }
+  makeIndexHtml(wiki, editor) {
+    let template = wiki.getTiddlerText(HTML_TEMPLATE_TIDDLER);
+    return this.mkdir().then(() => {
+      this.logger.log(`Creating index file ${this.outputHtml}`);
+      return editor.writeFile(this.outputHtml, template);
     });
   }
   saveImgTiddler(wiki) {
@@ -347,14 +358,14 @@ export class Command {
       });
   }
 
-  processData(mediaData, tempDir) {
+  processData(mediaData, editor) {
     const wiki = this.commander.wiki;
     const media = mediaData.type === PANO_TYPE ?
-      new Pano(mediaData, tempDir) :
-      new Photo(mediaData, tempDir);
+      new Pano(mediaData, editor.tempDir) :
+      new Photo(mediaData, editor.tempDir);
     return Promise.join(
-      media.saveTiddlers(this.commander.wiki),
-      media.processImages()
+      media.saveTiddlers(wiki, editor),
+      media.processImages(wiki, editor)
     );
   }
 
@@ -394,7 +405,7 @@ export class Command {
         .map(file => this.defaultFileData(file))
         .filter(media => media !== null)
         .then(list => this.editMediaList(editor, list))
-        .map(media => this.processData(media, editor.tempDir))
+        .map(media => this.processData(media, editor))
         .then(() => this.uploadMedia(editor.tempDir));
     })
     .catch(isMediaPrepError, error => {
