@@ -74,10 +74,11 @@ class PanoramaWidget extends Widget {
       }
     } else {
       let panorama = this.getAttribute('url');
+      let preview = this.getAttribute('preview');
       if (!panorama) {
         throw new ConfigError('a "url" or "config" attribute is missing');
       }
-      return {panorama};
+      return {panorama, preview};
     }
   }
 

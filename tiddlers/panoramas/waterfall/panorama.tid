@@ -4,4 +4,4 @@ tags: Panoramas
 title: Waterfall in the Catskills
 type: text/vnd.tiddlywiki
 
-<$panorama url="//photos.tritarget.org/panoramas/waterfall/panorama.jpg"/>
+<$panorama url="//photos.tritarget.org/panoramas/waterfall/panorama.jpg" preview="//photos.tritarget.org/panoramas/waterfall/preview.jpg"/>

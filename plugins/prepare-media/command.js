@@ -216,7 +216,7 @@ class Pano extends Media {
     return this.addNewTiddler(wiki, `${this.basePath}/panorama.tid`, {
       title: this.title,
       tags: ['Panoramas'],
-      text: `<$panorama url="${this.mediaUrl}"/>\n`
+      text: `<$panorama url="${this.mediaUrl}" preview="${this.mediaThumbUrl}"/>\n`
     });
   }
   saveThumbImgTiddler(wiki) {

@@ -4,4 +4,4 @@ tags: Panoramas
 title: Cattail House Living Room
 type: text/vnd.tiddlywiki
 
-<$panorama url="//photos.tritarget.org/panoramas/CattailHouse/LivingRoom/panorama.jpg"/>
+<$panorama url="//photos.tritarget.org/panoramas/CattailHouse/LivingRoom/panorama.jpg" preview="//photos.tritarget.org/panoramas/CattailHouse/LivingRoom/preview.jpg"/>
