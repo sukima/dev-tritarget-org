@@ -1,0 +1,21 @@
+modified: 20160921125030000
+created: 20160921125030000
+modifier: Sukima
+creator: Sukima
+title: Tracking ASCII armored PGP/GPG keys with Git
+tags: Coding Tips
+
+Since PGP keys are not something that can be merged as text and are quite meaning less in a diff this trick allows you to have a human readable version of the changes.
+
+Add this to your Git config (global `$HOME/.gitconfig` or per repo `./.git/config`):
+
+```
+[diff "pgp"]
+  textconv = gpg -v
+```
+
+Now in the repo that contains a PGP key simply add this to a `.gitattributes` file:
+
+```
+*.asc diff=pgp -merge
+```
