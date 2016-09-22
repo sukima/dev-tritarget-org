@@ -1,0 +1,10 @@
+modified: 20160922003134000
+created: 20160922003134000
+modifier: Sukima
+creator: Sukima
+title: Pairing with tmux for fun and profit
+tags: Article Coding
+
+In my day job we do a lot of pairing. Working together on one machine. Because our locations differ from time to time we use [[tmux]] to share our source code and keyboard. I thought I would explain some neat tricks and use cases with tmux and [[tmate]].
+
+Since tmate
