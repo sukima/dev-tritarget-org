@@ -1,0 +1,150 @@
+modified: 20161012184653000
+created: 20160928210727000
+creator: Sukima
+modifier: Sukima
+tags: Article Coding JavaScript EmberJS
+title: Custom Errors and Ember Concurrency
+type: text/vnd.tiddlywiki
+
+I recently came across a really useful pattern and practise in EmberJS that I wanted to share. This article will describe an useful case for making your own `Error` objects and how to manage that. It will also show a common patten I use when working with [[ember-concurrency|http://ember-concurrency.com/]] tasks and separating actual //runtime// errors and errors I expected and wish to show to the user as feedback.
+
+First, let me set the scene. I have an Ember app which will offer an input and as the user types will send a network request to the server to query what the user typed. It then displays the result of that search. Let us say this is an email search and the feedback will be if the user exists or not. The possible known errors would be Unauthorized (401), Invalid email (422), or any other server problem.
+
+! Custom Errors
+
+There is a little bit of bad news with custom errors. Because you want the benefits of the language support for `Error`s your custom ones need to be a part of that prototype chain. According to the ES2015 standards built-in objects should be extendable. But some implementations were not so up-to-snuff on the idea. I started [[a discussion|http://stackoverflow.com/a/35858868/227176]] on this very topic on ~StackOverflow.com. As of this writing custom `Errors`s with ES6 classes don't fully work. However, trying this with ''Ember 2.6.0 did work''.
+
+With the bad news out of the way the rest of this is all roses. Custom errors provide some semantic context around the errors that occurs. It is almost like creating categories of errors. Described above we could have an error for validations and one for unauthorized both of wich are server based errors. This is drastically different then say a `ReferenceError`. But the intent is the same. We want to catpture (`catch`) when the server sends back these kinds of errors. Maybe we want a little popup for every `ServerError` yet also offer a login screen for just `UnauthorizedError`s. Categorizing these into different classes helps manage this. It could even go one step further and say that `ValidationError`s know how to parse the 422 response and format the different validation messages. But the 500 `ServerError` simply knows how to handle a generic message.
+
+I like to have a parent general class that knows how to construct a proper custom error and then all the specific ones I use will extend from that (less boilerplate).
+
+```js
+class ServerError extends Error {   // (1)
+  constructor(message) {
+    super();                        // (2)
+    this.name = 'ServerError';      // (3)
+    this.message = message;
+    this.stack = new Error().stack; // (4)
+  }
+}
+```
+
+# This is ES2015 syntax sugar for extending the `prototype` like we used to with `ServerError.prototype = Object.create(Error.prototype)`.
+# A requirement with ES2015 classes is that you can not assign to `this` without first calling `super()`. We don't care about the actual result in this case because calling `Error` as a constructor function does nothing (because… ''why make JavaScript easy?'' //that was sarcasm//).
+# And since we loose all real prototypical with `Error`s we have to rebuild the `ServerError`s main interface. Add a name (all errors should have a name) and the message we passed in. (Attempting `super(message)` does nothing because `super()` when it comes to error does nothing with `this`.
+# Most modern browsers implement `Error#stack` so we can set ours to a new error's stack and it works out. It is always good to have a stack trace even for expected errors. It make debugging easier by orders of magnitude.
+
+<<warning """
+A caveat is that (as of this writing) the Babel version on [[https://babeljs.io]] (using the ''es2015'' preset) does not fully support extending native `Error`s. Specifically it fails on `new CustomError() instanceof CustomError`. This is not the case for Ember which [[works as expected|https://ember-twiddle.com/57733e6a05fdc093ec3bba0d69277a9c]] using the ''es2016'' preset.
+""">>
+
+So now we have a custom error. Once you've done that you can easily make children from that one error. For example we can make one for when the user is unauthorized (not logged in):
+
+```js
+class AuthError extends ServerError {
+  constructor(message) {
+    super(message);                   // (1)
+    this.name = 'AuthError';          // (2)
+  }
+}
+```
+
+# We pass the message argument up to the parent to manage.
+# We still need to name this since the `super()` would have named it a `ServerError`. Everything else works correctly.
+
+And how about server side validations? In this case we want to extend the error's understanding of the validdation error because we not only want to display a general message (`.toString()`) but also allow form fields to know what fields were invalid so they can be highlighted. I will presume that the caller will pass in a server response.
+
+
+!!! Sample server response
+
+```json
+{
+  "errors": {
+    "name": ["Name cannot be blank"],
+    "password": ["Password cannot be blank", "Password must contain special characters"],
+    "email": ["Email is invalid"]
+  }
+}
+```
+
+!!! Custom validation error
+
+```js
+class ValidationError extends ServerError {
+  constructor(message, jsonData = {}) {           // (1)
+    super(message);
+    this.name = 'ValidationError'                 // (2)
+    this.fields = jsonData;
+  }
+
+  get flatMessages() {                            // (3)
+    let messages = [];
+    for (let key of Object.keys(this.fields)) {
+      messages = messages.concat(this.fields[key]);
+    }
+    return messages;
+  }
+
+  toString() {
+    let messages = this.flatMessages.join(', ');
+    return `${super.toString()} [${messages}]`;
+  }
+}
+
+new ValidationError('I18N string explaining validations', response.errors);
+```
+
+# In the case of an validation error we want the server response.
+# Again we add a custom name
+# This creates a computed property (getter) which will reduce the complex server response into a single array of messages.
+
+<<tip """It is always helpful to show a good summary message as a `toString()` because it makes understanding the state of the app from the console easier. It also allows custom messages (i.e. internationalization) and easier coding because anytime an error is used somewhere the `toString()` method offerers something useful.""">>
+
+! Using it in Ember
+
+In my apps that I don't use ember-data with I implement an `api` service. This service will perform the task of performing the API request and then constructing a proper error in response.
+
+```js
+import Ember from 'ember';
+import { task, didCancel } from 'ember-concurrency'; // (1)
+
+const { Service, $ } = Ember;
+
+function ignoreCancelations(err) {
+  if (!didCancel(err)) {
+    throw err;
+  }
+}
+
+function ajaxFn(method) {
+  return function (url, data) {
+    return get(this, 'ajaxTask')
+      .perform({url, method, data})
+      .catch(ignoreCancelations);
+  }
+}
+
+function errorTypeCheck(Type) {
+  return function (err) {
+    return err instanceof Type;
+  }
+}
+
+export default Service.extend({
+  ajaxTask: task(function * (payload) {
+    payload.dataType = 'json';
+    try {
+      return yield $.ajax(payload);
+    } catch (err) {
+      if (err
+    }
+  }),
+    
+  getHttp:    ajaxFn('GET'),
+  putHttp:    ajaxFn('PUT'),
+  postHttp:   ajaxFn('POST'),
+  patchHttp:  ajaxFn('PATCH'),
+  deleteHttp: ajaxFn('DELETE')
+});
+
+https://ember-twiddle.com/7847629e379b19b2632fa89103ad7719
