@@ -25,5 +25,8 @@
       "--rendertiddler","$:/core/templates/static.template.css","static/static.css","text/plain"],
     "feed": [
       "--rendertiddler","$:/plugins/dullroar/atomfeed/atom.template.xml","atom.xml","text/plain"]
+  },
+  "config": {
+    "retain-original-tiddler-path": true
   }
 }
