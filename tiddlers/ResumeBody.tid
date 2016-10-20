@@ -45,7 +45,7 @@ Very proficient on command line using tmux, bash, and Vim
 
 !! Work History
 
-<<work-history title:"Senior Software Engineer" where:"""[ext[SeeClickFix, Inc.|https://seeclickfix.com/]]""" dates:"04/2012 - Present">>
+<<work-history title:"Senior Software Engineer" where:"""[ext[SeeClickFix, Inc.|https://seeclickfix.com/]]""" dates:"04/2013 - Present">>
 
 I am a lead EmberJS engineer. I maintain and develop our backend client facing web application written entirely in EmberJS and interfaces with our Ruby on Rails API. I maintain an iOS application written in Appcelerator Titanium (JavaScript → native). I've written several Node based build system using Gulp, Browserify, Ember. I've written several (in-house) stream based plugins for Gulp. I help maintain our Native Android application. I actively maintain and enhance our main system with Ruby on Rails. I wrote a test suite frame work in Jasmine for Titanium code and later ported the same system to Mocha.
 
@@ -56,7 +56,7 @@ I am a lead EmberJS engineer. I maintain and develop our backend client facing w
 * Bash and Vim guru
 * Git master
 
-<<work-history title:"Simulation Specialist" where:"Yale New Haven Health System" dates:"03/2010 - 04/2012">>
+<<work-history title:"Simulation Specialist" where:"Yale New Haven Health System" dates:"03/2010 - 04/2013">>
 
 * Linux system administration
 * Document technical manuals, process and procedures
