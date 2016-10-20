@@ -1,0 +1,67 @@
+modified: 20161020192945000
+created: 20161020192945000
+modifier: Sukima
+creator: Sukima
+title: JavaScript Countdown Latch Pattern
+tags: Tips Coding JavaScript
+
+In a really small applicaiton I was working on I needed to perform a set of XHR requests and wanted to wait for them all to finish before continuing. This is difficult in JS environments that don't support promises. Since the project was so small placing a pollyfill was overkill. So I found the ''Countdown Latch'' pattern ([[https://gist.github.com/nowelium/1604371]]) and refactored it.
+
+! Countdown Latch
+
+```js
+function Latch(limit) {
+  this.limit = limit;
+  this.count = 0;
+  this.waitBlock = function () {};
+};
+
+Latch.prototype.async = function (fn, ctx) {
+  var _this = this;
+  setTimeout(function () {
+    fn.call(ctx, function () {
+      _this.count = _this.count + 1;
+      if(_this.limit <= _this.count){
+        _this.waitBlock.call(_this.waitBlockCtx);
+      }
+    });
+  }, 0);
+};
+
+Latch.prototype.await = function (callback, ctx) {
+  this.waitBlock = callback;
+  this.waitBlockCtx = ctx;
+};
+```
+
+!! Example usage
+
+```js
+var barrier = new Latch(2);
+
+barrier.async(function (done){
+  setTimeout(function (){
+    console.log('work A');
+    done();
+  }, 100);
+});
+barrier.async(function (done){
+  setTimeout(function (){
+    console.log('work B');
+    done();
+  }, 200);
+});
+console.log('wait for all to finish...');
+barrier.await(function(){
+  console.log('done all');
+});
+```
+
+!! Example output
+
+```
+wait for all to finish...
+work A
+work B
+done all
+```
