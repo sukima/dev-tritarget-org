@@ -1,0 +1,64 @@
+modified: 20161102170404000
+created: 20161102170404000
+modifier: Sukima
+creator: Sukima
+title: Forget Inbox Zero
+tags: Article
+
+I have to get this off my chest. I have a love/hate relationship with Email. On one hand I love the simplicity of sending an electronic letter to people and offering a single point of contact. I //hate// what Email has become these days. It is no longer a letter based communication method. It is a chat. It is a notification system. It is a tracking system. It is an invasive advertisement system. It is a vector for malware. ''It is an anxiety producing pile of steaming monkey feces that just keeps on giving.''
+
+For perspective I receive well over 2000 nonsensical notifications a year that I will never find a next action for (other than attempting to delete it as fast as possible). With three email accounts each with a plethora of influx it is a nightmare to keep in check. I tried setting up aggressive filters yet things keep getting past. Google has tried to make sense of it all by categorizing emails into buckets (priority, promotions, updates, etc.) for which I found myself jumping between them in the GMail app and having no separation in clients like Apple's Mail.app. In any case someof the information I wanted. Some I only needed the subject line. And others just got in the way.
+
+I asked around and some suggested to weed the noise down by unsubscribing some emails. I could and probubly will in some cases but it was not scalable as the influx was so large there was now way to tame the flood in one batch process. I then looked into aggressive filters and again I was not able to make that solution scale. Rules change, new ones were needed, clean up old ones. And filters could only be manage in the web app not from my iPhone.
+
+I needed a way to automate this. I thought about [[procmail|https://en.wikipedia.org/wiki/Procmail]] but that only moved the filtering management to a command line server instead of a web app (again not iPhone friendly). Then I thought about a mystical web app that processed mail and wrapped the emails in an HTML form which I could click on and have it open a browser to manage filters. Yeah that didn't work out either.
+
+Finally, it occurred to me that there needed to be a conveyor belt like automation system. So here is how my system works.
+
+!! FIFO Style Email Management
+
+!!! 80/20 Rule
+
+80% or more emails contextually are only relevant for about a week. After that it becomes noise in the inbox. Any email that I feel is important but ignored for a week will become relevant again by nature of the sender asking why I dropped off the face of the earth. Often this comes in the form //Didn't you get my email?//.
+
+!!! //Next Actions// are rare and cognitively expensive
+
+For the few emails which rank higher in priority then the usual signal noise often I struggle to develop a ''next action''. GTD (Getting Things Done) touts the idea that you can not move on from the current inbox item till you've chosen on of the //four D's// (Do, Delegate, Defer, or Delete). Again this is difficult to accomplish in the usual user interface of an iPhone. You have to cognitively map the next action from the //four D's// to what that means in Email terminology and actions. Even then it isn't immediately obvious.
+
+Then add on the human factor of //Ugh, I really don't want to do this right now.// Say you want to check you email for that recreational website registration confirmation. Only to weed through 20 emails screaming for your attention. Either you have to filter them out (anxiety producing), process them (find their //four D's// next action), or give up and go to bed. This is not always that easy. It takes energy and when you faced with more than 100 emails in your conceptual queue it can //feel// overwhelming.
+
+!!! Organizing requires multiple steps
+
+Most Email clients make organizing a bit cumbersome. This maybe a frivolous complaint but given the exercise of reading then archiving an email verses read and move on, I think the later is cognitively easier. Honestly, if given a solution of organization management that did not require swiping back and forth is a win in my book. And that brings me to this system.
+
+!!! Rules
+
+# Any email in the inbox that has activity more then a week old will be auto-archived. Except emails that are starred.
+# Any email more than two years old will be deleted (moved to trash). Except emails that are starred.
+# Any email more than a month old in the trash will be expunged. (This is a built-in rule on GMail.)
+
+GMail has some good filters to accomplish this task:
+
+# `in:inbox older_than:8d !label:Starred` (eight days to give a day buffer)
+# `older_than:2y !label:Starred` (two years… just in case)
+# expunge deleted emails `older_then:1m` is automatic by GMail.
+
+Now you could once a day run these searches manually but you can't use them as filters because they are time based and filters only trigger on incoming email. Instead to make this automatic we need to write an [[app-script|https://developers.google.com/apps-script/]] for it that runs every day. To do so start a new script project and use the foolowing code:
+
+```javascript
+function archiveWeekOldEmails() {
+  var threads = GmailApp.search('in:inbox older_than:8d !label:Starred', 0, 100);
+  Logger.log('Archiving ' + threads.length + ' threads');
+  GmailApp.moveThreadsToArchive(threads);
+}
+
+function deleteYearOldEmails() {
+  var threads = GmailApp.search('older_than:2y !label:Starred', 0, 100);
+  Logger.log('Deleting ' + threads.length + ' threads');
+  GmailApp.moveThreadsToTrash(threads);
+}
+```
+
+Then add triggers by using the menu ''Resources | Current project triggers''. Set the `archiveWeekOldEmails` to trigger by day at say… Midnight to 1am. And set `deleteYearOldEmails` to trigger by day at maybe… 1am to 2am.
+
+Now the system will automate things and all I have to do is check it every now and then. No more organizing or labeling. Just let the steam flow by and things take care on their own. If I miss something it was either out of date and not so important. Or I'll get a nasty gram asking why I was ignoring them. And a simple search brings the conversation back easy. I'm curious to see how this system works out.
