@@ -5,5 +5,4 @@ modifier: Sukima
 title: $:/DefaultTiddlers
 type: text/vnd.tiddlywiki
 
-[[Latest Journal Entries]]
 [tag[Article]!sort[created]limit[10]]
