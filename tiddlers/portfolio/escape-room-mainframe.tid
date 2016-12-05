@@ -1,0 +1,17 @@
+modified: 20161205180705000
+created: 20161205180705000
+modifier: Sukima
+creator: Sukima
+title: Escape Room Mainframe
+tags: Projects Portfolio
+terms: EmberJS, JavaScript, CSS
+description: Disable a self-descruct sequence with a CRT-themed mini game
+url: https://sandbox.tritarget.org/mainframe/
+
+<a href={{!!url}}><<preview-right "escape-room-mainframe.png">></a>
+
+This was a mini game for [[escapenewhaven.com]] where players escape a room by solving real puzzles. This is one of the puzzles where players must enter in codes to disable a self-destruct sequence.
+
+Uses EmberJS and have CSS to make it look and feel like a classic CRT computer. I implemented the virtual keyboard and all the controls. Sounds from [[freesound.org]].
+
+''Demo:'' {{!!url}}
