@@ -1,0 +1,46 @@
+modified: 20161206142848000
+created: 20161206142848000
+modifier: Sukima
+creator: Sukima
+title: Bash script configuration file format
+tags: snippets Bash
+url: http://unix.stackexchange.com/a/206216/8541
+
+A simple [[Bash]] configuration file format parsing for scripts to use. From this SO answer: {{!!url}}
+
+!! Example conf file
+
+```
+username=foo
+password=bar
+echo rm -rf /
+PROMPT_COMMAND='echo "Sending your last command $(history 1) to my email"'
+hostname=localhost; echo rm -rf /
+```
+
+!! Parser script
+
+```shell
+#!/bin/bash
+typeset -A config # init array
+config=( # set default values in config array
+  [username]="root"
+  [password]=""
+  [hostname]="localhost"
+)
+
+while read line
+do
+  if echo $line | grep -F = &>/dev/null
+  then
+    varname=$(echo "$line" | cut -d '=' -f 1)
+    config[$varname]=$(echo "$line" | cut -d '=' -f 2-)
+  fi
+done < myscript.conf
+
+echo ${config[username]} # should be loaded from config file
+echo ${config[password]} # should be loaded from config file
+echo ${config[hostname]} # includes the "injected" code, but it's fine here
+echo ${config[PROMPT_COMMAND]} # also respects variables that you may not have
+             # been looking for, but they're sandboxed inside the $config array
+```
