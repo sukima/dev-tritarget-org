@@ -5,13 +5,32 @@ creator: Sukima
 title: JavaScript Resources
 tags: Tips Coding JavaScript
 
+\define web() {{$:/core/images/globe}}
+\define doc() ''[Document]''
+\define book() ''[Book]''
+\define video() {{$:/core/images/video}}
+
+<style>
+.resource-links svg {
+width: 16px;
+height: 16px;
+margin: 0;
+padding: 0;
+}
+</style>
+
 These are some JavaScript resources I have found to be valuable:
 
-* http://www.poodr.com/
-* https://www.amazon.com/Code-Complete-Practical-Handbook-Construction/dp/0735619670?ie=UTF8&linkCode=ll1&linkId=6aabd46b91da513d86257af2c05b6585&ref_=as_li_ss_tl&tag=chrimaiospo06-20
-* https://sourcemaking.com/refactoring
-* http://humanjavascript.com/
-* https://www.youtube.com/watch?v=8aGhZQkoFbQ
-* http://bdcampbell.net/javascript/book/javascript_the_good_parts.pdf
-* http://effectivejs.com/
-* https://www.youtube.com/watch?v=TMuno5RZNeE
+<div class="resource-links">
+
+* [[Practical Object-Oriented Design in Ruby|http://www.poodr.com/]] <<book>>
+* [[Code Complete|https://www.amazon.com/Code-Complete-Practical-Handbook-Construction/dp/0735619670?ie=UTF8&linkCode=ll1&linkId=6aabd46b91da513d86257af2c05b6585&ref_=as_li_ss_tl&tag=chrimaiospo06-20]] <<book>>
+* [[Refactoring Guides|https://sourcemaking.com/refactoring]] <<web>>
+* [[Human JavaScript|http://humanjavascript.com/]] <<book>>
+* [[Philip Roberts: What the heck is the event loop anyway?|https://www.youtube.com/watch?v=8aGhZQkoFbQ]] <<video>>
+* [[JavaScript the Good Parts|http://bdcampbell.net/javascript/book/javascript_the_good_parts.pdf]] <<doc>>
+* [[Effective JavaScript|http://effectivejs.com/]] <<book>>
+* [[Bob Martin SOLID Principles of Object Oriented and Agile Design|https://www.youtube.com/watch?v=TMuno5RZNeE]] <<video>>
+* [[SOLID JavaScript In A Wobbly World (Wide Web)|http://www.youtube.com/watch?v=TAVn7s-kO9o]] <<video>>
+
+</div>
