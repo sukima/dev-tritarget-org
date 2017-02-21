@@ -1,0 +1,15 @@
+modified: 20170221151615000
+created: 20170221151615000
+modifier: Sukima
+creator: Sukima
+title: Ember
+tags: Concepts
+url: http://emberjs.com/
+
+[img width=200 [//upload.wikimedia.org/wikipedia/en/6/69/Ember.js_Logo_and_Mascot.png]]
+
+<<<
+Ember.js is an open-source JavaScript web framework, based on the Model–view–viewmodel (MVVM) pattern. It allows developers to create scalable single-page web applications[1] by incorporating common idioms and best practices into the framework.
+<<< [[WikiPedia (sourced 2017-02-21)|https://en.wikipedia.org/wiki/Ember.js]]
+
+{{!!url}}
