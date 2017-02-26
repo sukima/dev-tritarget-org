@@ -1,0 +1,43 @@
+created: 20170226045420149
+creator: Sukima
+modified: 20170226050625395
+modifier: Sukima
+title: Privacy Policy
+
+\define sitename() //tritarget.org//
+
+If you require any more information or have any questions about our privacy policy, please feel free to [[contact us by email|ContactInfo]].
+
+At <<sitename>> we consider the privacy of our visitors to be extremely important. This privacy policy document describes in detail the types of personal information is collected and recorded by <<sitename>> and how we use it.
+
+!! Log Files
+
+Like many other Web sites, <<sitename>> makes use of log files. These files merely logs visitors to the site - usually a standard procedure for hosting companies and a part of hosting services's analytics. The information inside the log files includes internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date/time stamp, referring/exit pages, and possibly the number of clicks. This information is used to analyze trends, administer the site, track user's movement around the site, and gather demographic information. IP addresses, and other such information are not linked to any information that is personally identifiable.
+
+!! Cookies and Web Beacons
+
+<<sitename>> does not use cookies.
+
+!! ~DoubleClick DART Cookie
+
+<<sitename>> does not use ~DoubleClick ad service.
+
+!! Our Advertising Partners
+
+<<sitename>> does not use any ad services.
+
+!! Children's Information
+
+We believe it is important to provide added protection for children online. We encourage parents and guardians to spend time online with their children to observe, participate in and/or monitor and guide their online activity. <<sitename>> does not knowingly collect any personally identifiable information from children under the age of 13. If a parent or guardian believes that <<sirename>> has in its database the personally-identifiable information of a child under the age of 13, please contact us immediately (using the contact in the first paragraph) and we will use our best efforts to promptly remove such information from our records.
+
+!! Online Privacy Policy Only
+
+This privacy policy applies only to our online activities and is valid for visitors to our website and regarding information shared and/or collected there. This policy does not apply to any information collected offline or via channels other than this website.
+
+!! Consent
+
+By using our website, you hereby consent to our privacy policy and agree to its terms.
+
+!! Update
+
+This Privacy Policy was last updated on: <$view field="modified" format="date" template="DDD, MMM DDth, YYYY"/>. Should we update, amend or make any changes to our privacy policy, those changes will be posted here.
