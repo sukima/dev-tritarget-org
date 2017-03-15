@@ -1,0 +1,11 @@
+created: 20170315021908544
+modified: 20170315024331184
+tags: Article Coding
+title: DND Light RaspberryPi and Ember project
+type: text/vnd.tiddlywiki
+
+I recently took on the challenge to create a remote controlled ''Do Not Disturb'' light using a RaspberryPi and [[Ember]]. For context, a few co-workers posted a traffic light printed on paper to their office door. Then that place a magnet on red, yellow, or green to tell others if they are focused or available to chat.
+
+Not to be left out I choose to challenge myself with a more complicated idea. I used the RaspberryPi to control three LEDs and run a simple [[socket.io]] server. Then I wrote an [[Ember]] app to control the lights remotely.
+
+There is a lot of information I wanted to distil here. Hardware, Software (server configs and system installs), and a bunch of neat Ember.JS tricks working with socket.io.
