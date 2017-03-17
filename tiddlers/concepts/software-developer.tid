@@ -1,0 +1,33 @@
+modified: 20170317212112000
+created: 20170317212112000
+modifier: Sukima
+creator: GitLab
+title: Software Developer
+tags: Concepts
+url: https://about.gitlab.com/jobs/developer/
+
+Senior Developers are experienced developers who meet the following requirements:
+
+* Technical Skills
+** Are able to write modular, well-tested, and maintainable code
+** Know a domain really well and radiate that knowledge
+** Contribute to one or more complementary projects
+* Leadership
+** Begins to show architectural perspective
+** Proposing new ideas, performing feasibility analyses and scoping the work
+* Code quality
+** Leaves code in substantially better shape than before
+** Fixes bugs/regressions quickly
+** Monitors overall code quality/build failures
+** Creates test plans
+* Communication
+** Provides thorough and timely code feedback for peers
+**  Able to communicate clearly on technical topics
+**  Keeps issues up-to-date with progress
+**  Helps guide other merge requests to completion
+**  Helps with recruiting
+* Performance & Scalability
+**  Excellent at writing production-ready code with little assistance
+**  Able to write complex code that can scale with a significant number of users
+
+//Source: {{!!url}}//
