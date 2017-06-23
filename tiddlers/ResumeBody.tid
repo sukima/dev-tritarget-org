@@ -8,40 +8,11 @@ type: text/vnd.tiddlywiki
 \define tv-wikilinks() no
 \define work-history(title,where,dates) !!! $dates$<br>$title$, $where$
 
-I am a highly passionate software developer and fast learner, with interests in mobile and web technologies, security, leadership, teamwork, and teaching. I have a child like sense of wonder to programming and enjoy discovering new ideas.
-
-I strive for quality. I believe the code I write should have a degree of prose akin to the kind of user experiences I expect end users to have. I feel fellow developers and my future self are as much an ''end user'' as anyone else.
-
-In my free time I enjoy contributing to open source projects, and exploring photography.
-
 !! Proficiency
 
 JavaScript (ES2015), Node, Ember, Backbone, jQuery, CSS, HTML5, CoffeeScript, Appcelerator Titanium, Ruby on Rails, Node.js, JSON, PHP, Java, iOS, Android, Shell scripting, SQL, XML, PostGIS, Git, BDD/TDD, Unix/Linux, Mac OS X, Windows
 
 Very proficient on command line using tmux, bash, and Vim
-
-!! Experience
-
-<!-- TODO: Add Resume ready projects
-!!! Mobile App Development
-
-* Cross platform mobile application [http://tritarget.org/s/#p1 ­ JavaScript, CoffeeScript, jQuery­mobile]
-* Equipment tracking web app with mobile features [http://tritarget.org/s/#p2 ­ Ruby on Rails, jQuery­mobile, Redmine]
-* Web Application Development Event scheduling, notification, and submission software [http://tritarget.org/s/#p3 ­ Ruby on Rails, jQuery­ui]
-* Partner Relationship Management software [Channelwave ­ Java, JSP]
--->
-
-!!! Portfolio
-
-<ul>
-<$list filter="[tag[Portfolio]!has[draft.of]!sort[created]]">
-<li><a href={{!!url}} class="tc-tiddlylink-external" target="_blank">{{!!title}}</a> {{!!description}} [{{!!terms}}]</li>
-</$list>
-</ul>
-
-!!! System Administration
-
-* Webmaster, backups, helpdesk ticketing, equipment tracking, and networking [Linux, Apache, RoR, Bash]
 
 !! Work History
 
@@ -50,11 +21,9 @@ Very proficient on command line using tmux, bash, and Vim
 I am a lead EmberJS engineer. I maintain and develop our backend client facing web application written entirely in EmberJS and interfaces with our Ruby on Rails API. I maintain an iOS application written in Appcelerator Titanium (JavaScript → native). I've written several Node based build system using Gulp, Browserify, Ember. I've written several (in-house) stream based plugins for Gulp. I help maintain our Native Android application. I actively maintain and enhance our main system with Ruby on Rails. I wrote a test suite frame work in Jasmine for Titanium code and later ported the same system to Mocha.
 
 * Senior EmberJS Engineer
-* iOS / Appcelerator Titanium developer
 * Ruby on Rails developer
-* Resident Node expert
-* Bash and Vim guru
-* Git master
+* Study in Node.JS, Bash, Vim, and Git
+* iOS / Appcelerator Titanium developer
 
 <<work-history title:"Simulation Specialist" where:"Yale New Haven Health System" dates:"03/2010 - 04/2013">>
 
@@ -73,31 +42,13 @@ I am a lead EmberJS engineer. I maintain and develop our backend client facing w
 * Leadership skills
 * Studied computer programming (Ruby on Rails, JavaScript, Objective­C, and more) in between calls
 
-<<work-history title:"Software Contractor" where:"Mr. Joy, Inc." dates:"11/2007 - 12/2007">>
+!! Portfolio
 
-* Ruby on Rails Development
-* Code review
-* Develop PayPal integration
-
-<<work-history title:"Electrician" where:"Weaver Electric" dates:"09/2000 - 09/2003">>
-
-* Wired commercial builds for electricity, phone, and computer networking
-* Designed and built small office networks
-
-<<work-history title:"Software Contractor" where:"Newcastle, Inc." dates:"03/2003 - 06/2003">>
-
-* Java Developer
-* Product Design
-* Developed Java Media Framework video codec
-* Ported remote desktop solution written in C to Java
-
-<<work-history title:"Java Developer" where:"ChannelWave, Inc." dates:"09/2000 - 05/2001">>
-
-* Code review
-* Web based software using J2EE, Java Servlets and JSP
-* Version control management
-* Leveraged HTML, CSS, and XML for data binding and presentation
-* Researched and implemented software version control and bug tracking software
+<ul>
+<$list filter="[tag[Portfolio]!has[draft.of]!sort[created]]">
+<li><a href={{!!url}} class="tc-tiddlylink-external" target="_blank">{{!!title}}</a> {{!!description}} [{{!!terms}}]</li>
+</$list>
+</ul>
 
 !! Education
 
@@ -105,6 +56,7 @@ I am a lead EmberJS engineer. I maintain and develop our backend client facing w
 
 !! Associations
 
-* Treasurer of Groton Ambulance Association
+* Member of Groton Ambulance Association
+* Technology Committee Chairman at local church
 * Contributing Member to [[NewHaven.io Meetup|http://newhaven.io/]]
 * Git instructor for local [[A100 apprenticeship program|http://indie-soft.com/a100/]]
