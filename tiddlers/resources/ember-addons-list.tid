@@ -1,0 +1,17 @@
+modified: 20170629181715000
+created: 20170629181715000
+modifier: Sukima
+creator: Sukima
+title: Ember Addons I Cannot Live Without
+tags: Resource Coding Ember
+
+;[[ember-concurrency|http://ember-concurrency.com/#/docs/introduction]]
+:Improved concurrency/async primitives for [[Ember|Ember.js]]
+;[[ember-parachute|https://offirgolan.github.io/ember-parachute/]]
+:Improved Query Params for Ember
+;[[ember-cli-page-object|http://ember-cli-page-object.js.org/docs/v1.8.x/]]
+:The ember-cli-page-object addon makes it easy to create page objects for your acceptance and integration tests
+;[[ember-truth-helpers|https://github.com/jmurphyau/ember-truth-helpers]]
+:Ember HTMLBars Helpers for `{{if}}` & `{{unless}}`: not, and, or, eq & is-array 
+;[[ember-responsive|https://freshbooks.github.io/ember-responsive/]]
+:Easy responsive layouts with Ember
