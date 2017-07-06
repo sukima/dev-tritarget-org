@@ -7,34 +7,42 @@ tags: Article Coding Ember
 
 I ran into a interesting puzzle over the weekend. I was using [[ember-concurrency|https://ember-concurrency.com]]'s derived state to show a loading indicator. This seems perfectly reasonable:
 
-```js
+```javascript
+import Ember from 'ember';
 import { task } from 'ember-concurrency';
 
-myTask: task(function * () {
-  let result = yield ajaxRequest('http://example.com/resource');
-  return result;
-})
+export default Ember.Component.extend({
+  showLoadingIndicator: Ember.computed.reads('myTask.isRunning'),
+
+  myTask: task(function * () {
+    let result = yield ajaxRequest('http://example.com/resource');
+    return result;
+  })
+});
 ```
 
 Then in my template I simply use `myTask.isRunning` to show a loading indicator. Normally this would work except in my case the asynchronous task I was doing was preloading an image. It was so fast that the loading indicator would show but for a fraction of a second causing a //blip// or flicker.
 
 I instead had to introduce an artificial delay into the task so that the loading indicator would show only if the resolution took  longer then a set amount of time. I used `race` to test if the result resolved first before a `timeout()` did.
 
-```js
+```javascript
+import Ember from 'ember';
 import { task, timeout, race } from 'ember-concurrency';
 
-showLoadingIndicator: false,
+export default Ember.Component.extend({
+  showLoadingIndicator: false,
 
-myTask: task(function * () {
-  let promise = ajaxRequest('http://example.com/resource'); // [1]
-  try {
-    let result = yield race([promise, timeout(250)]);       // [2]
-    this.set('showLoadingIndicator', true);                 // [3]
-    return yield promise;                                   // [4]
-  } finally {
-    this.set('showLoadingIndicator', false);                // [5]
-  }
-})
+  myTask: task(function * () {
+    let promise = ajaxRequest('http://example.com/resource'); // [1]
+    try {
+      let result = yield race([promise, timeout(250)]);       // [2]
+      this.set('showLoadingIndicator', true);                 // [3]
+      return yield promise;                                   // [4]
+    } finally {
+      this.set('showLoadingIndicator', false);                // [5]
+    }
+  })
+});
 ```
 
 # First store the promise into a variable because we need it in more than one place.
