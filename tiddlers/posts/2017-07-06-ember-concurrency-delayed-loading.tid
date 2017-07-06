@@ -1,0 +1,50 @@
+modified: 20170706121539000
+created: 20170706121539000
+modifier: Sukima
+creator: Sukima
+title: Delayed loding indicators with ember-concurrency
+tags: Article Coding Ember
+
+I ran into a interesting puzzle over the weekend. I was using [[ember-concurrency|https://ember-concurrency.com]]'s derived state to show a loading indicator. This seems perfectly reasonable:
+
+```js
+import { task } from 'ember-concurrency';
+
+myTask: task(function * () {
+  let result = yield ajaxRequest('http://example.com/resource');
+  return result;
+})
+```
+
+Then in my template I simply use `myTask.isRunning` to show a loading indicator. Normally this would work except in my case the asynchronous task I was doing was preloading an image. It was so fast that the loading indicator would show but for a fraction of a second causing a //blip// or flicker.
+
+I instead had to introduce an artificial delay into the task so that the loading indicator would show only if the resolution took  longer then a set amount of time. I used `race` to test if the result resolved first before a `timeout()` did.
+
+```js
+import { task, timeout, race } from 'ember-concurrency';
+
+showLoadingIndicator: false,
+
+myTask: task(function * () {
+  let promise = ajaxRequest('http://example.com/resource'); // [1]
+  try {
+    let result = yield race([promise, timeout(250)]);       // [2]
+    this.set('showLoadingIndicator', true);                 // [3]
+    return yield promise;                                   // [4]
+  } finally {
+    this.set('showLoadingIndicator', false);                // [5]
+  }
+})
+```
+
+# First store the promise into a variable because we need it in more than one place.
+# Here we race the resolution of `promise` against a promise that resolves after 250ms.
+# Regardless of who wins we set the loading indicator to true. (Yes this works.)
+# Wait for the `ajaxRequest` value and return that.
+# With the `finally` block we guarantee that when the `ajaxRequest` resolves the loading indicator will be hidden. This happens even when the request fails and throws an exception.
+
+I at first thought that I had to wrap the `this.set('showLoadingIndicator', true);` in a conditional so that it would only execute if the result of the `race` was because the `timeout` resolved first (resolving as `undefined`). Turns out you don't need it. If the `timeout` finishes first then the `yield promise` will still be waiting while the `showLoadingIndicator` is `true`. However, if the `ajaxRequest` promise resolves first setting `showLoadingIndicator` to true is kind of a no-op because it will be set to false immediately afterwords (in the same Ember run loop) because the `yield promise` will not have to wait. And since rendering happens at the end of the Ember Run Loop the fact that `showLoadingIndicator` ''was'' set to `true` is lost the moment it gets set back to `false`.
+
+I've developed a working example of this in an [[ember-twiddle|https://ember-twiddle.com/18baf8b630d691bcf0d757d68f70cff2]]:
+
+<div style="position: relative; height: 0px; overflow: hidden; max-width: 100%; padding-bottom: 56.25%;"><iframe src="https://ember-twiddle.com/18baf8b630d691bcf0d757d68f70cff2?fullScreen=true" style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%;"></iframe></div>
