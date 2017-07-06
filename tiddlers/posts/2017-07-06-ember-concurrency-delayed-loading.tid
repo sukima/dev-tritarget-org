@@ -2,7 +2,7 @@ modified: 20170706121539000
 created: 20170706121539000
 modifier: Sukima
 creator: Sukima
-title: Delayed loding indicators with ember-concurrency
+title: Delayed loading indicators with ember-concurrency
 tags: Article Coding Ember
 
 I ran into a interesting puzzle over the weekend. I was using [[ember-concurrency|https://ember-concurrency.com]]'s derived state to show a loading indicator. This seems perfectly reasonable:
