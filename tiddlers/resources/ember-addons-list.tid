@@ -15,3 +15,7 @@ tags: Resource Coding Ember
 :Ember HTMLBars Helpers for `{{if}}` & `{{unless}}`: not, and, or, eq & is-array 
 ;[[ember-responsive|https://freshbooks.github.io/ember-responsive/]]
 :Easy responsive layouts with Ember
+;[[ember-exex: Exceptional Exceptions for ambitious applications|https://github.com/janmisek/ember-exex]]
+:Ember Exceptional Exceptions: Customizable error classes and error re-throwing with original error included
+;[[ember-elsewhere|https://github.com/ef4/ember-elsewhere]]
+:Render elsewhere in the DOM, with nice composition, animation, etc. Based on 100% public API.

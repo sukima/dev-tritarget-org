@@ -1,9 +1,10 @@
-modified: 20160630013318000
 created: 20160630013318000
-modifier: Sukima
 creator: Sukima
+modified: 20170726204420278
+modifier: Sukima
+tags: Resource Tips Coding JavaScript
 title: JavaScript Resources
-tags: Tips Coding JavaScript
+type: text/vnd.tiddlywiki
 
 \define web() {{$:/core/images/globe}}
 \define doc() ''[Document]''
@@ -32,6 +33,7 @@ These are some JavaScript resources I have found to be valuable:
 * [[Effective JavaScript|http://effectivejs.com/]] <<book>>
 * [[Bob Martin SOLID Principles of Object Oriented and Agile Design|https://www.youtube.com/watch?v=TMuno5RZNeE]] <<video>>
 * [[SOLID JavaScript In A Wobbly World (Wide Web)|http://www.youtube.com/watch?v=TAVn7s-kO9o]] <<video>>
+* [[ES6 generators in depth|http://2ality.com/2015/03/es6-generators.html]] <<doc>>
 
 !! [[Ember]]
 
