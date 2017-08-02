@@ -19,3 +19,7 @@ tags: Resource Coding Ember
 :Ember Exceptional Exceptions: Customizable error classes and error re-throwing with original error included
 ;[[ember-elsewhere|https://github.com/ef4/ember-elsewhere]]
 :Render elsewhere in the DOM, with nice composition, animation, etc. Based on 100% public API.
+;[[ember-exex|https://www.npmjs.com/package/ember-exex]]
+:Exceptional Exceptions: Customizable error classes and error re-throwing with original error included.
+;[[ember-keyboard|http://null-null-null.github.io/ember-keyboard/#/]]
+:An Ember.js addon for the painless support of keyboard events.
