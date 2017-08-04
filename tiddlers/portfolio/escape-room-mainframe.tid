@@ -14,4 +14,5 @@ This was a mini game for [[escapenewhaven.com]] where players escape a room by s
 
 Uses EmberJS and have CSS to make it look and feel like a classic CRT computer. I implemented the virtual keyboard and all the controls. Sounds from [[freesound.org]].
 
-''Demo:'' {{!!url}}
+''Demo:'' {{!!url}}<br>
+''Source:'' https://gitlab.com/sukima/escape-room-mainframe
