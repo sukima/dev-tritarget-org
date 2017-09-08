@@ -1,0 +1,14 @@
+modified: 20170908210354000
+created: 20170908210354000
+description: An Ember asynchronous confirmation addon
+tags: Projects Portfolio
+terms: EmberJS
+title: Confirmed Ember Addon
+type: text/vnd.tiddlywiki
+url: http://sukima.github.io/ember-confirmed/
+
+<a href={{!!url}}>ember-confirmed</a>
+
+{{!!description}}.
+
+{{!!url}}

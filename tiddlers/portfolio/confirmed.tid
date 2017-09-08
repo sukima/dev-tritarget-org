@@ -1,0 +1,14 @@
+modified: 20170908210354000
+created: 20170908210354000
+description: A framework agnostic asynchronous confirmation module 
+tags: Projects Portfolio
+terms: EmberJS
+title: Confirmed NPM Module
+type: text/vnd.tiddlywiki
+url: http://sukima.github.io/ember-confirmed/
+
+<a href={{!!url}}>confirmed</a>
+
+{{!!description}}.
+
+{{!!url}}
