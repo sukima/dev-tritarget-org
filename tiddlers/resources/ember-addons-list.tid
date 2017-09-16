@@ -6,7 +6,9 @@ title: Ember Addons I Cannot Live Without
 tags: Resource Coding Ember
 
 ;[[ember-concurrency|http://ember-concurrency.com/#/docs/introduction]]
-:Improved concurrency/async primitives for [[Ember|Ember.js]]
+:Improved concurrency/async primitives for Ember
+;[[ember-co|https://www.npmjs.com/package/ember-co]]
+:A tj/co implementation for Ember
 ;[[ember-parachute|https://offirgolan.github.io/ember-parachute/]]
 :Improved Query Params for Ember
 ;[[ember-cli-page-object|http://ember-cli-page-object.js.org/docs/v1.8.x/]]
