@@ -1,0 +1,139 @@
+modified: 20171011020558000
+created: 20171011020558000
+modifier: Sukima
+creator: Sukima
+title: Clean-up Code with Duck-Typing
+tags: Article Coding Ember JavaScript
+
+In an [[Ember]] app I've used recently we had a service that would popup a notification flash message. Specifically [[ember-notify|http://simonwade.me/ember-notify]] which has many methods for different styles.
+
+One day I cam across a method which used this service to display three distinct notifications. It looked like this:
+
+```javascript
+saveAllTheThings: task(function * () {
+  const notify = this.get('notify');
+  let model = this.get('model');
+  let name = model.get('model.user.name');
+
+  try {
+    yield model.save();
+    if (model.get('type') === 'foo') {
+      notify.success(`Congrats ${name}, you saved a foo model.`);
+    } else {
+      notify.info(`Well ${name}, things still worked out OK, even if this wasn't a foo model`);
+    }
+  } catch (error) {
+    notify.alert('Bollocks, things did not go as planned.');
+    console.error(error);
+  }
+})
+```
+
+Style aside I noticed that there was a lot of similar code happening there. It also leads to the problem of scaling. If a new `type` were to be introduced this method starts growing with a `else if` or worse becomes a `switch` statement. There has to be a better way.
+
+If we were to describe the similarities into a set of objects which have the same interface then we could easily duck-type our way through this. I'll start with defining each duck:
+
+```javascript
+import Ember from 'ember';
+import EmObject from 'ember-object';
+
+const { computed: { reads } } = Ember;
+
+export const FooSuccessNotifier = EmObject.extend({
+  name: reads('model.user.name'),
+  execute() {
+    const notify = this.get('notify');
+    let name = this.get('name');
+    notify.success(`Congrats ${name}, you saved a foo model.`);
+  }
+});
+
+export const BarSuccessNotifier = EmObject.extend({
+  name: reads('model.user.name'),
+  execute() {
+    const notify = this.get('notify');
+    let name = this.get('name');
+    notify.info(`Well ${name}, things still worked out OK, even if this wasn't a foo model`);
+  }
+});
+
+export const ErrorNotifier = EmObject.extend({
+  execute() {
+    const notify = this.get('notify');
+    notify.alert('Bollocks, things did not go as planned.');
+  }
+});
+```
+
+With this in hand our task will simplify quite a bit:
+
+```javascript
+saveAllTheThings: task(function * () {
+  const notify = this.get('notify');
+  let model = this.get('model');
+  let Notifier = this.get('type') === 'foo'
+    ? FooSuccessNotifier
+    : BarSuccessNotifier;
+
+  try {
+    yield model.save();
+  } catch (error) {
+    Notifier = ErrorNotifier;
+    console.error(error);
+  } finally {
+    Notifier.create({ notify, model }).execute();
+  }
+})
+```
+
+I may not be apparent just how more flexible and clean this is at first. I mean truthfully all I did was sweep the dirt into yet another file. If anything I've added complexity. However, I would argue that we are now in a much better position to make future changes. Granted the easy route is to simply `notify.blah('blah blah')` except we would have these littered everywhere, have difficulty searching for them, increase the difficulty in moving to ~I18N solutions, and makes changes to business logic harder. Not to mention the first one just read poorly.
+
+If I were to break this down in the first example I have to keep a few things in my head at any one time: The logic that got us to a point in the code, the contextual meaning of the method passed to `notify` and the contextual significance of the magic string phrase being used, the intent the whole task is trying to convey, and where are the seams to use to best modify the code. In contrast the second refactored example I can easily follow the intent and story. The method saves a model and notifies the user. How it notifies the user is abstracted to another object so I'm safe to just read the method without needing to also hold into my head the significance of what each notifier does.
+
+I think there is something to be said about the information loss when we de-tokenize our narratives. What I mean by this is that we mentally categorize concepts into tokens (tokenize) all the time. Once we recognize a person we give the person a name and reference that person by name. In math we give concepts a symbol even when the concept is a constant number. When describing physics we then name it under a theorem. This is all taken for granted. And yet so often we miss this idea when working with small concepts in programming.
+
+With all these tokens we can reference ideas and concepts without having to re describe them every time. In the second example I've compiled these concepts into a single token and then used the token to describe intent. It is easy to see why values are tokenized as variables but often it is difficult to realize that concepts and behavior also can be tokenized. I would co so far as to say concepts, ideas, and behavior ''are'' values that should be tokenized.
+
+[[Sandi Metz|http://www.sandimetz.com/]] offers a well articulated explanation of this concept that she calls the ''Squint Test'' which describes a way to look at code by leaning back squinting your eyes and look for changes in shape and color. The above example might look like this:
+
+{{2017-10-10-squint-test-1.png}}
+
+While the refactored version might look like this:
+
+{{2017-10-10-squint-test-2.png}}
+
+Notice the left indentation. While the top one looks complex the bottom one only has two levels. And the amount of differing colors is a lot less.
+
+To finish up allow me to demonstrate just how scalable this second example can become:
+
+```javascript
+const TYPE_NOTIFIERS = {
+  _default: BarSuccessNotifier,
+  foo: FooSuccessNotifier,
+  baz: BazSuccessNotifier,
+  foobar: FoobarSuccessNotifier
+};
+
+export function notifierFor(type) {
+  return TYPE_NOTIFIERS[type] || TYPE_NOTIFIERS._default;
+};
+
+saveAllTheThings: task(function * () {
+  const notify = this.get('notify');
+  let model = this.get('model');
+  let Notifier = notifierFor(this.get('type'));
+
+  try {
+    yield model.save();
+  } catch (error) {
+    Notifier = ErrorNotifier;
+    console.error(error);
+  } finally {
+    Notifier.create({ notify, model }).execute();
+  }
+})
+```
+
+With the above any number of types can be added and only one file (the Notifiers) needs changing. Again this may seem small in these examples but when you have common idioms and code littered across a large code base it can become quite noisy. I propose pushing implementation behavior into objects and simply send message to objects through your code. It will allow you to not only hide the cruft //but// add a bit of meta information to the intents your trying to describe.
+
+I emplor you watch [[Sandi Metz - All the Little Things|https://www.youtube.com/watch?v=8bZh5LMaSmE]] video to see this in much better detail.
