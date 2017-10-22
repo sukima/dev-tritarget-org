@@ -4,7 +4,7 @@ modifier: Sukima
 creator: Sukima
 title: Bash script configuration file format
 tags: snippets Bash
-url: http://unix.stackexchange.com/a/206216/8541
+url: https://unix.stackexchange.com/a/331965/8541
 
 A simple [[Bash]] configuration file format parsing for scripts to use. From this SO answer: {{!!url}}
 
@@ -20,27 +20,26 @@ hostname=localhost; echo rm -rf /
 
 !! Parser script
 
-```shell
+```bash
 #!/bin/bash
-typeset -A config # init array
-config=( # set default values in config array
-  [username]="root"
-  [password]=""
-  [hostname]="localhost"
-)
 
-while read line
-do
-  if echo $line | grep -F = &>/dev/null
-  then
-    varname=$(echo "$line" | cut -d '=' -f 1)
-    config[$varname]=$(echo "$line" | cut -d '=' -f 2-)
+CONFIG_FILE="config.cfg"
+
+config_read_file() {
+  (grep -E "^${2}=" -m 1 "${1}" 2>/dev/null || echo "VAR=__UNDEFINED__") \
+    | head -n 1 | cut -d '=' -f 2-
+}
+
+config_get() {
+  val="$(config_read_file "$CONFIG_FILE" "${1}")"
+  if [ "${val}" = "__UNDEFINED__" ]; then
+    val="$2"
   fi
-done < myscript.conf
+  printf -- "%s" "${val}"
+}
 
-echo ${config[username]} # should be loaded from config file
-echo ${config[password]} # should be loaded from config file
-echo ${config[hostname]} # includes the "injected" code, but it's fine here
-echo ${config[PROMPT_COMMAND]} # also respects variables that you may not have
-             # been looking for, but they're sandboxed inside the $config array
+username="$(config_get username default_username)" # should be loaded from config file
+password="$(config_get password)" # should be loaded from config file
+hostname="$(config_get hostname)" # includes the "injected" code, but it's fine here
+echo "$(config_get PROMPT_COMMAND)" # also respects variables that you may not have been looking for.
 ```
