@@ -1,0 +1,49 @@
+created: 20171209190736000
+creator: Sukima
+modified: 20171209193527663
+modifier: Sukima
+tags: Ember JavaScript Tips Coding
+title: Ember Async wait helper
+type: text/vnd.tiddlywiki
+
+I find I often forget the syntax on handling async side-effects in ember testing. Acceptance tests have this mostly hidden from the user but my tests are usually integration heavy.
+
+In this case I will search the internet for quite some time till I find the right answer.
+
+Check your `package.json` for the version of `ember-cli-qunit`. And depending on the version you will need to use one of the following patterns.
+
+!! ember-cli-qunit 4.0
+
+```javascript
+import { moduleForComponent, test } from 'ember-qunit';
+import { default as settled } from 'ember-test-helpers/wait';
+import hbs from 'htmlbars-inline-precompile';
+```
+
+!! ember-cli-qunit 4.1+
+
+```javascript
+import { moduleForComponent, test, settled } from 'ember-qunit';
+import hbs from 'htmlbars-inline-precompile';
+```
+
+!! Usage with async/await
+
+```javascript
+test('Funny async method', async function(assert) {
+  this.render(hbs`{{my-component}}`);
+  await settled();
+  assert.ok(true, 'waited for funny async method');
+});
+```
+
+!! Usage with promise chaining
+
+```javascript
+test('Funny async method', function() {
+  this.render(hbs`{{my-component}}`);
+  return settled().then(() => {
+    assert.ok(true, 'waited for funny async method');
+  });
+});
+```
