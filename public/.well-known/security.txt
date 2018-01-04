@@ -1,0 +1,5 @@
+Contact: suki@tritarget.org
+Encryption: https://tritarget.org/key
+Acknowledgement: https://tritarget.org/static/Hall%2520of%2520Fame.html
+Policy: https://tritarget.org/static/Privacy%2520Policy.html
+signature: https://tritarget.org/.well-known/security.txt.asc
