@@ -9,9 +9,13 @@ RewriteRule ^(.*)$ https://tritarget.org/$1 [L,R=301]
   deny from all
 </Files>
 
-<ifmodule mod_deflate.c>
+<IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript
   BrowserMatch ^Mozilla/4 gzip-only-text/html
   BrowserMatch ^Mozilla/4\.0[678] no-gzip
   BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
-</ifmodule>
+</IfModule>
+
+<IfModule headers_module>
+  header set X-Clacks-Overhead "GNU Terry Pratchett"
+</IfModule>
