@@ -1,0 +1,41 @@
+created: 20180108185821087
+modified: 20180108190821471
+tags: snippets Ember Coding
+title: Example PromiseProxyMixin
+type: text/vnd.tiddlywiki
+
+```javascript
+// app/components/my-component.js
+import Ember from 'ember';
+
+const {
+  Component,
+  ObjectProxy,
+  PromiseProxyMixin,
+  computed
+} = Ember;
+
+const Wrapper = ObjectProxy.extend(PromiseProxyMixin);
+
+export default Component.extend({
+  wrapper: computed('delayedValue', {
+    get() {
+      let promise = this.get('delayedValue');
+      return Wrapper.create({promise})
+        .catch(error => console.error(error));
+    }
+  })
+});
+```
+
+```handlebars
+{{! app/templates/components/my-component.hbs }}
+
+{{#if wrapper.isPending}}
+  Loading&hellip;
+{{else if wrapper.isRejected}}
+  Error: {{wrapper.reason}}
+{{else}}
+  Value: {{wrapper.content}}
+{{/if}}
+```

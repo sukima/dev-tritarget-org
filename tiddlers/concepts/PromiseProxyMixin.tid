@@ -1,0 +1,40 @@
+created: 20180108183208910
+modified: 20180108185935073
+tags: Ember Concepts Coding
+title: PromiseProxyMixin
+type: text/vnd.tiddlywiki
+
+In Ember the PromiseProxyMixin is a pattern for wrapping a Promise in an object that reacts and provides some derived state about the promise.
+
+It works very well with `ObjectProxy` or `ArrayProxy`.
+
+!! Basic usage
+
+```javascript
+const {
+  Object: EmObject,
+  PromiseProxyMixin
+} = Ember;
+
+const MyObject = EmObject.extend(PromiseProxyMixin);
+let myObjectInstance = MyObject.create({
+  promise: RSVP.resolve()
+});
+```
+
+This will provide you with an object with the following properties:
+
+* `isPending` - Is the promise pending?
+* `isSettled` - Is the promise resolved or rejected?
+* `isFulfilled` - Is the promise resolved (fulfilled)?
+* `isRejected` - Is the promise rejected (error)?
+* `content` - The value if the promise has been fulfilled.
+* `reason` - The error if the promise has been rejected.
+
+<<.tip """Due to Ember's aggressive stance on unhandled promises to use this in cases where you might expect the rejection to be handled in the template there is an extra step to prevent tests and the console from assuming it was an error: ''catch the PromiseProxyMixin not the original promise''. This will resolve the promise so Ember can let it go but //after// the PromiseProxyMixin has already extracted its derived state and populated `reason`.""">>
+
+<<.warning """You can not use PromiseProxyMixin with a component due to its asynchronous use of derived state it will cause a crash when a component is destroyed and the promise hasn't settled yet. ''Use an intermediate object instead.''""">> 
+
+!! Example Use
+
+{{Example PromiseProxyMixin}}
