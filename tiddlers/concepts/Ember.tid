@@ -1,9 +1,10 @@
-modified: 20170221151615000
 created: 20170221151615000
-modifier: Sukima
 creator: Sukima
-title: Ember
+modified: 20180108182746219
+modifier: Sukima
 tags: Concepts
+title: Ember
+type: text/vnd.tiddlywiki
 url: http://emberjs.com/
 
 [img width=200 [//upload.wikimedia.org/wikipedia/en/6/69/Ember.js_Logo_and_Mascot.png]]
@@ -13,3 +14,7 @@ Ember.js is an open-source JavaScript web framework, based on the Modelâ€“viewâ€
 <<< [[WikiPedia (sourced 2017-02-21)|https://en.wikipedia.org/wiki/Ember.js]]
 
 {{!!url}}
+
+!! Content about Ember
+
+<<list-links "[tag[Ember]]">>
