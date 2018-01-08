@@ -10,6 +10,7 @@ import Ember from 'ember';
 
 const {
   Component,
+  Logger,
   ObjectProxy,
   PromiseProxyMixin,
   computed
@@ -21,8 +22,7 @@ export default Component.extend({
   wrapper: computed('delayedValue', {
     get() {
       let promise = this.get('delayedValue');
-      return Wrapper.create({promise})
-        .catch(error => console.error(error));
+      return Wrapper.create({promise}).catch(Logger.error);
     }
   })
 });
