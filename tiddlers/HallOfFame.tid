@@ -10,8 +10,5 @@ type: text/vnd.tiddlywiki
 We would like to thank the following researchers:
 
 <ul>
-  <<thanks-to "Frank Denis" "2017-04-15" "Reflected cross-site scripting">>
-  <<thanks-to "Alice Quinn" "2017-01-02" "SQL injection">>
-  <<thanks-to "John Buchner" "2016-12-24" "Stored cross-site scripting">>
-  <<thanks-to "Anna Richmond" "2016-06-10" "A server configuration issue">>
+  <!--<<thanks-to "Frank Denis" "2017-04-15" "Reflected cross-site scripting">>-->
 </ul>
