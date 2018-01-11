@@ -168,9 +168,18 @@ gulp.task('watch', ['server'], function() {
   gulp.watch(['plugins/**/*', 'themes/**/*', 'config/**/*'], ['server']);
 });
 
-gulp.task('build', ['tiddlywiki', 'scripts'], function() {
-  return gulp.src(['public/**/*', 'public/.htaccess']).pipe(gulp.dest('wiki/output'));
+gulp.task('public', function() {
+  return gulp.src(
+    [
+      'public/**/*',
+      'public/.htaccess',
+      'public/.well-known/**/*'
+    ],
+    {base: 'public'}
+  ).pipe(gulp.dest('wiki/output'));
 });
+
+gulp.task('build', ['tiddlywiki', 'scripts', 'public']);
 
 gulp.task('prepare-wiki', ['config-development', 'themes', 'plugins', 'tiddlers']);
 
