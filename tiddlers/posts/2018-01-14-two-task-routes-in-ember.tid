@@ -1,0 +1,187 @@
+created: 20180114175115000
+creator: Sukima
+modified: 20180205133742627
+modifier: Sukima
+tags: Article Coding JavaScript Ember
+title: Two-Tasks Routes in Ember
+type: text/vnd.tiddlywiki
+
+Forgiving the lack of a good name this article is a deep dive into the concept / pattern for routes described by the now famous blog post by ~LinkedIn <cite>[[Adopting ember-concurrency or: How I Learned to Stop Worrying and Love the Task|https://engineering.linkedin.com/blog/2016/12/ember-concurrency--or--how-i-learned-to-stop-worrying-and-love-t]]</cite>. I have since come to name this the //soi-disant// ''Two-Tasks Route Pattern''.
+
+The unfortunate part of the article is that it described this promising [[ember-concurrency]] pattern but never shared any details of how they implemented that pattern. There is a common theme in the `#e-concurrency` channel in the [[Ember Community Slack|https://emberjs.com/community/]] of people eager to try out the new pattern and unfortunately not realizing the implementation details involved.
+
+!! High level view
+
+The article describes a User Interface concept known as a [[Skeleton Screen|https://www.wpeka.com/using-skeleton-screens-help-enhance-ux.html]] where instead of showing a full view loading screen it shows what looks like the ready screen with placeholders where real data would be. This way it looks like the app is responsive while in reality it is still loading in the background. Most times this is accomplished by using shapes (images) in place of actual text to represent the placeholders. However, the article goes one step further and includes old data with the UI while new data is loading. In much the same way as an infinite scroll would keep the old data while the new data is appended to the list.
+
+To understand how the article accomplished its claims I will dive into my interpretation of how //Vanilla// Ember manages what it calls ''sub-states'' and how it handles the `model` hook.
+
+!! Vanilla route patterns in Ember
+
+When a route is entered Ember will execute the lifecycle hooks. The moment one of the three hooks (`beforeModel`, `model`, and `afterModel`) returns a [[Promise]] (or [[Thenable]]) Ember will render the route's ''loading'' template. If any of the promises get rejected Ember will transition out of the current route and then render the route's ''error'' template. The model is defined as what ever is either returned by the `model` hook or resolved to if the `model` hook returned a [[Promise]]. Then the `setupController` hook is executed (which by default sets the controller's model property to the model that was established). Finally the `didTransition` action is triggered.
+
+The advantage of this system is that the loading and error situations are handled for you. The developer's job is to simply give Ember the pieces and then only worry about how to fetch the model. The down side to this design is that each sub-state is an all or nothing approach. You are either loading or your not. Which means the layout and styles that would normally render are all gone during the loading state or an error.
+
+One option in this case would be to copy/paste the view into the loading and error templates to provide a skeleton screen. But that seems counter intuitive even with well abstracted components. Another option is to skip the route and make the controller do //all the work//. But that feels dirty and really violates the Single Responsibility Principle.
+
+!! Avoiding the sub-states
+
+The compromise solution is to have the route manage the fetching but instead of triggering Ember's loading and error sub-states the model resolves to a ''non-Promise'' and the controller manages the sub-states.
+
+To do that we need to perform a few tricks. Obviously [[ember-concurrency]] makes this easier and I'll demonstrate that later (working up to it). But for this example I will show you how to do things in //Vanilla// Ember.
+
+The first thing to avoid triggering any sub-states. This means not returning any [[Promises|Promise]] from any of the route hooks. For that you will have to bundle what would have been the `beforeModel`, `model`, and `afterModel` methods into one `model` method. The [[Promise]] chain that Ember would usually unbundle will have to be wrapped in an object to hide it from Ember.
+
+```javascript
+import Ember from 'ember';
+const { Route } = Ember;
+
+export default Route.extend({
+  model(params) {
+    return {
+      post: this.store.findRecord('post', params.id);
+    };
+  }
+});
+```
+
+With the above it will be difficult to glean the state of the promise and would require some unwrapping. Again counter intuitive to manage. Sure there are addons that attempt to make that easier but I've found nothing better then the built in `PromiseProxyMixin` that comes with ember. (Except [[ember-concurrency]] which does the same thing with more finesse).
+
+```javascript
+import Ember from 'ember';
+const { Route, ObjectProxy, PromiseProxyMixin } = Ember;
+
+const Wrapper = ObjectProxy.extend(PromiseProxyMixin);
+
+export default Route.extend({
+  model(params) {
+    return { wrapper: this.fetchModel(params) };
+  },
+
+  fetchModel(params) {
+    let promise = this.store.findRecord('post', params.id);
+    let wrapper = Wrapper.create({ promise });
+    // Avoid triggering an unhandled rejection handler since the error will be
+    // managed by the controller/template
+    wrapper.catch(() => {});
+    return wrapper;
+  }
+});
+```
+
+What I've done here is wrap the original payload in a promise (`this.store.findRecord`) wrapped in a `PromiseProxyMixin` which offers properties like `isFulfilled`, `isPending`, `isRejected`, etc. and then wrapped it in an object to avoid Ember's default Promise management. If your keen you might question the `catch` line there. This is to prevent the default ''unhandled promise rejection'' handler which normally logs to the console or logs with a 3rd party like rollbar or sentry.
+
+The way this works is in how the lifecycle of a `PromiseProxyMixin` works. Internally when the `promise` property is assigned `then` and `catch` methods tap onto the promise which will correctly set the `PromiseProxyMixin` derived state. It also aliases the `then` and `catch` methods to it's own. So `wrapper.catch` appended to the promise chain //after// the derived state is handled. In this way the `PromiseProxyMixin` derived state `reason` holds the rejection value but the final `wrapper.catch(() => {});` fulfills the original promise but it does not matter because the derived state has already been assigned. It is a simple way to declare that //yes, I know what I'm doing and will manually handle the error so the default can be a no-op.//
+
+I will eventually have more to say on the beautiful abstraction called the `PromiseProxyMixin` in a different article.
+
+Now in the controller we can easily tap into all of this derived state like so:
+
+```javascript
+import Ember form 'ember';
+const { Controller, computed: { reads } } = Ember;
+
+export default Controller.extend({
+  post: reads('model.wrapper.content'),
+  isLoading: reads('model.wrapper.isPending'),
+  hasError: reads('model.wrapper.isRejected'),
+  error: reads('model.wrapper.reason')
+});
+```
+
+!! Refreshing old data
+
+In some cases you might want the old data to hang around while new data is being loaded. With the above approach we could store the previous value as a simple cache:
+
+```javascript
+import Ember from 'ember';
+const { Route, ObjectProxy, PromiseProxyMixin } = Ember;
+
+const Wrapper = ObjectProxy.extend(PromiseProxyMixin);
+
+export default Route.extend({
+  model(params) {
+    return {
+      previousWrapper: this.get('previousWrapper'),
+      currentWrapper: this.fetchModel(params)
+    };
+  },
+
+  afterModel(model) {
+    this.set('previousWrapper', model.currentWrapper);
+  },
+
+  fetchModel(params) {
+    let promise = this.store.findRecord('post', params.id);
+    let wrapper = Wrapper.create({ promise });
+    // Cache only the last successful wrapper. No-Op the chain because derived
+    // state has already been handled by the PromiseProxyMixin.
+    wrapper.then(() => this.set('previousWrapper', wrapper));
+    // Avoid triggering an unhandled rejection handler since the error will be
+    // managed by the controller/template
+    wrapper.catch(() => {});
+    return wrapper;
+  }
+});
+```
+
+And now we can hot-swap the previous with the current in our controller like so:
+
+```javascript
+import Ember form 'ember';
+const { Controller, computed: { or, reads } } = Ember;
+
+export default Controller.extend({
+  post: or('model.{currentWrapper,previousWrapper}.content'),
+  isLoading: reads('model.currentWrapper.isPending'),
+  hasError: reads('model.currentWrapper.isRejected'),
+  error: reads('model.currentWrapper.reason')
+});
+```
+
+!! Implementing the Two-Tasks Route pattern
+
+Whew a lot of code to read. I wish I was better at creative writing. Good news: here is the crème de la crème: [[ember-concurrency]]. Ember-concurrency does a lot for you. Mainly it manages its own derived state. It abstracts the whole wrapping concept we implemented with the `PromiseProxyMixin` and caches previous runs.
+
+```javascript
+import { task } from 'ember-concurrency';
+const { Route } = Ember;
+
+export default Route.extend({
+  model(params) {
+    let previousTask = this.get('fetchData.lastSuccessful');
+    let currentTask = this.get('fetchData').perform(params);
+    // Errors in e-c suffer the same problem as PromiseProxyMixin does.
+    // Declare we wish to manually manage the error and no-op the default
+    // handler. https://github.com/machty/ember-concurrency/issues/40
+    currentTask.catch(() => {});
+    return { previousTask, currentTask };
+  },
+
+  fetchData: task(function * (params) {
+    let result = yield this.store.find('post', params.id);
+    return result;
+  })
+  .restartable()
+  .cancelOn('deactivate')
+});
+```
+
+```javascript
+const { Controller, computed: { or, reads } } = Ember;
+
+export default Controller.extend({
+  post: or('model.{currentTask,previousTask}.value'),
+  isLoading: reads('model.currentTask.isRunning'),
+  hasError: reads('model.currentTask.isError'),
+  error: reads('model.currentTask.error')
+});
+```
+
+!! Responsibilities and Ownership
+
+It might be tempting to manage things in the controller or components and avoid the routes. It might be tempting to skip derived state and rely on a Promise unwrapping addon. However, I hope I've been able to illustrate that you don't need to. There are built-in solutions that can still be elegant and flexible. I also hope I've been able to illustrate a way to have separation of concerns and still pull off some slick UI and data management. Best of all the above examples (as far as I can tell) still abide by the core conventions that Ember intended.
+
+In the [[ember-concurrency]] example much of the derived state is taken care of but it isn't too much to do it ourselves with a [[PromiseProxyMixin]]. The take away would be that fetching is the responsibility of the Route and the display of that information is the responsibility of the Controller. This setup also offers the ability to leverage //vanilla// `queryParams` management. Your Route resolves the model to an object to avoid the normal loading sub-state. The object has a reference to the underlying wrapper that wrapped the promise. The wrapper provides derived state that is used in the Controller/Template to provide user feed back.
+
+Here is a working example for reference that attempts to illustrate this approach and also an example of doing things the old fashioned way for comparison: https://ember-twiddle.com/bb723d135b9457cbf13d909e1d529a8f
