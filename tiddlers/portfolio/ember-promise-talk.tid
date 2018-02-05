@@ -1,6 +1,6 @@
 created: 20160411012358000
 description: A slot machine using EmberJS, Promises, and Timers
-modified: 20160411163703050
+modified: 20180205134849060
 tags: Projects Portfolio
 terms: EmberJS, Promises, JavaScript
 title: ember-promise-talk
@@ -13,6 +13,6 @@ An example demo on having fun with EmberJS… promise.
 
 It is a fully working (graphical) slot machine written in the EmberJS framework.
 
-This is the result of wanting a working ember application to use during a talk about [[Promises]]. It is in progress but the game portion is working. Try it out!.
+This is the result of wanting a working ember application to use during a talk about [[Promises|Promise]]. It is in progress but the game portion is working. Try it out!.
 
 ''Demo:'' {{!!url}}
