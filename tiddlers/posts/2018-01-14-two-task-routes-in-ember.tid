@@ -144,6 +144,7 @@ export default Controller.extend({
 Whew a lot of code to read. I wish I was better at creative writing. Good news: here is the crème de la crème: [[ember-concurrency]]. Ember-concurrency does a lot for you. Mainly it manages its own derived state. It abstracts the whole wrapping concept we implemented with the `PromiseProxyMixin` and caches previous runs.
 
 ```javascript
+import Ember from 'ember';
 import { task } from 'ember-concurrency';
 const { Route } = Ember;
 
@@ -168,6 +169,7 @@ export default Route.extend({
 ```
 
 ```javascript
+import Ember from 'ember';
 const { Controller, computed: { or, reads } } = Ember;
 
 export default Controller.extend({
