@@ -1,0 +1,234 @@
+modified: 20180227033113000
+created: 20180227033113000
+modifier: Sukima
+creator: Sukima
+title: Decorator Pattern in Ember
+tags: Article Coding JavaScript Ember
+
+I've tried really hard to develop a concise and convincing story for a new pattern I use in my Ember apps but haven't seen others use. I call it the Decorator Pattern. It follows the same concept as the Object Oriented Programming pattern of the same name but is Ember specific. It is also specific in its use case as I plan to explain.
+
+To properly explain this pattern I need to review the current set of classes that Ember provides and promotes through convention: Models and Components. In the parlance of an Ember model its responsibility is to declare the data that will come from the server and provide methods to manage that data (Like `save()`) This also includes some conversions of data that drive the behavior of the application. What I mean by this is computed properties that the application uses as business logic. Alternatively presenting data to the user is a presentation concern and does not directly drive the apps behaviour.
+
+For example say your API offers a `state` property that describes the status state of the model. The value is an enum of specific names. These names or codes are not typically meant to display to the user. Reasoning that the `state` might drive what buttons or views are able to render or what actions the user is allowed to perform but when your actually rendering the state to the user you will want to run it through ~I18N or render it as an icon. In this case the ''business logic'' in the model might look like this:
+
+```javascript
+export default Model.extend({
+  state: attr('string'),
+  isOpen: equal('state', 'open'),
+  isClosed: equal('state', 'closed'),
+  isInDraft: equal('state', 'in-draft'),
+  isInReview: equal('state', 'in-review'),
+  canEdit: or('{isOpen,isInDraft}')
+});
+```
+
+Where the ''presentation logic'' might look like:
+
+```javascript
+export default Component.extend({
+  i18n: service(),
+  tagName: 'span',
+  classNames: ['state-icon', 'fa'],
+  classNameBindings: ['stateIcon'],
+  attributeBindings: ['stateLabel:title'],
+  stateLabel: computed('model.state', {
+    get() {
+      const i18n = this.get('i18n');
+      let state = this.get('model.state');
+      return i18n.t(`model_states.${state}`);
+    }
+  }),
+  stateIcon: computed('model.state', {
+    get() {
+      let iconName = STATE_ICONS[this.get('model.state')] || 'question';
+      return `fa-${iconName}`;
+    }
+  });
+});
+```
+
+The line is a little fuzzy between the two and when left unchecked leads to complex Components and/or //fat models//. This is something the Ruby on Rails community has discovered and addressed by suggesting an intermediary object type (service objects or presenters). In Ember the intermediary will gravitate to one end of the spectrum (model vs component) or land their way into helpers. While this is good for a good portion of the apps out there I have fond there are advantages to having a well established intermediary object which decorates the model //for// the component.
+
+A different example might be a presentation need to keep some state for each model in a for loop. Maybe we want to keep track of which models are selected or not. To do this inside a component means we need to keep a map if the presentation state to the models in use. Or we have to just put the presentation state on the model. But then we may need to display the models multiple times on a page and each time have their own state. How about this example:
+
+```javascript
+export default Component.extend({
+  decoratedItems: computed('items.[]', {
+    get() {
+      let items = this.get('items') || [];
+      return items.map(item => {
+        return { item, selected: false };
+      });
+    }
+  })
+});
+```
+
+In this case we are developing our own data structure to store the intermediary state (`selected`) while still exposing the original model. Neat, but we can do so much better and here is where the pattern really comes into play.
+
+Let us presume that we want a convenient way to define these decorators and apply them. We would also like to keep the Ember dependency injection functionality. To do this we will use `Ember.getOwner().factoryFor()` API. We will create a utility function that will lookup the Decorator objects by filename. Then we will create a custom computed property that will wrap an object with the Decorator. And finally we will build an ''Array Decorator'' that can wrap a set of objects in decorators (eliminating the need for a `map`);
+
+!! `getDecorator` utility function
+
+```javascript
+// app/utils/get-decorator.js
+import Ember from 'ember';
+const { assert, getOwner } = Ember;
+
+export default getDecorator(ctx, decoratorName) {
+  let owner = getOwner(ctx);
+  let Decorator = owner.factoryFor(`decorator:${decoratorName}`);
+  assert(`Decorator ${decoratorName} not found. Did you add it to the app/decorators directory?`, Decorator);
+  return Decorator;
+}
+```
+
+This is a simple utility that uses Ember's dependency injection API to lookup a decorator that is defined in the `app/decorators/` directory.
+
+!! `decorate` Computed Property
+
+```javascript
+// app/utils/computed-properties.js
+import Ember from 'ember';
+import getDecorator from './get-decorator';
+const { computed, String: { dasherize } } = Ember;
+
+export function decorates(dependentProp, decoratorName) {
+  return computed(dependentProp, {
+    get(key) {
+      let content = this.get(dependentProp);
+      let lookupName = decoratorName || dasherize(key);
+      let Decorator = getDecorator(this, lookupName);
+      return Decorator.create({ content });
+    }
+  }).readOnly();
+}
+```
+
+This is a custom computed property that will take a dependent property and wrap it in a decorator. An example could look like this:
+
+```javascript
+// app/components/foo.js
+import Ember from 'ember';
+import { decorates } from '../utils/computed-properties';
+const { Component } = Ember;
+
+export default Component.extend({
+  location: decorates('model')
+});
+```
+
+Now our component has a property `location` that wraps the `model` attribute and gains presentation logic. With that how about we talk about what a decorator is.
+
+!! The decorator `ObjectProxy`
+
+A decorator in this context will likely be a proxy for the object being decorated and Ember provides an excellent API for this called the `ObjectProxy`. All object proxies take a `content` property and will masquerade as the object that is `content`. Basically when you ask the proxy for a property it fist looks to see if it has a property defined and if not will ask the `context` object if it has that property.
+
+For example, Say I have a model for a location. It has logic that will determine if the location has the same city and state as ''Portland, Oregon'':
+
+```javascript
+// app/models/location.js
+import Ember from 'ember';
+import DS from 'ember-data';
+const { computed } = Ember;
+const { Model, attr } = DS;
+
+export default Model.extend({
+  name: attr('string'),
+  street: attr('string'),
+  street2: attr('string'),
+  city: attr('string'),
+  state: attr('string'),
+  zip: attr('number'),
+
+  isLocal: computed('{city,state}', {
+    get() {
+      let city = this.get('city') || '';
+      let state = this.get('state') || '';
+      let isSameCity = city.toUpperCase() === 'PORTLAND';
+      let isSameState = state.toUpperCase() === 'OREGON';
+      return isSameCity && isSameState;
+    }
+  })
+});
+```
+
+Now say we have a component that will use CSS to highlight when a location is local or not. We will use a decorator that will provide the appropriate CSS class:
+
+```javascript
+// app/decorators/location.js
+import Ember from 'ember';
+const { ObjectProxy, computed } = Ember;
+
+export default ObjectProxy.extend({
+  shippingClass: computed('content.isLocal', {
+    get() {
+      return this.get('content.isLocal') ? 'bg-green' : 'bg-red';
+    }
+  });
+});
+```
+
+At first glance this doesn't seem as important as it is based on this contrived example. But it does illustrate how one might wrap a model with presentation logic. This example become more apparent if instead of single component we use a component that does a `{{#each..}}` over the models. For this trick we will use another decorator but instead of an `ObjectProxy` we will make an `ArrayProxy`.
+
+!! `array` Decorator
+
+With a special `array` decorator we establish a small DSL to decorators in that one which is designed to wrap an array can simply define an `itemDecorator` property and have things link up correctly. It could look like this.
+
+```javascript
+// app/decorators/locations.js
+import ArrayDecorator from './array';
+
+export default ArrayDecorator.extend({
+  itemDecorator: 'location'
+});
+```
+
+I means that the new proxied array will return elements that have (or will be) decorated with the `location` decorator defined above. The implementation could look like this:
+
+```javascript
+// app/decorators/array.js
+import Ember from 'ember';
+import getDecorator from '../utils/get-decorator';
+const { ArrayProxy } = Ember;
+
+export default ArrayProxy.extend({
+  objectAtContent(index) {
+    let content = this.get('arrangedContent').objectAt(index);
+    let lookupName = this.get('itemDecorator');
+    let Decorator = getDecorator(this, lookupName);
+    return Decorator.create({ content, index });
+  }
+});
+```
+
+!! Pulling things together
+
+The final result is a simple set of utilities that allow something similar to the following application code:
+
+```javascript
+// app/components/locations-list.js
+import Ember from 'ember';
+import { decorates } from '../utils/computed-properties';
+const { Component } = Ember;
+
+export default Component.extend({
+  locations: decorates('model')
+});
+```
+
+```htmlbars
+<ul>
+  {{#each locations as |location|}}
+    <li class={{location.shippingClass}}>
+      {{location.street}}<br>
+      {{location.street2}}<br>
+      {{location.city}}, {{location.state}} {{location.zip}}
+    </li>
+  {{/each}}
+</ul>
+```
+
+And the best news is all the above implementation details a have been encapsulated into in ember addon called [[ember-decorator-pattern|https://github.com/sukima/ember-decorator-pattern]].
+
+I hope that this deep dive has offered some insight into alternative design patterns that can expand and organize some of the complexities we all experience in legacy code bases.
