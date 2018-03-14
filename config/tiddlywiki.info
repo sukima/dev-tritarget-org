@@ -1,8 +1,6 @@
 {
   "description": "TriTarget.org TiddlyWiki edition",
-  "plugins": [
-    "tiddlywiki/highlight"
-  ],
+  "plugins": [],
   "themes": [
     "tiddlywiki/vanilla",
     "tiddlywiki/snowwhite"
