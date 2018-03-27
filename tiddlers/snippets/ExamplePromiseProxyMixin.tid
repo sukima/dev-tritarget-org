@@ -22,7 +22,11 @@ export default Component.extend({
   wrapper: computed('delayedValue', {
     get() {
       let promise = this.get('delayedValue');
-      return Wrapper.create({promise}).catch(Logger.error);
+      let wrapper = Wrapper.create({promise});
+      // Stop an unhandled promise error because we handle the error in the
+      // template.
+      wrapper.catch(() => {});
+      return wrapper;
     }
   })
 });
@@ -36,6 +40,8 @@ export default Component.extend({
 {{else if wrapper.isRejected}}
   Error: {{wrapper.reason}}
 {{else}}
+  {{! The actual object is in content but the properties are proxied and
+  accessible directly without diving into content. }}
   Value: {{wrapper.content}}
 {{/if}}
 ```
