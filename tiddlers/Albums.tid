@@ -1,0 +1,8 @@
+color: #3333ff
+modified: 20180407193949000
+created: 20180407193949000
+icon: $:/core/images/picture
+title: Albums
+type: text/vnd.tiddlywiki
+
+<<list-links filter:"[tag[Albums]]">>
