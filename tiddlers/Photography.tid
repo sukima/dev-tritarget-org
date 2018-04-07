@@ -11,6 +11,10 @@ type: text/vnd.tiddlywiki
 <<tag-summary "Photography">>
 </$button>
 
+<$button to="Albums" class="tc-summary-button">
+There are <$count filter="[tag[Albums]]"/> <<tag "Albums">>
+</$button>
+
 <$button to="Photos" class="tc-summary-button">
 There are <$count filter="[tag[Photos]]"/> <<tag "Photos">>
 </$button>
