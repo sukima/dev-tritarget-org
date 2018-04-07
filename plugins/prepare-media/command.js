@@ -8,7 +8,7 @@ generator command to prep and create media tiddlers
 
 \*/
 /*globals Promise:true*/
-let Promise, util, fs, path, mktemp, child_process, del, gm, generateTiddlerFilename;
+let Promise, util, fs, path, mktemp, child_process, del, gm, FileSystemAdapter;
 const CDN_DOMAIN = 'photos.tritarget.org';
 const RSYNC_COMMAND = 'rsync -rzv --progress %s ktohg@tritarget.org:photos.tritarget.org';
 const PANO_TYPE = 'image/prs.panorama';
@@ -26,9 +26,9 @@ function loadModules() {
   child_process = Promise.promisifyAll(require('child_process'));
   del = require('del');
   gm = require('gm');
-  generateTiddlerFilename =
+  FileSystemAdapter =
     require('$:/plugins/tiddlywiki/filesystem/filesystemadaptor.js')
-    .adaptorClass.prototype.generateTiddlerFilename;
+    .adaptorClass;
 }
 
 class MediaPrepError {
@@ -242,9 +242,9 @@ class Pano extends Media {
 class Photo extends Media {
   constructor(...args) {
     super(...args);
-    const baseDir = path.join(this.tempDir, 'photos');
-    const parts = path.parse(this.output);
-    const thumbName = `${trimSlash(parts.name)}_t${parts.ext}`;
+    let baseDir = path.join(this.tempDir, 'photos');
+    let parts = path.parse(this.output);
+    let thumbName = `${trimSlash(parts.name)}_t${parts.ext}`;
     this.basePath = path.join('photos', this.output);
     this.outputDir = path.join(baseDir, parts.dir);
     this.outputFile = path.join(baseDir, this.output);
@@ -275,8 +275,10 @@ class Photo extends Media {
     });
   }
   saveImgTiddler(wiki) {
-    const title = this.title;
-    const fileName = generateTiddlerFilename(title, '.tid', []);
+    let title = this.title;
+    let filesystem = new FileSystemAdapter({wiki});
+    let fileName = filesystem.generateTiddlerBaseFilepath(title);
+    fileName = fileName.replace(/\s/g, '_') + '.tid';
     return this.addNewTiddler(wiki, path.join('photos', fileName), {
       title,
       tags: ['Photos'],
@@ -285,8 +287,10 @@ class Photo extends Media {
     });
   }
   saveThumbImgTiddler(wiki) {
-    const title = `${this.title} Thumbnail Image`;
-    const fileName = generateTiddlerFilename(title, '.tid', []);
+    let title = `${this.title} Thumbnail Image`;
+    let filesystem = new FileSystemAdapter({wiki});
+    let fileName = filesystem.generateTiddlerBaseFilepath(title);
+    fileName = fileName.replace(/\s/g, '_') + '.tid';
     return this.addNewTiddler(wiki, path.join('photos', fileName), {
       title,
       tags: ['PhotoThumbnail'],
@@ -316,7 +320,8 @@ export class Command {
       if (paths.length === 0) {
         throw new MediaPrepError('Missing file(s) for processing.');
       }
-      const args = [...paths, '-type', 'f'];
+      let choppedPaths = paths.map(p => p.replace(/\/+$/, ''));
+      const args = [...choppedPaths, '-type', 'f'];
       child_process.execFile('find', args, (err, stdout, stderr) => {
         if (err) {
           err.message = `${err.message}\n${stderr.toString()}`;
@@ -349,7 +354,7 @@ export class Command {
         const isPano = this.isPossiblePano(size);
         const name = path.basename(file, path.extname(file));
         const title = name.charAt(0).toUpperCase() + name.slice(1);
-        const output = isPano ? `${name}/` : path.basename(file);
+        const output = isPano ? `${name}/` : path.basename(file).replace(/\s/g, '_');
         const type = isPano ? PANO_TYPE : this.getMimeType(path.extname(file));
         return {type, title, output, input: file};
       })
