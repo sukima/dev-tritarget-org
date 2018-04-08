@@ -1,0 +1,172 @@
+modified: 20180408113912000
+created: 20180109185506000
+creator: Sukima
+modifier: Sukima
+tags: Coding Article JavaScript
+title: Domain Specific Promises
+type: text/vnd.tiddlywiki
+
+I have been mulling over this concept for a few years now. I even attempted to articulate the original idea in [[a blog about promises|http://bluebirdjs.com/docs/async-dialogs.html]] and since have learned a lot more. <small>I should probably update that original article.</small> Have you ever had to manage a popup dialog in a web page only to realized it does not block the UI like `window.confirm` does? Did you then wish there was a clear promise like API that could hide the ugly callback state management? Probably not; but I did and this is the result of that need.
+
+The term ''Domain Specific Language'' has been used to describe a localized API that is //specific// to your use case. It is part and passel with Object Oriented Programing abstractions and touted often by well respected developers in the field. In this article I wanted to describe a pattern which I call ''Domain Specific Promises''. I know&hellip; click-bait-ish. Sorry about that; I can suck at naming.
+
+I will be using the example of a confirmation modal dialog in a web page because it is the best example I've come up with. The pattern however can be applied in other domains as well.
+
+<<.preamble """What I want is an object that represents the resolution of a modal popup confirmation dialog. Since a custom dialog box is asynchronous in nature the API can not be blocking. I would also want the abstracted object to be framework agnostic.""">>
+
+With these requirements I ended up thinking about Promises. The `Promise` API supports those constraints and includes constraints that help a great deal with being flexible any any code base. For example:
+
+```javascript
+let disposeEvents;
+new Promise((resolve, reject) => {
+  disposeEvents = function() {
+    confirmButton.removeEventListener('click', resolve);
+    cancelButton.removeEventListener('click', reject);
+  };
+  confirmButton.addEventListener('click', resolve);
+  cancelButton.addEventListener('click', reject);
+  showDialog();
+})
+.finally(() => {
+  closeDialog();
+  disposeEvents();
+})
+.then(result => {
+  // Confirmed
+})
+.catch(result => {
+  // Canceled
+});
+```
+
+([[JSBIN Example|http://jsbin.com/boyujuy/edit?js,output]])
+
+<<.note """The `finally` is an API provided by almost all Promise libraries but not currently available in vanilla ES6. It can be [[polyfilled|https://github.com/stefanpenner/es6-promise]] if needed.""">>
+
+There are a few problems with the above. First it does not read well. It is confusing. Second it requires a level of internal knowledge to understand the meaning of a resolution and a rejection. It also leverages the error state of the Promise to drive flow control. This does not follow the idea that an error in a Promise is meant to be an error and canceling a confirmation dialog is hardly an error. Not only that but because of the binary nature of promises you loose the information if the user canceled the dialog or actually clicked the no button. Maybe they have different semantics.
+
+On the plus side a promise handles all that asynchronous mess nicely and results in a single object we can pass around. The concept is what we want but the API of promises makes it ill suited as the actual interface we want to use.
+
+To solve this dependency we need to make our own promise-like interface but have it be specific to the domain in which we are working. In this example that domain is confirmation. We will need to describe this domain.
+
+A confirmation can have the following outcomes:
+
+* ''Confirmed'' - The user pressed the //Yes// button
+* ''Rejected'' - The user pressed the //No// button
+* ''Cancelled'' - The user cancelled the confirmation dialog (clicked outside, programmatic reason to remove the dialog)
+* ''Error'' - Something unexpected happened (server unable to validate confirmation)
+
+It would also help if these outcomes included some payload if needed (reason there was an error, the value of a text input in the dialog box, which cancellation button was clicked, etc.)
+
+The interface we need (if following the style that Promises use) should have a initializer function, and chainable hooks for each outcome state.
+
+First I will tackle the //initializer function// concept. To make the ability to initialize a dialog and attach all the event handlers needed we can use the same design style that Promises employ by calling an initializer function and provide it a set of callback that can be used in handlers to resolve things. As stated above we will need four callbacks. Since that is a lot we will simply offer an object with four methods which the consumer can destructure or pass along as they wish. The interface might look like this:
+
+```javascript
+new Confirmer(resolver => {
+  resolver.confirm('Yes button');
+  resolver.reject('No button');
+  resolver.cancel('Cancelled');
+  resolver.error(new Error('Thing are broken'));
+});
+```
+
+These resolver functions need to take on some behavioral responsibilities. First they need to be tolerant to being called more than once. Meaning that once one is called the `Confirmer` object becomes immutable even if another resolver function is called after. Second they need to be free from context binding which means they should be able to be used outside the contact of the resolver object so that calling the function will be tolerant to any changes to `this` since `this` is dynamic. These two properties are the same as the `resolve` and `reject` functions passed in when constructing a `Promise`.
+
+To make implementation of the `Confirmer` object easier we will use a `Promise` as the underlying data structure even though we will only expose //our// interface. However, with a `Promise` You only have two states. To expand it to more states we will use another internal data structure to keep of which resolution the user triggered.
+
+To start we will define a set of known symbols to track the different outcomes:
+
+```javascript
+export const CONFIRMED = 'confirmed';
+export const CANCELLED = 'cancelled';
+export const REJECTED = 'rejected';
+```
+
+The `error` outcome is technically an exception so instead of resolving the `Promise` it is handled by rejecting the `Promise` and so does not need a symbol to represent that outcome.
+
+<<.note """We use strings instead of ES6 `Symbol` because symbols are not 100% supported by all browsers / environments and hinders flexibility when extending or meta-programing. And honestly, it is easier to read in most cases. In my experience `Symbol` is more cumbersome in this use case and is better for cases where you wish to have a dedicated function name on the base Object (POJO) not when defining your own internal enumerations / Object definitions.""">>
+
+Our internal payload that the internal `Promise` will resolve to will be a POJO with the `reason` and `value`. Enough chat here is the initial implementation:
+
+```javascript
+export default class Confirmer {
+  constructor(initFn) {
+    this._promise = new Promise((resolve, reject) => {
+      initFn({
+        error: reject,
+        confirm: value => resolve({reason: CONFIRMED, value}),
+        cancel: value => resolve({reason: CANCELED, value}),
+        reject: value => resolve({reason: REJECTED, value})
+      });
+    });
+  }
+}
+```
+
+Great, we've covered most of the requirements and can make encapsulated `Confirmer` objects that represent an asynchronous confirmation result. We saved the underlying `Promise` to a private member. This is great for creating a Confirmer but to properly chain our user facing API we will need a factory method that knows how take different payloads and construct a new Confirmer that is already resolved with the payload (instead of one which hasn't been resolved yet).
+
+This will become more apparent as we flesh out the public API after. Here is a basic factory method which can take a resolution value or another Confirmer. Because the actual resolution is inside a promise we have to perform a little bit of a promise dance with it.
+
+```javascript
+static resolve(result) {
+  // Allow Confirmer.resolve(anotherConfirmer) be a no-op (same semantics as
+  // Promise.resolve)
+  if (result instanceof Confirmer) { return result; }
+  // We need a Confirmer to work with but we don't care about its resolution
+  // since we will be setting the resolution manually
+  let newConfirmer = new Confirmer(() => {});
+  // Manually set the internal promise to a new one that resolves to the
+  // supplied resolution (result)
+  newConfirmer._promise = Promise.resolve(result).then(result => {
+    let reason = result && result.reason;
+    // Make sure the result is a sane one since without a reason the Confirmer
+    // is rendered useless in the context of using any of the public interfaces
+    if (![CONFIRMED, CANCELLED, REJECTED].includes(reason)) {
+      throw new Error(`Unknown resolution reason ${reason}`);
+    }
+    return result;
+  });
+  return newConfirmer;
+}
+```
+
+With this under out belt we are now empowered to write how each public interface method works. We will start with confirming. Whatever triggers the `resolver.confirm` callback it will set the internal promise `reason` to `CONFIRMED` and we need to test for this in our `onConfirmed` method.
+
+These methods will need to return a //new// Confirmer to keep in line with the immutability that Promise offer. If the reason does not match the method then it should be a no-op. And if the callback provided returns a different value it should mutate that value for the next Confirmer it returns. It might look something like this:
+
+```javascript
+onConfirmed(fn) {
+  // Create a new Promise that will become the new Confirmer's internal promise
+  // and have it chain from this Confirmer's internal promise
+  let promise = this._promise.then(result => {
+    // If this isn't CONFIRMED then simply return. The result ends up being a
+    // no-op but in a new promise that we can use. This is the essence of
+    // immutability in terms of Promises
+    if (result.reason !== CONFIRMED) { return result; }
+
+    let newValue = fn(result.value);
+    // If the callback returned a new Confirmer we need to unwrap it and use
+    // its internal promise as ours. This allows us to continue the chaining
+    if (newValue instanceof Confirmer) { return newValue._promise; }
+    // If the result is a promise or scalar value then we will want to preserve
+    // the reason
+    return Promise.resolve(newValue).then(value => {
+      return { reason: CONFIRMED, value };
+    });
+  });
+  // Since we now have a promise we need to convert it into a new Confirmer
+  // using our resolve utility method from above
+  return Confirmer.resolve(promise);
+}
+```
+
+What this pattern does is if the `Promise` resolved via a `CONFIRMED` reason it will execute the callback and use the return value as the next in the chaining. Like a promise this will allow you to change and manipulate the value or the whole reason by returning a new Confirmer.
+
+Here is an [[example of this Utility and chaining in action|http://jsbin.com/lifufat/edit?js,output]].
+
+This is a lot to unpack I realize but the payoff is huge. I provides a specialized set of APIs in one interface and allows the consumer to worry about the actual logic of their application instead of how to manage all the details of the domain they are working in.
+
+The take away I was attempting to illustrate in this complicated example was to show that a Promise which has only two outcomes can be wrapped in a higher level class to support more than just those two outcomes. In this example it has four outcomes. And the details of how those outcomes are internally represented are mostly hidden from the consumer. I coll these Domain Specific Promises in that they take on many of the properties and semantics we are used to with promises but offer an API that is specific to a particular domain.
+
+The Confirmer above has been turned into an [[NPM module|https://www.npmjs.com/package/confirmed]] along with more API features and well tested. Feel free to use it in your applications.
