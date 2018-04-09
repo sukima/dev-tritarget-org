@@ -1,0 +1,78 @@
+modified: 20180408114555000
+created: 20180408114555000
+modifier: Sukima
+creator: Sukima
+title: DomainSpecificPromise
+tags: Concepts JavaScript Tips
+
+A [[Domain Specific Promise|Domain Specific Promises]] is a concept that I use to describe an object that has the same semantics as a [[Promise]] but is tailored to a specific domain. This means it has its own callback functions and a different set of resolutions that just fulfilled and rejected.
+
+This concept has three main components:
+
+# ''Constuctor/Resolver'' - A custom initializer function with hooks for each new resolution state
+# ''Factory method'' - A utility factory method that is used to construct a new object based on just the payload provided. It will unwrap / proxy / prepare raw data and return a ready to chain Domain Specific Promise object
+# ''Chainable API'' - Chainable callbacks for each resolution state which return //new// Domain Specific Promise objects so that the previous chain is not mutated
+
+! Constructor/Resolver
+
+Like a [[Promise]] the constructor of the object takes an ''initializer function''. This //callback// is executed immediately and is passed an object with hooks for each resolution state.
+
+Each hook is a function that can take a value and has no ties to any `this` contexts so they can be passed around the app or attached to event handlers all without loosing any context.
+
+!! Example
+
+```javascript
+class Example {
+  constructor(initFn) {
+    this._promise = new Promise((resolve, reject) => {
+      initFn({
+        error: reject,
+        resolveReason1: value => resolve({ reason: 'reason1', value }),
+        resolveReason2: value => resolve({ reason: 'reason2', value }),
+        resolveReason3: value => resolve({ reason: 'reason3', value })
+      });
+    });
+  }
+}
+```
+
+! Factory method
+
+The factory method is a static method that can take any of the following and know how to return a new instance of the //Domain Specific Object//. The idea is to unwrap the values construct new promise chain and return a new and well constructed DomainSpecificPromise.
+
+!! Example
+
+```javascript
+static resolve(result) {
+  if (result instanceof DomainSpecificPromise) { return result; }
+  let newDomainSpecificPromise = new DomainSpecificPromise(() => {});
+  newDomainSpecificPromise._promise = Promise.resolve(result).then(value => {
+    let reason = value && value.reason;
+    if (!ALLOWED_REASONS.includes(reason)) {
+      throw new Error(`Unknown resolution reason ${reason}`);
+    }
+    return result;
+  });
+  return newDomainSpecificPromise;
+}
+```
+
+! Chainable API
+
+Each resolution will have a callback. They will be a no-op if the resolution is not applicable and allow the chaining to continue. If it is applicable then the return value from the function will result in a new instance of a DomainSpecificPromise and llow continued chaining. It should be able to accept a scalar value, promise, or a new DomainSpecificPromise (to mutate the resolution if desired).
+
+!! Example
+
+```javascript
+onReason1(fn) {
+  let promise = this._promise.then(result => {
+    if (result.reason !== 'reason1') { return result; }
+    let newValue = fn(result.value);
+    if (newValue instanceof Confirmer) { return newValue._promise; }
+    return Promise.resolve(newValue).then(value => {
+      return { reason: 'reason1', value };
+    });
+  });
+  return Confirmer.resolve(promise);
+}
+```
