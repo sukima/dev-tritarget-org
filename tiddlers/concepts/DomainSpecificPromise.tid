@@ -3,7 +3,7 @@ created: 20180408114555000
 modifier: Sukima
 creator: Sukima
 title: DomainSpecificPromise
-tags: Concepts JavaScript Tips
+tags: Concepts JavaScript Tips Coding
 
 A [[Domain Specific Promise|Domain Specific Promises]] is a concept that I use to describe an object that has the same semantics as a [[Promise]] but is tailored to a specific domain. This means it has its own callback functions and a different set of resolutions that just fulfilled and rejected.
 
