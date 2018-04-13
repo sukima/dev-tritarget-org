@@ -36,3 +36,12 @@ Hello Sukima!
 This reply-mechanism is great, it would love to import it to my TW.
 
 </$comment>
+<$comment name="Sukima" gravatar="a33233f156a5531707f130c28565de69" date="2018-04-13T13:56:15.000Z" url="https://tritarget.org">
+
+Awesome! Very glad to hear that. I have the [[code open and free on GitHub|https://github.com/sukima/dev-tritarget-org/tree/master/plugins/comments]] (and the [[server code|https://github.com/sukima/dev-tritarget-org/blob/master/public/patch.php]]).
+
+To be honest though it hasn't really paid off. I think the geeky nature of constructing a [[Git Patch|https://git-scm.com/docs/git-format-patch]] seems a little to much for most people to experiment with. Or my site just does not get enough traffic. Administration is also a very manual process.
+
+I would really love some feed back on how to make it better.
+
+</$comment>
