@@ -33,7 +33,7 @@ This will provide you with an object with the following properties:
 
 <<.tip """Due to Ember's aggressive stance on unhandled promises to use this in cases where you might expect the rejection to be handled in the template there is an extra step to prevent tests and the console from assuming it was an error: ''catch the PromiseProxyMixin not the original promise''. This will resolve the promise so Ember can let it go but //after// the PromiseProxyMixin has already extracted its derived state and populated `reason`.""">>
 
-<<.warning """You can not use PromiseProxyMixin with a component due to its asynchronous use of derived state it will cause a crash when a component is destroyed and the promise hasn't settled yet. ''Use an intermediate object instead.''""">> 
+<<.warning """In Ember prior to version 2.11 you can not use PromiseProxyMixin with a component due to its asynchronous use of derived state it will cause a crash when a component is destroyed and the promise hasn't settled yet. ''Use an intermediate object instead.''""">>
 
 !! Example Use
 
