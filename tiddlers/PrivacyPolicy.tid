@@ -1,6 +1,6 @@
+modified: 20180430173907000
 created: 20170226045420149
 creator: Sukima
-modified: 20170226050625395
 modifier: Sukima
 title: Privacy Policy
 
@@ -37,6 +37,10 @@ This privacy policy applies only to our online activities and is valid for visit
 !! Consent
 
 By using our website, you hereby consent to our privacy policy and agree to its terms.
+
+!! Security
+
+We ask that security researchers disclose vulnerabilities or concerns to us [[by email|ContactInfo]]. We are interested in an open dialog about any security issues or concerns. We expect responsible disclosure of at least 30 days of initial contact. We will make any discoveries public on or before any agreed upon grace period and will [[acknowledge any researchers involved in discovery and/or mitigations|Hall of Fame]].
 
 !! Update
 
