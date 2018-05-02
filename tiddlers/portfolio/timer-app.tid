@@ -1,0 +1,18 @@
+modified: 20180502210155000
+created: 20180502210155000
+modifier: Sukima
+creator: Sukima
+title: Timer App
+tags: Projects Portfolio
+terms: EmberJS, JavaScript, CSS
+description: A simple timer to track speeches and talks
+url: https://timer.tritarget.org
+
+<a href={{!!url}}><<preview-right "timer-app.gif">></a>
+
+A simple yet useful speech or talk timer that follows the [[Toastmasters|https://www.toastmasters.org/]] recommended timer notifications.
+
+Made with EmberJS.
+
+''Demo:'' {{!!url}}<br>
+''Source:'' https://github.com/sukima/timer-app
