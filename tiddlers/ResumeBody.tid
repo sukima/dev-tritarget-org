@@ -1,4 +1,4 @@
-modified: 20180425211021000
+modified: 20180522225656000
 created: 20160324133130224
 creator: Sukima
 modifier: Sukima
@@ -64,3 +64,13 @@ I was a lead EmberJS developer. I maintained and developed their administrative,
 * Technology Committee Chairman at local church
 * Contributing Member to [[NewHaven.io Meetup|http://newhaven.io/]]
 * Git instructor for local [[A100 apprenticeship program|http://indie-soft.com/a100/]]
+
+!! Testimonials
+
+<$list filter="[tag[PersonalTestimonials]!has[draft.of]!sort[created]]">
+
+<<<
+<$transclude />
+<<< {{!!caption}}
+
+</$list>
