@@ -1,0 +1,41 @@
+created: 20180523012345000
+creator: Sukima
+modified: 20180523014010540
+modifier: Sukima
+tags: Ember Coding Tips
+title: Ember queryParams with CSV and object flags
+type: text/vnd.tiddlywiki
+
+\define twiddle(label) ''[[$label$|https://ember-twiddle.com/bff1f204072b0a6e8b8d04c69f8da3ae]]''
+
+This is clever and neat way to convert between an Ember `queryParams` as a comma separated list and an object that has all the list values as boolean flags. <<twiddle "Demo">>
+
+```javascript
+const KNOWN_PARAMS = ['foo', 'bar', 'baz'];
+
+const FieldParams = EmberObject.extend({
+  params: computed(...KNOWN_PARAMS, {
+    get() {
+      return KNOWN_PARAMS
+        .filter(field => this.get(field))
+        .join(',');
+    },
+    set(key value) {
+      for (let field of KNOWN_FIELDS) {
+        this.set(field, value.includes(field));
+      }
+      return value;
+    }
+  })
+});
+
+export default Controller.extend({
+  queryParams: ['myParams'],
+  myParams: alias('fieldParams.params'),
+  fieldParams: computed(function() {
+    return FieldParams.create();
+  })
+});
+```
+
+<<twiddle "See it in action">>
