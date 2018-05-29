@@ -9,14 +9,12 @@ tags: Resource Coding Ember
 :Improved concurrency/async primitives for Ember
 ;[[ember-co|https://www.npmjs.com/package/ember-co]]
 :A tj/co implementation for Ember
-;[[ember-parachute|https://offirgolan.github.io/ember-parachute/]]
-:Improved Query Params for Ember
 ;[[ember-data-storefront|https://embermap.github.io/ember-data-storefront/latest/]]
 :Predictable data-loading APIs for Ember Data
 ;[[ember-cli-page-object|http://ember-cli-page-object.js.org/docs/v1.8.x/]]
 :The ember-cli-page-object addon makes it easy to create page objects for your acceptance and integration tests
 ;[[ember-truth-helpers|https://github.com/jmurphyau/ember-truth-helpers]]
-:Ember HTMLBars Helpers for `{{if}}` & `{{unless}}`: not, and, or, eq & is-array 
+:Ember HTMLBars Helpers for `{{if}}` & `{{unless}}`: not, and, or, eq & is-array
 ;[[ember-responsive|https://freshbooks.github.io/ember-responsive/]]
 :Easy responsive layouts with Ember
 ;[[ember-exex: Exceptional Exceptions for ambitious applications|https://github.com/janmisek/ember-exex]]
