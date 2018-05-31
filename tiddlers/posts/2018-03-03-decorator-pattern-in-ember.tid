@@ -193,14 +193,27 @@ import getDecorator from '../utils/get-decorator';
 const { ArrayProxy } = Ember;
 
 export default ArrayProxy.extend({
+  decoratedContent: null,
+
   objectAtContent(index) {
     let content = this.get('arrangedContent').objectAt(index);
+    let decoratedContent = this.get('decoratedContent');
+    if (decoratedContent.has(content)) { return decoratedContent.get(content); }
     let lookupName = this.get('itemDecorator');
     let Decorator = getDecorator(this, lookupName);
-    return Decorator.create({ content, index });
+    let decorator = Decorator.create({ content, index });
+    decoratedContent.set(content, decorator);
+    return decorator;
+  }
+
+  init() {
+    this._super(...argumants);
+    this.set('decoratedContent', new WeakMap());
   }
 });
 ```
+
+<<.note """This became a little more complicated when I realized there may be a need to access the original decorated object in later runs of the `objectAtContent`. Had to design a simple cache lookup.""">>
 
 !! Pulling things together
 
