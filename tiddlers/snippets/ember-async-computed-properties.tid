@@ -1,0 +1,49 @@
+created: 20180608190405286
+modified: 20180608191213000
+creator: Sukima
+modifier: Sukima
+tags: Ember snippets Coding
+title: Ember async computed-properties
+type: text/vnd.tiddlywiki
+
+```javascript
+import ObjectProxy from '@ember/object/proxy';
+import ArrayProxy from '@ember/array/proxy';
+import PromiseProxyMixin from '@ember/object/promise-proxy-mixin';
+import { computed } from '@ember/object';
+import { expandProperties } from '@ember/object/computed';
+
+export const ObjectResponsePending = ObjectProxy.extend(PromiseProxyMixin);
+export const ArrayResponsePending = ArrayProxy.extend(PromiseProxyMixin);
+
+export function expandAllDependencies(depList) {
+  let dependencies = [];
+  function register(dependency) {
+    dependencies.push(dependency);
+  }
+  for (let dependency of depList) {
+    expandProperties(dependency, register);
+  }
+  return dependencies;
+}
+
+export function asyncObject(fnName, depList) {
+  let dependencies = expandAllDependencies(depList);
+  return computed(...dependencies, function() {
+    let promise = resolve(fnName());
+    let wrapper = ObjectResponsePending.create({ promise });
+    wrapper.catch(() => {});
+    return wrapper;
+  });
+}
+
+export function asyncArray(fnName) {
+  let dependencies = expandAllDependencies(depList);
+  return computed(...dependencies, function() {
+    let promise = resolve(fnName());
+    let wrapper = ArrayResponsePending.create({ promise });
+    wrapper.catch(() => {});
+    return wrapper;
+  });
+}
+```

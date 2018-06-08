@@ -1,0 +1,82 @@
+created: 20180531145632000
+creator: Sukima
+modified: 20180608190341893
+modifier: Sukima
+tags: Article Coding Ember JavaScript
+title: Asynchronous Computed Properties in Ember
+type: text/vnd.tiddlywiki
+
+\define huge(text) <div style="font-size: 2em; font-weight: bold; text-align: center;">$text$</div>
+
+This topic comes up a lot in the forums and there have been several blog posts and addons all addressing this same issue. I'd like to put this topic to rest by showing that 99% of what people want from asynchronous computed properties can be manged with ''Vanilla Ember''.
+
+But first let me just get this off my chest&hellip;
+
+<<huge "Do not return a promise from a computed property!">>
+
+&hellip;Ok moving on. A computed property is designed as a way to provide a ''computed'' value based on other values. By its very nature the value is the key here. If our computed property returns a promise the ''value'' is a Promise. It is ''not'' the resolved value. This would be fine if in every instance we `this.get()` that property was in places where we can use a Promise.
+
+The problem comes in when the expectation of a computed property is that it can be used anywhere. Since Promises are not useful in templates or in cases where we intended a resolved value the use of a Promise as a value breaks down. We don't have a good way to designate some computed properties as Promise properties and others as //safe// properties. Aside from a naming convention this can become unmaintainable and introduces confusion and often frustrating bugs/problems.
+
+This is further compounded because Promises are two things in one. A task to perform and the result of that task. In Ember these ideas are usually separated and described in the classic mantra of ''Data Down, Actions Up''. We usually separate these two things to help reason about a large system. This means that if you can restructure your application to perform async operations as actions and the result of those operations as state changes then the need for async computed properties goes away. This also means it is easier to reason about in your large applications.
+
+However, there are times when an async computed property is the best option. ''There are many addons that attempt to address these issues and I have found that most of them miss the actual intent and are more a band-aid then anything.'' What I mean by this is that a property should resolve into an actionable value. And that is what I will showing you using nothing but //Vanilla Ember//.
+
+Since the Promise object primitive is not compatible with the templating engine we need to wrap it in an object that is. Ember comes with a built-in primitive for this purpose called the PromiseProxyMixin which wraps a Promise in an Ember Object and has computed properties (derived state) that represents the current progress if the Promise. Here is a simple example (more advanced methods will follow):
+
+```javascript
+import Component from '@ember/component';
+import EmberObject, { computed } from '@ember/object';
+import PromiseProxyMixin from '@ember/object/promise-proxy-mixin';
+
+const PendingResponse = EmberObject.extend(PromiseProxyMixin);
+
+export default Component.extend({
+  fetchPayload(url) {
+    return fetch(url).then(res => res.json());
+  },
+
+  response: computed('url', function() {
+    let promise = this.fetchPayload(this.get('url'));
+    let responseObject = PendingResponse.create({ promise });
+    responseObject.catch(() => {});
+    return responseObject;
+  })
+});
+```
+
+Now our `response` object will have useful derived state like `response.isPending`, `response.isFulfilled`, and `response.content`. Take a look at my summary about PromiseProxyMixin for more details about these.
+
+Notice the `responseObject.catch(() => {})`. This is because Ember is aggressive about //unhandled promise rejections// and will report them to your error detection service or the console. They will also fail tests. This is by design. However, in the case of an async computed property typically you are interested in handling the errors yourself in the template using the PromiseProxyMixin derived state. We add the no-op catch to announce to Ember that you are taking on the //unhandled// responsibility yourself (using the `isRejected` and `reason` properties).
+
+Also notice the `content` property? When the wrapped promise fulfills the `content` property becomes that result. ObjectProxy and ArrayProxy both proxy to the `content` property. That means that PromiseProxyMixin works very well with them. This also means that for example instead of `response.content.foobar` you could do `response.foobar` with an ObjectProxy. Both ObjectProxy and ArrayProxy work really well with ember templates.
+
+If the result you expect will be object use ObjectProxy:
+
+```javascript
+import ObjectProxy from '@ember/object/proxy';
+const PendingResponse = ObjectProxy.extend(PromiseProxyMixin);
+```
+
+If the result you expect will be an array use ArrayProxy:
+
+```javascript
+import ArrayProxy from '@ember/array/proxy';
+const PendingResponse = ArrayProxy.extend(PromiseProxyMixin);
+```
+
+To make this easy you can make your own //custom computed-property macros// so that you import the appropriate macro and can use it in a one-liner:
+
+```javascript
+import Component from '@ember/component';
+import { asyncObject, asyncArray } from 'my-app/utils/computed-properties';
+
+export default Component.extend({
+  responseAsObject: asyncObject('fetchPayload'),
+  responseAsArray: asyncArray('fetchPayload')
+});
+```
+
+And here is that implementation:
+
+{{Ember async computed-properties}}
