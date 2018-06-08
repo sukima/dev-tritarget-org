@@ -1,0 +1,43 @@
+created: 20180608202428000
+creator: Sukima
+modified: 20180608202740289
+modifier: Sukima
+tags: Tip Ember Coding Javascript
+title: Ember multiple yields in contextual components
+type: text/vnd.tiddlywiki
+
+It is possible now to yield different sections in a single component. Your wrapping component will yield a specially crafted hash which references a dummy component.
+
+For example the dummy component `foo-content`:
+
+```handlebars
+{{yield}}
+```
+
+And an example wrapper component `foo-wrapper`:
+
+```handlebars
+<div class="foo-wrapper">
+  <div class="foo-wrapper__foo-a">
+    {{yield (hash a=(component "foo-content"))}}
+  </div>
+  <div class="foo-wrapper__foo-b">
+    {{yield (hash b=(component "foo-content"))}}
+  </div>
+  <div class="foo-wrapper__foo-c">
+    {{yield (hash c=(component "foo-content"))}}
+  </div>
+</div>
+```
+
+Would provide you (the consumer) with this syntax:
+
+```handlebars
+{{#foo-wrapper as |foo|}}
+  {{#foo.a}}This is the Foo A component{{/foo.a}}
+  {{#foo.b}}This is the Foo B component{{/foo.b}}
+  {{#foo.c}}This is the Foo C component{{/foo.c}}
+{{/foo-wrapper}}
+```
+
+[[Here is a working demo|https://ember-twiddle.com/8c266f53719259ed8061b6eab92d00df]].
