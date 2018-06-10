@@ -1,10 +1,12 @@
-modified: 20170629181715000
+modified: 20180610191334000
 created: 20170629181715000
 modifier: Sukima
 creator: Sukima
 title: Ember Addons I Cannot Live Without
 tags: Resource Coding Ember
 
+;[[ember-auto-import|https://github.com/ef4/ember-auto-import]]
+:Zero config import from npm packages
 ;[[ember-concurrency|http://ember-concurrency.com/#/docs/introduction]]
 :Improved concurrency/async primitives for Ember
 ;[[ember-co|https://www.npmjs.com/package/ember-co]]
