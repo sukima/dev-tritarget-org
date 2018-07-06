@@ -67,10 +67,4 @@ I was a lead EmberJS developer. I maintained and developed their administrative,
 
 !! Testimonials
 
-<$list filter="[tag[PersonalTestimonials]!has[draft.of]!sort[created]]">
-
-<<<
-<$transclude />
-<<< {{!!caption}}
-
-</$list>
+{{PersonalTestimonials}}

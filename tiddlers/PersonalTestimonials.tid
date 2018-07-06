@@ -1,0 +1,13 @@
+modified: 20180706192035000
+created: 20180706192035000
+modifier: Sukima
+creator: Sukima
+title: PersonalTestimonials
+
+<$list filter="[tag[PersonalTestimonials]!has[draft.of]!sort[created]]">
+
+<<<
+<$transclude />
+<<< {{!!caption}}
+
+</$list>
