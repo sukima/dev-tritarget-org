@@ -1,0 +1,38 @@
+modified: 20180709131509000
+created: 20180709131509000
+modifier: Sukima
+creator: Sukima
+title: EventEmitter
+tags: snippets JavaScript
+
+```javascript
+export default class EventEmitter {
+  constructor() {
+    this.events = new Map();
+  }
+
+  on(name, cb) {
+    this.events.has(name) || this.events.set(name, new Set());
+    this.events.get(name).add(cb);
+    return this;
+  }
+
+  off(name, cb) {
+    if (!this.events.has(name)) { return; }
+    if (!cb) { return this.events.delete(name); }
+    this.events.get(name).delete(cb);
+    return this;
+  }
+
+  emit(name, ...args) {
+    if (!this.events.has(name)) { return; }
+    for (let cb of this.events.get(name)) { cb(...args); };
+    return this;
+  }
+
+  log(...args) {
+    this.emit('info', ...args);
+    return this;
+  }
+}
+```
