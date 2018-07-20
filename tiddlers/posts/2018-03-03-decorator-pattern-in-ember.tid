@@ -186,34 +186,7 @@ export default ArrayDecorator.extend({
 
 I means that the new proxied array will return elements that have (or will be) decorated with the `location` decorator defined above. The implementation could look like this:
 
-```javascript
-// app/decorators/array.js
-import Ember from 'ember';
-import getDecorator from '../utils/get-decorator';
-const { ArrayProxy } = Ember;
-
-export default ArrayProxy.extend({
-  decoratedContent: null,
-
-  objectAtContent(index) {
-    let content = this.get('arrangedContent').objectAt(index);
-    let decoratedContent = this.get('decoratedContent');
-    if (decoratedContent.has(content)) { return decoratedContent.get(content); }
-    let lookupName = this.get('itemDecorator');
-    let Decorator = getDecorator(this, lookupName);
-    let decorator = Decorator.create({ content, index });
-    decoratedContent.set(content, decorator);
-    return decorator;
-  },
-
-  init() {
-    this._super(...arguments);
-    this.set('decoratedContent', new WeakMap());
-  }
-});
-```
-
-<<.note """This became a little more complicated when I realized there may be a need to access the original decorated object in later runs of the `objectAtContent`. Had to design a simple cache lookup.""">>
+{{array-decorator.js}}
 
 !! Pulling things together
 

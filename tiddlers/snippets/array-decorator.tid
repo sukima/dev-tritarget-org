@@ -1,0 +1,28 @@
+modified: 20180720164738000
+created: 20180720164738000
+modifier: Sukima
+creator: Sukima
+title: array-decorator.js
+tags: Ember JavaScript snippits
+
+```javascript
+// app/decorators/array.js
+import Ember from 'ember';
+import getDecorator from '../utils/get-decorator';
+const { ArrayProxy } = Ember;
+
+export default ArrayProxy.extend({
+  decoratedContent: null,
+
+  arrangedContent: computed('content.[]', {
+    get() {
+      let lookupName = this.get('itemDecorator');
+      let Decorator = getDecorator(this, lookupName);
+      let baseContent = this.get('content') || [];
+      return baseContent.map((content, index) => {
+        return Decorator.create({ content, index });
+      });
+    }
+  })
+});
+```
