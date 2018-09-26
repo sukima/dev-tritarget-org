@@ -1,31 +1,25 @@
 {
   "name": "dev-tritarget-org",
   "private": true,
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "My personal home page http://tritarget.org/",
   "author": "Devin Weaver (@sukima) <suki@tritarget.org>",
   "license": "LicenseRef-LICENSE",
   "scripts": {
-    "clean": "gulp clean",
-    "start": "gulp server",
-    "build": "gulp build",
-    "media": "gulp prepare-wiki && tiddlywiki wiki --prepare-media",
-    "deploy": "npm run clean && npm run build && npm run rsync-wiki",
-    "rsync-wiki": "rsync -rlvz --delete --exclude-from ./config/rsync-exclude wiki/output/ ktohg@tritarget.org:tritarget.org"
+    "clean": "make clean",
+    "start": "make server",
+    "build": "make build",
+    "deploy": "make deploy",
+    "media": "make build-files && tiddlywiki wiki --prepare-media"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-preset-es2015": "^6.3.13",
     "bluebird": "^3.3.4",
-    "debug": "^2.2.0",
     "del": "^2.2.0",
     "fs-extra": "^0.26.7",
     "gm": "^1.21.1",
-    "gulp": "^3.9.0",
-    "gulp-babel": "^6.1.1",
-    "gulp-livereload": "^3.8.1",
-    "gulp-rename": "^1.2.2",
-    "gulp-util": "^3.0.7",
-    "lodash": "^3.10.1",
     "mktemp": "^0.4.0",
     "tiddlywiki": "^5.1.9"
   },
@@ -33,6 +27,6 @@
     "babel-polyfill": "^6.3.14"
   },
   "engines": {
-    "node": ">=5 <10"
+    "node": ">=10"
   }
 }

@@ -1,0 +1,33 @@
+#!/usr/bin/env node
+/*eslint-env node:true es6:true */
+const fs = require('fs');
+
+function uniq(arrArg) {
+  return arrArg.filter((elem, pos, arr) => {
+    return arr.indexOf(elem) === pos;
+  });
+}
+
+function loadJson(file) {
+  return JSON.parse(fs.readFileSync(file, { encoding: 'utf8' }));
+}
+
+function mergeKeys(obj, mergeObj = {}) {
+  for (let key of Object.keys(mergeObj)) {
+    let toArr = obj[key] || [];
+    let values = mergeObj[key];
+    obj[key] = uniq(toArr.concat(values));
+  }
+}
+
+let mainFile = process.argv[2];
+let mergeFiles = process.argv.slice(3);
+let main = loadJson(mainFile);
+let environment = process.env['NODE_ENV'] || 'development';
+
+for (let mergeFile of mergeFiles) {
+  let mergeData = loadJson(mergeFile);
+  mergeKeys(main, mergeData[environment]);
+}
+
+process.stdout.write(JSON.stringify(main, null, 2));
