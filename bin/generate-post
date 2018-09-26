@@ -1,0 +1,25 @@
+#!/bin/bash
+
+if [[ $1 == "-o" ]]; then
+  OPEN=yes
+  shift
+fi
+
+FILE="tiddlers/posts/$(date +%Y-%m-%d)-$(echo "$*" | tr -s ' ' -).tid"
+DATE="$(date +%Y%m%d%H%M%S000)"
+
+cat <<EOF >"$FILE"
+creator: Sukima
+created: ${DATE}
+modified: ${DATE}
+tags: Article
+title: $*
+type: text/vnd.tiddlywiki
+
+EOF
+
+echo "Generated ${FILE}"
+
+if [[ $OPEN == yes ]]; then
+  exec vim "${FILE}"
+fi
