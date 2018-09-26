@@ -10,7 +10,7 @@
     "start": "make server",
     "build": "make build",
     "deploy": "make deploy",
-    "media": "make build-files && tiddlywiki wiki --prepare-media"
+    "media": "make media-build && tiddlywiki wiki --prepare-media"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

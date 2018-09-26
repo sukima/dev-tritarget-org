@@ -7,7 +7,7 @@ plugins_src := $(shell find plugins -type f)
 plugins_out := $(patsubst plugins/%,wiki/plugins/%,$(plugins_src))
 asset_files := $(patsubst public/%,wiki/output/%,$(shell find public -type f))
 
-.PHONY: build-files build clean assets tiddlywiki server deploy
+.PHONY: build-files build clean assets tiddlywiki server media-build deploy
 
 build:
 	@rm -f wiki/tiddlywiki.info
@@ -18,6 +18,10 @@ server:
 	@rm -f wiki/tiddlywiki.info
 	$(MAKE) -e NODE_ENV=development build-files
 	$(tiddlywiki) wiki --server "" "" "" "" "" "" "0.0.0.0"
+
+media-build:
+	@rm -f wiki/tiddlywiki.info
+	$(MAKE) -e NODE_ENV=development build-files
 
 clean:
 	rm -rf wiki
