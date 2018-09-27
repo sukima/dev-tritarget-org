@@ -5,6 +5,14 @@ tags: Article Ember JavaScript Coding
 title: Making a Mess in Ember
 type: text/vnd.tiddlywiki
 
+\define OOP() <abbr title="Object Orientated Programming">OOP</abbr>
+
 * [[Sandi Metz "Go Ahead, Make a Mess"|https://www.youtube.com/watch?v=mpA2F1In41w]]
 * [[Sandi Metz "All the Little Things"|https://www.youtube.com/watch?v=8bZh5LMaSmE]]
 * [[Sandi Metz "Nothing is Something"|https://www.youtube.com/watch?v=OMPfEXIlTVE]]
+
+I've been a big fan of [[Sandi Metz]] for quite some time. I've tried to watch every talk I can find on YouTube. In doing so I've notice several common themes, one of them is about ''dependency injections''.
+
+In her talks she describes dependency injection as an <<OOP>> pattern that helps decouple the complexity people find in their programs. She describes two examples for dependency injection: ''Roles'' and ''Factories''.
+
+Ember offers a very robust system for dependency injection but it is often not realized in most apps. It is a public API but is not something described by the documentation.
