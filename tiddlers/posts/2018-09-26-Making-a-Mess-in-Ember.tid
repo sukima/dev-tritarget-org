@@ -16,3 +16,11 @@ I've been a big fan of [[Sandi Metz]] for quite some time. I've tried to watch e
 In her talks she describes dependency injection as an <<OOP>> pattern that helps decouple the complexity people find in their programs. She describes two examples for dependency injection: ''Roles'' and ''Factories''.
 
 Ember offers a very robust system for dependency injection but it is often not realized in most apps. It is a public API but is not something described by the documentation.
+
+! Roles
+
+
+
+! Factories
+
+
