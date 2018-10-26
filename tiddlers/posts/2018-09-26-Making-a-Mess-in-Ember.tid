@@ -18,7 +18,7 @@ Ember offers a very robust system for dependency injection but it is often not r
 
 [[Ember's Object Model|EmberObject]] allows one to not only extend the objects but also override properties at creation time. In fact Ember's [[action closures|http://miguelcamba.com/blog/2016/01/24/ember-closure-actions-in-depth]] allow you to assign/override behavior on components by passing them functions. Ember also offers a dependency injection system. An example of this are services. When you tell an EmberObject that a property is a `service()` it will perform the dependency injection code under the hood for you. In this section I'd like to show you how that dependency injection works and how to use it in cases other then services.
 
-
+In this example we will have an app that has two or more types of notifications. In some cases we want a popup, others we want desktop notifications, maybe in others we
 
 ! Factories
 
