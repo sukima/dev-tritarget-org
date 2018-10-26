@@ -18,6 +18,11 @@ This dependency injection system provides two things, a way to resolve objects b
 
 Ember will associate an //owner// to the objects it creates. This owner object provides two //factory methods// which bootstraps the dependency injection system into the objects it creates. To gain access to this //owner// you use the `getOwner()` function:
 
+<<<<<<< Updated upstream
+In this example we will have an app that has two or more types of notifications. In some cases we want a popup, others we want desktop notifications, maybe in others we
+||||||| merged common ancestors
+
+=======
 ```javascript
 import { getOwner } from '@ember/application';
 EmberObject.extend({
@@ -28,6 +33,7 @@ EmberObject.extend({
 ```
 
 Resolution of objects is managed by providing the `lookup` or `factoryFor` methods with a string that is colon separated between `type:name`. The type is singular and defined be initializers. In ''ember-cli'' the directory paths will auto define types for you to make thing more magical. For example with ''ember-cli'' a file located at `app/libs/foobar.js` will auto register a type of `lib` (singular) with an object named `foobar` resulting in a lookup of `lib:foobar`.
+>>>>>>> Stashed changes
 
 This can be customized by manually registering the type and class in a own custom initializer. But by default these objects are automagically registered with ember-cli. In the classic structure the type is the top level directory under the `app/` folder and the filename is the name of the class. In the pod structure the directory is the name and the filename is the type.
 
