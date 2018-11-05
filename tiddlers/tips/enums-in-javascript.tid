@@ -1,0 +1,47 @@
+modified: 20181105204706000
+created: 20181105204706000
+modifier: Sukima
+creator: Sukima
+title: Enums in JavaScript
+tags: Coding Tips JavaScript
+source: https://stijndewitt.com/2014/01/26/enums-in-javascript/
+
+Define your enum like so:
+
+```javascript
+var SizeEnum = {
+  SMALL: 1,
+  MEDIUM: 2,
+  LARGE: 3,
+};
+```
+
+Then use it like so:
+
+```javascript
+var mySize = SizeEnum.SMALL;
+```
+
+If you want the enum values to hold properties, you can add them to an extra object:
+
+```javascript
+var SizeEnum = {
+  SMALL: 1,
+  MEDIUM: 2,
+  LARGE: 3,
+  properties: {
+    1: {name: "small", value: 1, code: "S"},
+    2: {name: "medium", value: 2, code: "M"},
+    3: {name: "large", value: 3, code: "L"}
+  }
+};
+```
+
+Then use it like so:
+
+```javascript
+var mySize = SizeEnum.MEDIUM;
+var myCode = SizeEnum.properties[mySize].code; // myCode == "M"
+```
+
+''Source'': {{!!source}}
