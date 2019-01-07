@@ -1,0 +1,65 @@
+@startuml
+title Ember View Layers
+
+node Controllers [
+  Controllers
+  --
+  manages queryParams,
+  model interpretation,
+  and top level template interactions
+]
+
+node TopLevelLayouts [
+  Top Level Layouts
+  --
+  Grids, Flexbox, Sidebars, etc.
+]
+
+node ProviderComponents [
+  Data Components
+  --
+  Provider Components specific
+  to Application data
+]
+
+node AppContextualComponents [
+  Application Components
+  --
+  Contextual Components specific
+  to Application logic
+]
+
+node BlackBoxComponents [
+  Black Box Components
+  --
+  Components that act on a high level
+  encapsulating application data
+  and logic concerns
+]
+
+node GenericComponents [
+  Generic Components
+  --
+  The typical reusable component you
+  see in tutorials and guides
+]
+
+node BasicElements [
+  Basic HTML Elements
+]
+
+Controllers -- TopLevelLayouts
+Controllers -- ProviderComponents
+Controllers -- AppContextualComponents
+Controllers -- BlackBoxComponents
+
+TopLevelLayouts -- GenericComponents
+TopLevelLayouts -- BasicElements
+ProviderComponents -- GenericComponents
+ProviderComponents -- BasicElements
+AppContextualComponents -- GenericComponents
+AppContextualComponents -- BasicElements
+BlackBoxComponents -- GenericComponents
+BlackBoxComponents -- BasicElements
+
+@enduml

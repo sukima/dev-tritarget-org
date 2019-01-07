@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="456px" preserveAspectRatio="none" style="width:1117px;height:456px;" version="1.1" viewBox="0 0 1117 456" width="1117px" zoomAndPan="magnify"><defs><filter height="300%" id="f1szcavsz7e5hh" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><text fill="#000000" font-family="sans-serif" font-size="18" lengthAdjust="spacingAndGlyphs" textLength="163" x="475.5" y="17.4023">Ember View Layers</text><!--entity Controllers--><polygon fill="#FEFECE" filter="url(#f1szcavsz7e5hh)" points="452,39.1992,462,29.1992,741,29.1992,741,123.1523,731,133.1523,452,133.1523,452,39.1992" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="731" x2="740" y1="39.1992" y2="30.1992"/><line style="stroke: #000000; stroke-width: 1.5;" x1="452" x2="731" y1="39.1992" y2="39.1992"/><line style="stroke: #000000; stroke-width: 1.5;" x1="731" x2="731" y1="39.1992" y2="133.1523"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="77" x="467" y="62.7344">Controllers</text><line style="stroke: #000000; stroke-width: 1.0;" x1="452" x2="731" y1="65.6875" y2="65.6875"/><line style="stroke: #000000; stroke-width: 1.0;" x1="731" x2="741" y1="65.6875" y2="55.6875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="159" x="473" y="83.2227">manages queryParams,</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="146" x="473" y="99.7109">model interpretation,</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="237" x="473" y="116.1992">and top level template interactions</text><!--entity TopLevelLayout--><polygon fill="#FEFECE" filter="url(#f1szcavsz7e5hh)" points="650.5,232.1992,660.5,222.1992,804.5,222.1992,804.5,258.6875,794.5,268.6875,650.5,268.6875,650.5,232.1992" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="794.5" x2="803.5" y1="232.1992" y2="223.1992"/><line style="stroke: #000000; stroke-width: 1.5;" x1="650.5" x2="794.5" y1="232.1992" y2="232.1992"/><line style="stroke: #000000; stroke-width: 1.5;" x1="794.5" x2="794.5" y1="232.1992" y2="268.6875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="114" x="665.5" y="255.7344">Top Level Layout</text><!--entity ProviderComponents--><polygon fill="#FEFECE" filter="url(#f1szcavsz7e5hh)" points="839.5,211.6992,849.5,201.6992,1095.5,201.6992,1095.5,279.1641,1085.5,289.1641,839.5,289.1641,839.5,211.6992" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="1085.5" x2="1094.5" y1="211.6992" y2="202.6992"/><line style="stroke: #000000; stroke-width: 1.5;" x1="839.5" x2="1085.5" y1="211.6992" y2="211.6992"/><line style="stroke: #000000; stroke-width: 1.5;" x1="1085.5" x2="1085.5" y1="211.6992" y2="289.1641"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="123" x="854.5" y="235.2344">Data Components</text><line style="stroke: #000000; stroke-width: 1.0;" x1="839.5" x2="1085.5" y1="238.1875" y2="238.1875"/><line style="stroke: #000000; stroke-width: 1.0;" x1="1085.5" x2="1095.5" y1="238.1875" y2="228.1875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="204" x="860.5" y="255.7227">Provider Components specific</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="130" x="860.5" y="272.2109">to Application data</text><!--entity AppContextualComponents--><polygon fill="#FEFECE" filter="url(#f1szcavsz7e5hh)" points="6,211.6992,16,201.6992,281,201.6992,281,279.1641,271,289.1641,6,289.1641,6,211.6992" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="271" x2="280" y1="211.6992" y2="202.6992"/><line style="stroke: #000000; stroke-width: 1.5;" x1="6" x2="271" y1="211.6992" y2="211.6992"/><line style="stroke: #000000; stroke-width: 1.5;" x1="271" x2="271" y1="211.6992" y2="289.1641"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="170" x="21" y="235.2344">Application Components</text><line style="stroke: #000000; stroke-width: 1.0;" x1="6" x2="271" y1="238.1875" y2="238.1875"/><line style="stroke: #000000; stroke-width: 1.0;" x1="271" x2="281" y1="238.1875" y2="228.1875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="223" x="27" y="255.7227">Contextual Components specific</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="133" x="27" y="272.2109">to Application logic</text><!--entity BlackBoxComponents--><polygon fill="#FEFECE" filter="url(#f1szcavsz7e5hh)" points="316,203.1992,326,193.1992,615,193.1992,615,287.1523,605,297.1523,316,297.1523,316,203.1992" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="605" x2="614" y1="203.1992" y2="194.1992"/><line style="stroke: #000000; stroke-width: 1.5;" x1="316" x2="605" y1="203.1992" y2="203.1992"/><line style="stroke: #000000; stroke-width: 1.5;" x1="605" x2="605" y1="203.1992" y2="297.1523"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="157" x="331" y="226.7344">Black Box Components</text><line style="stroke: #000000; stroke-width: 1.0;" x1="316" x2="605" y1="229.6875" y2="229.6875"/><line style="stroke: #000000; stroke-width: 1.0;" x1="605" x2="615" y1="229.6875" y2="219.6875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="247" x="337" y="247.2227">Components that act on a high level</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="210" x="337" y="263.7109">encapsulating application data</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="129" x="337" y="280.1992">and logic concerns</text><!--entity GenericComponents--><polygon fill="#FEFECE" filter="url(#f1szcavsz7e5hh)" points="308.5,367.1992,318.5,357.1992,608.5,357.1992,608.5,434.6641,598.5,444.6641,308.5,444.6641,308.5,367.1992" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="598.5" x2="607.5" y1="367.1992" y2="358.1992"/><line style="stroke: #000000; stroke-width: 1.5;" x1="308.5" x2="598.5" y1="367.1992" y2="367.1992"/><line style="stroke: #000000; stroke-width: 1.5;" x1="598.5" x2="598.5" y1="367.1992" y2="444.6641"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="144" x="323.5" y="390.7344">Generic Components</text><line style="stroke: #000000; stroke-width: 1.0;" x1="308.5" x2="598.5" y1="393.6875" y2="393.6875"/><line style="stroke: #000000; stroke-width: 1.0;" x1="598.5" x2="608.5" y1="393.6875" y2="383.6875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="248" x="329.5" y="411.2227">The typical reusable component you</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="181" x="329.5" y="427.7109">see in tutorials and guides</text><!--entity BasicElements--><polygon fill="#FEFECE" filter="url(#f1szcavsz7e5hh)" points="643.5,387.6992,653.5,377.6992,825.5,377.6992,825.5,414.1875,815.5,424.1875,643.5,424.1875,643.5,387.6992" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="815.5" x2="824.5" y1="387.6992" y2="378.6992"/><line style="stroke: #000000; stroke-width: 1.5;" x1="643.5" x2="815.5" y1="387.6992" y2="387.6992"/><line style="stroke: #000000; stroke-width: 1.5;" x1="815.5" x2="815.5" y1="387.6992" y2="424.1875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="142" x="658.5" y="411.2344">Basic HTML Elements</text><!--link Controllers to TopLevelLayout--><path d="M638.3094,133.5407 C662.1209,163.3506 690.76,199.2041 709.0444,222.0945 " fill="none" id="Controllers-TopLevelLayout" style="stroke: #A80036; stroke-width: 1.0;"/><!--link Controllers to ProviderComponents--><path d="M714.1415,133.2025 C764.0161,155.2495 821.4816,180.652 869.0628,201.6852 " fill="none" id="Controllers-ProviderComponents" style="stroke: #A80036; stroke-width: 1.0;"/><!--link Controllers to AppContextualComponents--><path d="M452.8568,133.2025 C391.9587,155.2495 321.792,180.652 263.6942,201.6852 " fill="none" id="Controllers-AppContextualComponents" style="stroke: #A80036; stroke-width: 1.0;"/><!--link Controllers to BlackBoxComponents--><path d="M554.6906,133.5407 C539.4902,152.5703 522.3224,174.0627 507.137,193.0736 " fill="none" id="Controllers-BlackBoxComponents" style="stroke: #A80036; stroke-width: 1.0;"/><!--link TopLevelLayout to GenericComponents--><path d="M687.5184,268.3112 C647.1238,291.662 583.7295,328.3082 533.8703,357.1301 " fill="none" id="TopLevelLayout-GenericComponents" style="stroke: #A80036; stroke-width: 1.0;"/><!--link TopLevelLayout to BasicElements--><path d="M728.548,268.4791 C729.8714,297.8788 732.1349,348.1599 733.4563,377.5144 " fill="none" id="TopLevelLayout-BasicElements" style="stroke: #A80036; stroke-width: 1.0;"/><!--link ProviderComponents to GenericComponents--><path d="M847.8406,288.8219 C839.2868,291.7216 830.7755,294.5421 822.5,297.1992 C752.7522,319.5938 674.7101,342.1146 608.83,360.4035 " fill="none" id="ProviderComponents-GenericComponents" style="stroke: #A80036; stroke-width: 1.0;"/><!--link ProviderComponents to BasicElements--><path d="M902.2867,288.7214 C859.071,317.5627 804.0918,354.2549 769.0862,377.617 " fill="none" id="ProviderComponents-BasicElements" style="stroke: #A80036; stroke-width: 1.0;"/><!--link AppContextualComponents to GenericComponents--><path d="M231.6639,288.7214 C274.9818,310.1053 327.0423,335.805 370.3574,357.1875 " fill="none" id="AppContextualComponents-GenericComponents" style="stroke: #A80036; stroke-width: 1.0;"/><!--link AppContextualComponents to BasicElements--><path d="M268.2442,288.7519 C278.4284,291.7866 288.6054,294.6484 298.5,297.1992 C442.0047,334.1946 484.1533,315.9719 626.5,357.1992 C645.4304,362.682 665.607,370.2982 683.3346,377.6276 " fill="none" id="AppContextualComponents-BasicElements" style="stroke: #A80036; stroke-width: 1.0;"/><!--link BlackBoxComponents to GenericComponents--><path d="M463.1496,297.411 C462.2758,316.8219 461.2945,338.6218 460.4593,357.1738 " fill="none" id="BlackBoxComponents-GenericComponents" style="stroke: #A80036; stroke-width: 1.0;"/><!--link BlackBoxComponents to BasicElements--><path d="M555.8214,297.411 C602.8319,324.5862 657.9427,356.4439 694.396,377.5164 " fill="none" id="BlackBoxComponents-BasicElements" style="stroke: #A80036; stroke-width: 1.0;"/><!--
+@startuml
+title Ember View Layers
+
+node Controllers [
+  Controllers
+  - -
+  manages queryParams,
+  model interpretation,
+  and top level template interactions
+]
+
+node TopLevelLayout [
+  Top Level Layout
+]
+
+node ProviderComponents [
+  Data Components
+  - -
+  Provider Components specific
+  to Application data
+]
+
+node AppContextualComponents [
+  Application Components
+  - -
+  Contextual Components specific
+  to Application logic
+]
+
+node BlackBoxComponents [
+  Black Box Components
+  - -
+  Components that act on a high level
+  encapsulating application data
+  and logic concerns
+]
+
+node GenericComponents [
+  Generic Components
+  - -
+  The typical reusable component you
+  see in tutorials and guides
+]
+
+node BasicElements [
+  Basic HTML Elements
+]
+
+Controllers - - TopLevelLayout
+Controllers - - ProviderComponents
+Controllers - - AppContextualComponents
+Controllers - - BlackBoxComponents
+
+TopLevelLayout - - GenericComponents
+TopLevelLayout - - BasicElements
+ProviderComponents - - GenericComponents
+ProviderComponents - - BasicElements
+AppContextualComponents - - GenericComponents
+AppContextualComponents - - BasicElements
+BlackBoxComponents - - GenericComponents
+BlackBoxComponents - - BasicElements
+
+@enduml
+
+PlantUML version 1.2018.12(Sun Oct 21 06:15:15 EDT 2018)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Java Version: 1.8.0_144-b01
+Operating System: Mac OS X
+OS Version: 10.14.2
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>
