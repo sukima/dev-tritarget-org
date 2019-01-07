@@ -1,0 +1,30 @@
+@startuml
+title Ember Route/Controller life cycle
+
+participant DB as "Data Management"
+participant Route
+participant Controller
+
+Route -> Controller : set(...queryParams)
+Route <-- Controller : queryParams
+Route -> Route : beforeModel()
+Route -> Route : model()
+activate Route
+DB <- Route : fetch()
+DB --> Route : model
+deactivate Route
+Route -> Route : afterModel()
+Route -> Controller : setupController()
+activate Controller
+Controller -> Controller : set(model)
+Route <-- Controller
+deactivate Controller
+Route -> Route : didTransition()
+
+... When leaving ...
+
+Route -> Route : willTransition
+note left : willTransition is an action
+Route -> Controller : resetController()
+
+@enduml
