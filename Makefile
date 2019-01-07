@@ -7,7 +7,7 @@ plugins_src := $(shell find plugins -type f)
 plugins_out := $(patsubst plugins/%,wiki/plugins/%,$(plugins_src))
 asset_files := $(patsubst public/%,wiki/output/%,$(shell find public -type f))
 
-.PHONY: build-files build clean assets tiddlywiki server media-build deploy
+.PHONY: build-files build clean diagrams assets tiddlywiki server media-build deploy
 
 build:
 	@rm -f wiki/tiddlywiki.info
@@ -26,12 +26,15 @@ media-build:
 clean:
 	rm -rf wiki
 
+diagrams:
+	cd diagrams && $(MAKE)
+
 deploy: build
 	rsync -rlvz --delete --exclude-from ./config/rsync-exclude wiki/output/ $(deploy_path)
 
 assets: $(asset_files)
 
-build-files: wiki/tiddlywiki.info wiki/tiddlers $(polyfill) $(plugins_out)
+build-files: wiki/tiddlywiki.info wiki/tiddlers diagrams $(polyfill) $(plugins_out)
 
 tiddlywiki: build-files
 	$(tiddlywiki) wiki --build index favicon static feed

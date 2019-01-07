@@ -1,5 +1,6 @@
 yarn-error.log
 node_modules/
+diagrams/.depend
 tiddlers/\$__StoryList.tid
 tiddlers/\$__ShowEditPreview.tid
 tiddlers/\$__comments*
