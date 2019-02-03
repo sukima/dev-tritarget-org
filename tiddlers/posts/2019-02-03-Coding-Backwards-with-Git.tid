@@ -1,0 +1,157 @@
+modified: 20190203211238000
+creator: Sukima
+created: 20190203211238000
+tags: Article Coding Git
+title: Coding Backwards with Git
+type: text/vnd.tiddlywiki
+
+We all love [[TDD|https://en.wikipedia.org/wiki/Test-driven_development]] but I am really bad at it. In fact I am not able to think in TDD terms. I am too [[ADD|https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder]] to accomplish that level of discipline. To compensate I've developed my own workflow that tries to balance the benefits of TDD (testing in general) while still allowing me to work like a deranged [[monkey typing on a keyboard|https://en.wikipedia.org/wiki/Infinite_monkey_theorem]].
+
+<<.tip """All my customizations for git are available at https://github.com/sukima/dotfiles/blob/master/home/.gitconfig""">>
+
+! 1. Research and Planning
+
+The first thing I do I start code reading. I try to get a feel for if I can accomplish the task. Maybe build a diagram or pseudo-code some ideas. If it is something I think I can manage and have a possible game plan I will start coding at the call sites.
+
+What I mean by call sites is I like to plan out my API and a preliminary organization. This will help be flesh out what abstractions I want to dig deeper with. For example if I plan to make a new [[Ember]] Component I will first write its use as if the component already exists. This helps me flesh out the requirements for what I want to accomplish and how I want to expose that solution.
+
+! 2. A Monkey Types
+
+My next step is to code like crazy getting the implementation to work, check the browser styling, user interactions, etc. Get it working make it look good. But with my mind always attempting to avoid the key choke points that make testing impossible.
+
+# If I use a hard-coded string or number I define a constant for it and export that constant. This way when testing I can compare the results with a known value that is defined in one place. This includes [[enums|Enums in JavaScript]], supporting objects, and classes.
+# Any classes or objects I depend on need to be injectable ([[Dependency Injection|https://en.wikipedia.org/wiki/Dependency_injection]]).
+# Any async code has an escape hatch that can be engaged in testing. Possibly via config options or Dependency Injection.
+
+Now it isn't like I can be omnipotent about this but I can at least try. And when I do get to testing I will be forced to make these happen. Instead I just try to keep my mind in the right frame so that I know where the pitfalls are that would make testing hard.
+
+Another aspect of just coding is that it is rarely done in one stretch. I get so many interruptions. I compensate for this by creating snapshots. Every time I get something working I will make a snapshot. Anytime I have to take a break I make a snapshot. This process has helped immensely. There have been many times when I go off into a rabbit hole and find that a huge mucking of the code ultimately didn't work or was the wrong abstraction. Because I made a snapshot when thing were a little more sane and working I can simple jump back to the snapshot. Or I can run through my changes and weed out which ones are ok and which one broke something based on a diff from the snapshot.
+
+I use Git for this. I will make a branch and start working. Each point where I want to snapshot I will:
+
+```
+$ git add .
+$ git commit -m "WIP [skip ci]"
+```
+
+I have an alias for this that lets me name the WIP commits if I wish:
+
+```
+[alias]
+  wip = "!f() { git commit --no-gpg-sign -m \"WIP${*+ $*} [skip ci]\"; }; f"
+  unwip = "!git reset -q HEAD^ && git status -sb"
+```
+
+The `[skip ci]` prevents most Continuous Integrations services from trying to run on this commit. That lets me push my in progress branch to the server for cloud backup without wasting all the computer time processing a bogus commit.
+
+! 3. Review and Rebase
+
+At this point I feel like I got 80% if the production code ready but in a plethora of WIP commits. I will reset the branch back to the beginning so all the changes are left in the working directory unstaged.
+
+<<.tip """I will usually take note of the last WIP commit SHA before I reset so that in the rare case I loose code I have a backup at that commit""">>
+
+Because I do all my work in a separate branch it is easy to know how far back to reset to (usually `develop` or `master`).
+
+```
+$ git reset master
+```
+
+Now that I have the changes squashed into one massive unsaved, unstaged, and uncommitted mess in my working tree I can start committing logical chunks and build up well documented commit messages. I use a few tools to do this depending on the complexity of the changes.
+
+* If they are mild I will use the `git add --interactive` and `git add --patch` commands to choose what parts to stage.
+* If the changes are sever and complex having many little commits I will use a GUI like tool to add individual lines and hunks. The two tools I like are [[git gui|https://git-scm.com/docs/git-gui]] and [[tig|https://jonas.github.io/tig/]] which both allow easy patching and which one I use depends on if I'm in the mood to use a mouse or keyboard that day.
+* In some cases a set of changes are merged together and there is not a clear path of lines or hunks that can be cherry-picked to make clean atomic commits. In this case I have to resort to good ol' fashioned file backups and text editing (explained further below).
+
+!! 3.1 Git Commit Messages
+
+Here is my obligatory section about good commit messages. It is not enough to just have atomic code changes but to describe things that source code can not convey. For example it would not be expected to discuss solutions you tried but found lacking in code comments, or to consider links to supporting documentations, articles, Q&A, etc.
+
+I feel it is important to have a good explanation of what you changed and why in the commit messages. Granted not all changes require this but many do. If I've explained my though process in a previous commit and this one if simply to connect the pieces then I don't need to reiterate the same thing. The trick is that someone can `git log` through to see what is happening. For example I can use `git blame` on a line of code to usually find the change that produced it. If the commit is attached to other commits a `git log` will walk back from that point and expose the commit with the explanation.
+
+To help facilitate good commit messages I do the following:
+
+* Avoid `git commit -m` as much as possible. I always force myself to open the commit in an editor so that I am forced to think about the whole commit and what I want to say about it.
+* Use a commit template. I have a template that prompts me to answer some common questions. "If applied, this commit will&hellip;", "Why is this change needed?", "How does it address the issue?".
+
+I also turn on verbose commits. This way the diff of the commit is in the file I am editing. The advantage is that I can review that the commit matches my commit message but more importantly I can use name completion. If I want to reference a function or variable name I don't have to type the whole thing from memory I can just use completion because the diff provides the keywords in the current buffer.
+I also make it a point to sign my commits (see below). Y0ou can turn this on with `git config --global --bool --add commit.verbose true`.
+
+! 4. Destructive testing
+
+In this stage I write a test that encompasses enough setup to get one test to execute without error. This is my //are my pants on// test. Then I write a series of no-op tests that explain in words (the description) what I am planning to test. The behaviours come from:
+
+* Methods/actions I expose
+* Behaviours that are based on properties I set
+* Specific APIs I expect others to use
+
+There are three stages of tests that I focus on, especially in [[Ember]], I call ''unit'', ''integration'', and ''acceptance''. The differences between them are subtle but significant.
+
+To me, a ''unit'' test is for testing small parts, utility functions, non-Ember libs and objects, the kinds of things that you would have to contort other objects in strange ways just to exercise the one module. Some examples might include date-functions, custom computed properties, text processors, methods to objects that require no DOM or any expectation of a DOM, Models, Services, etc.
+
+''integration'' tests are the bulk of my testing. This is where I exercise all the edge cases that a component or helper could have. This also opens up the DOM and allows for very explicit dependency injections and focused mocking.
+
+''acceptance'' tests are mostly a <abbr title="Pain In The Ass">PITA</abbr> and I try to avoid them. Mostly I use acceptance tests to prove a full application //happy path//. I can justify this because I know that all the edge cases have been addressed in the integration tests. My philosophy here is that if my integration test can prove that every component on a page can render appropriately and reacts as expected based on the input provided that an acceptance test that renders that component is enough. It means that I know my app can render and hook up my components and I know that each component is fully tested. This is the same philosophy behind not testing the framework as you know the framework already has a full test suite.
+
+! 5. Fetch, Rebase, and Sign
+
+At this point I need to rebuild the branch with all the new tests and the code changes to make the tests work and most likely many bug fixes I never realized I had. To do this I will again use the above Git-fu to add atomic changes. Only this time I will link the commits to the previous commits.
+
+I have a few aliases for this process:
+
+* `git config --global --add alias.amend "commit --amend"`
+* `git config --global --add alias.fixup "commit --fixup"`
+* `git config --global --add alias.squash "commit --squash"`
+
+What these do is allow me to mark a new commit to be associated with a past commit. ''amend'' is simply says to take the staged changes and apply then to the most recent commit. More likely however is that the staged changes are meant for a commit a few back. For that I will use ''fixup'' which will create a new commit but the message will point to the commit in the past it is associated with. ''squash'' does the same thing but also marks that I want to edit the commit message when I eventually rebase.
+
+With all commits done I run `git rebase --interactive --autosquash <BASE_BRANCH>`. To make this easier I have the autosquash on by default with `git config --global --bool --add rebase.autosquash true` so that all I need to do is `git rebase -i <BASE_BRANCH>`.
+
+What this does is open the same interactive rebase I did above but with all the fixup and squash commits sorted into the right places. Once I save and exit the file Git will rebase applying those fixup and squash commits.
+
+!! 5.1 Signing
+
+Now my branch is ready for code review so I do one last step which is sign my commits. I have two alias for this:
+
+* `git config --global --add alias.sign "commit -v --amend --no-edit -S"`
+* `git config --global --add alias.signall "!f() { git rebase \"\$1\" --exec 'git sign'; }; f"`
+
+The first uses the `--amend` to sign the last commit. And the second does a rebase running `git sign` on each commit.
+
+!! 5.2 Pushing
+
+Finally I push this up but because we've rebased we can't push with out forcing. Because forcing can be problematic I always do the following:
+
+# Only do this on a feature branch
+# Use `--force-with-lease`. I have this aliased: `git config --global --add alias.pushf "push --force-with-lease"`
+
+And now I consolidate the commit messages into a summary for the Pull Request I am prepared to create.
+
+! Appendix A: Staging fun
+
+When my changes are so severe that I can not use `git add --patch` or `git gui` to separate them into atomic changes I will dive back into the editor. I will add as much as I can with `--patch`. If the difference between the distinct changes is simple I will edit the patch.
+
+For example if say I added two libs to a `package.json` file but only staging one at a time (to make the commits atomic) would leave a dangling comma I will use the edit feature of `--patch` to manually edit the diff. This has the advantage of letting me make the patch look like it would without the other commit but also keep the other changes so that I have something more for the next commit.
+
+Unfortunately there are times when the intermediate change is far to complicated for any of the above. In this case I am left with manual editing. What I will often do is back up the unstaged file or rely on my editor's undo feature. In Vim I will open the file and remove everything from the file that belongs to other commits. Basically I make the file look like how it should if all I did was end at the commit I am staging. Then I will save and press <kbd>CTRL-Z</kbd> to suspend the editor (keeping the undo in memory) and `git add` the file. The I resume Vim and undo back to what it should be and save. (I actually have a Vim command for this using [[vim-fugative|https://github.com/tpope/vim-fugitive]] `:Gwrite`).
+
+There have been times when I will copy the unstaged file to `./foo`, edit the original file, `git add`, then copy `./foo` back.
+
+It helps me to think about the ''staged'' changes as //How should the file look like at ''this'' commit// and let the unstaged changes mean //How the file should look like ''at the end'' of the Pull Request//.
+
+! Appendix B: Commit Template
+
+I add the following to `~/.git_commit_msg.txt`:
+
+```
+# If applied, this commit will...
+
+# Why is this change needed?
+Prior to this change,
+
+# How does it address the issue?
+This change
+
+# Provide links to any relevant tickets, articles or other resources
+```
+
+Then I execute `git config --global --path --add commit.template ~/.git_commit_msg.txt`
