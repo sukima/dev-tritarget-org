@@ -1,7 +1,7 @@
+modified: 20190207020156000
 caption: About
 created: 20160323135449961
 creator: Sukima
-modified: 20160412124510975
 modifier: Sukima
 position: 10
 tags: NavBar
@@ -17,8 +17,9 @@ This site was cobbled together with the following technologies:
 * JavaScript
 * TiddlyWiki
 * [[Node.js]]
-* [[Gulp]]
+* [[Make]]
 * [[Git]]
+* [[Vim]]
 
 !! About Me
 
