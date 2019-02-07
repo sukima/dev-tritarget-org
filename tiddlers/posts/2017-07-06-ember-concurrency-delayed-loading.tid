@@ -1,4 +1,4 @@
-modified: 20170706121539000
+modified: 20190207020112000
 created: 20170706121539000
 modifier: Sukima
 creator: Sukima
@@ -53,6 +53,4 @@ export default Ember.Component.extend({
 
 I at first thought that I had to wrap the `this.set('showLoadingIndicator', true);` in a conditional so that it would only execute if the result of the `race` was because the `timeout` resolved first (resolving as `undefined`). Turns out you don't need it. If the `timeout` finishes first then the `yield promise` will still be waiting while the `showLoadingIndicator` is `true`. However, if the `ajaxRequest` promise resolves first setting `showLoadingIndicator` to true is kind of a no-op because it will be set to false immediately afterwords (in the same Ember run loop) because the `yield promise` will not have to wait. And since rendering happens at the end of the Ember Run Loop the fact that `showLoadingIndicator` ''was'' set to `true` is lost the moment it gets set back to `false`.
 
-I've developed a working example of this in an [[ember-twiddle|https://ember-twiddle.com/18baf8b630d691bcf0d757d68f70cff2]]:
-
-<div style="position: relative; height: 0px; overflow: hidden; max-width: 100%; padding-bottom: 56.25%;"><iframe src="https://ember-twiddle.com/18baf8b630d691bcf0d757d68f70cff2?fullScreen=true" style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%;"></iframe></div>
+I've developed a working example of this in an ember-twiddle: https://ember-twiddle.com/18baf8b630d691bcf0d757d68f70cff2
