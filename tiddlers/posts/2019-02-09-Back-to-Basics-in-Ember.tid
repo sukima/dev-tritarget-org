@@ -1,0 +1,77 @@
+modified: 20190209161259000
+created: 20190209161259000
+creator: Sukima
+tags: Article Coding Ember
+title: Back to Basics in Ember
+type: text/vnd.tiddlywiki
+
+I've been thinking a lot about Ember and the vast amount of freedom it allows and the strict conventions it offers and I feel I can help by explaining my mental model of the Ember conventions.
+
+One of the big reasons I am so excited about Ember is that it provides out of the box structure to your applications. It offers canonical solutions 98% of the problems we face when writing full-fledged applications in the browser. And it does all this using tried and true methods like [[Object Oriented Programming]] patterns and [[Model-View-Controller]] based designs.
+
+Given that the [[Model-View-Controller]] design have name collisions with Ember terms I will attempt my best to highlight when these terms conflict.
+
+Ember's convention is to offer a MVVC design in that the ''view'' pattern is split into two pieces.
+
+! Model (Data Management)
+
+The ''model'' pattern in Ember is typically associated with ember-data but from a design point of view it is any kind of ''data management''. With this new concept we can black box things and define the ''model'' pattern as any API we provide to app code that manages data. This could be ember-data, raw `fetch`, jQuery AJAX, or some other fancy pants library. What is important is that this part of the MVC is a black box with well a known API.
+
+The other key piece of this is that the data management is accessible from //any// part of the application. Components, Controllers, Routes, even parts of the data management itself can access the ''model'' side of this pattern.
+
+! Controller (Route)
+
+The ''controller'' pattern of the MVC design is the middle man between the ''model'' and the ''view''. It has the responsibility to ask the data management for data and then pass it to the view to use.
+
+In Ember this process is handled by a series of hooks in the route. Any data returned from the `model()` hook will be passed to Ember's controller. The `setupContoller()` hook sets up the controller. There are a few more for different life cycles of a route transitions.
+
+{{ember-route-lifecycle.svg}}
+
+! View (Controller/Template)
+
+The ''view'' pattern in Ember is split into two. This is a point of drastic confusion. On one hand you have your top level templates controlled by a Controller and then you have templates controlled by Components. This could almost be argued there are three view categories: Controllers, Components, and Templates. I tend to think about this in three levels:
+
+{{ember-view-tree.svg}}
+
+Some of these need explanation&mdash;
+
+!! Controllers
+
+For me the controller manages the management of query params and the template. It handles the communication bridge between the Route and the Template. It handles UI specific to the controller's scope of the hierarchy like notifications, nav bars, modals, and delegating to components.
+
+For me I will always alias the model. Since the Route will provide me a `model` which is a generic name I will rename to to something specific with more meaning in the controller.
+
+```javascript
+// app/controllers/books.js
+export default Controller.extend({
+  books: reads('model')
+});
+```
+
+Also to me, the fact that a Route can refresh the model based on a query param is still a Controller concern in that the controller is communicating to the route by means of setting a query param. Where as the Route simply gives the controller a `model` and lets the controller know it is time to setup or reset.
+
+!! Top Level Layouts
+
+These are layout sections of a template that handle top level concerns like grid layouts, flexbox, nav bars, etc. They could be part of the template or delegate to components.
+
+!! Data Components
+
+These are components who manage data. They are ''Provider Components'' which means they `yield` data. This could be calculations on existing data, or possibly fetching data themselves. They might also `yield` actions to manipulate the data. An example of thins might be a component that fetches a list of users and exposes that list so a `<select>` can loop through them.
+
+!! Application Components
+
+In some applications there may be a convention to render the Controllers' layout as a Component. In this way the top level template gains the benefits of a Component's life-cycle hooks. In this case the controller is simply the query param manager and delegates to the component.
+
+!! Black Box Components
+
+These are those components that encapsulate a mini application or sub-application. They usually take one piece of data (like a model) and do things inside likely mutating the data in the process. This could be a Wizard modal system, or an interactive map, an Amiga Music Tracker.
+
+The important concept is that from the outside they are a black box where you put something in and something comes out and how that is done is the box's concern.
+
+!! Generic Components
+
+These are the components you see in guides and tutorials most often. They represent basic HTML elements but with some behavior involved. Like a QRCode image generator, or a autocomplete search box.
+
+!! Basic HTML Elements
+
+And your base HTML elements like `<input>` and `<textarea>` etc.
