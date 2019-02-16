@@ -1,4 +1,4 @@
-modified: 20180522225656000
+modified: 20190216020258000
 created: 20160324133130224
 creator: Sukima
 modifier: Sukima
@@ -16,9 +16,9 @@ Very proficient on command line using tmux, bash, and Vim
 
 !! Work History
 
-<<work-history title:"Senior Software Developer" where:"""[ext[Communication Services for the Deaf, Inc.|https://www.csd.org/]]""" dates:"08/2017 - Present">>
+<<work-history title:"Senior Software Developer" where:"""[ext[Communication Services for the Deaf, Inc.|https://www.csd.org/]]""" dates:"08/2017 - 02/2019">>
 
-I maintain and grow several EmberJS applications focused on managing work tickets and assignments for ASL interpreters and interpreter agencies. Requirements gathering for features and implementing appropriate refactoring for both new features and bug fixes. I help with back end development using Ruby on Rails. I provide mentoring to others through text communications, pair programming, and Pull Request reviews.
+I maintained and grew several EmberJS applications focused on managing work tickets and assignments for ASL interpreters and interpreter agencies. Requirements gathering for features and implementing appropriate refactoring for both new features and bug fixes. I helped with back end development using Ruby on Rails. I provided mentoring to others through text communications, pair programming, and Pull Request reviews.
 
 <<work-history title:"Senior Software Developer" where:"""[ext[SeeClickFix, Inc.|https://seeclickfix.com/]]""" dates:"04/2013 - 08/2017">>
 
