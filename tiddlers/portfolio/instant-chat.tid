@@ -1,0 +1,17 @@
+modified: 20190217162942000
+created: 20190217162942000
+modifier: Sukima
+creator: Sukima
+title: Instant Chat
+tags: Projects Portfolio
+terms: EmberJS, JavaScript, Encryption, Websockets
+description: An end-to-end secure chat system for the Deaf
+url: https://suki-instant-chat.herokuapp.com
+
+<a href={{!!url}}><<preview-right "instant-chat.png">></a>
+
+An end-to-end secure chat app designed to allow a Deaf person to send ephemeral messages to others by the use of a QR Code or small link. It uses LibSodium to encrypt the communications between the clients and the keys are only on the client browser till the tab closes. Everything is client side written in EmberJS with the server being only a Socket.IO relay.
+
+''Demo:'' {{!!url}} <br>
+''Source:'' https://gitlab.com/instant-chat/instant-chat <br>
+''Source:'' https://gitlab.com/instant-chat/instant-chat-server
