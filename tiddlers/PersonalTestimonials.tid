@@ -4,10 +4,18 @@ modifier: Sukima
 creator: Sukima
 title: PersonalTestimonials
 
+<div class="testimonials-flow">
+
 <$list filter="[tag[PersonalTestimonials]!has[draft.of]!sort[created]]">
 
-<<<
+<div class="testimonials-quote">
+
 <$transclude />
-<<< {{!!caption}}
+
+<cite>{{!!caption}}</cite>
+
+</div>
 
 </$list>
+
+</div>
