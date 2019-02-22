@@ -1,4 +1,4 @@
-modified: 20190216020258000
+modified: 20190222173636000
 created: 20160324133130224
 creator: Sukima
 modifier: Sukima
@@ -18,11 +18,11 @@ Very proficient on command line using tmux, bash, and Vim
 
 <<work-history title:"Senior Software Developer" where:"""[ext[Communication Services for the Deaf, Inc.|https://www.csd.org/]]""" dates:"08/2017 - 02/2019">>
 
-I maintained and grew several EmberJS applications focused on managing work tickets and assignments for ASL interpreters and interpreter agencies. Requirements gathering for features and implementing appropriate refactoring for both new features and bug fixes. I helped with back end development using Ruby on Rails. I provided mentoring to others through text communications, pair programming, and Pull Request reviews.
+Maintained and grew several EmberJS applications focused on managing work tickets and assignments for ASL interpreters and interpreter agencies. Requirements gathering for features and implementing appropriate refactoring for both new features and bug fixes. Helped with back end development using Ruby on Rails. Provided mentoring to others through text communications, pair programming, and Pull Request reviews. Built custom ember-data transport layer between Discus and ~WordPress. Developed several production ready Ember Addons. Studied and mentored the use and implementation of JSON:API. Refactored legacy code to harness modern Ember and Application design patterns.
 
 <<work-history title:"Senior Software Developer" where:"""[ext[SeeClickFix, Inc.|https://seeclickfix.com/]]""" dates:"04/2013 - 08/2017">>
 
-I was a lead EmberJS developer. I maintained and developed their administrative, client facing., web application written entirely in EmberJS and interfaces with our Ruby on Rails API. I maintained an iOS application written in Appcelerator Titanium (JavaScript → native). I've written several Node based build system using Gulp, Browserify, Ember. I've written several (in-house) stream based plugins for Gulp. I helped maintain our Native Android application. I actively maintained and enhanced their backend with Ruby on Rails. I wrote a test suite frame work in Jasmine for Titanium code and later ported the same system to Mocha.
+Was a lead EmberJS developer. Maintained and developed their administrative, client facing., web application written entirely in EmberJS and interfaces with our Ruby on Rails API. Maintained an iOS application written in Appcelerator Titanium (JavaScript → native). Wrote several Node based build system using Gulp, Browserify, Ember. Wrote several (in-house) stream based plugins for Gulp. Helped maintain a Native Android application. Maintained and enhanced the back end with Ruby on Rails. Wrote a test suite frame work in Jasmine for Titanium code and later ported the same system to Mocha.
 
 * Senior EmberJS Engineer
 * Ruby on Rails developer
