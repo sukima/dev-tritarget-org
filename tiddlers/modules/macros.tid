@@ -32,6 +32,6 @@ type: text/vnd.tiddlywiki
 
 \define pullquote(float:"right") <div class="tc-pullquote tc-float-$float$">$(quote)$</div>
 
-\define preview(image) [img width=172 [$image$]]
+\define preview(image, width:172) [img width=$width$ [$image$]]
 
-\define preview-right(image) [img width=172 class="tc-float-right" [$image$]]
+\define preview-right(image, width:172) [img width=$width$ class="tc-float-right" [$image$]]
