@@ -1,0 +1,27 @@
+modified: 20190227030338000
+created: 20190227030338000
+modifier: Sukima
+creator: Sukima
+title: Jasmine Cookbook
+isbn: 9781784397166
+
+I was the ''technical reviewer'' for this published book ISBN: {{!!isbn}}
+
+https://www.oreilly.com/library/view/jasmine-cookbook/9781784397166/
+
+!! Book Description
+
+Over 35 recipes to design and develop Jasmine tests to produce world-class JavaScript applications
+
+Jasmine provides a rich set of libraries to design and develop tests for JavaScript applications. Its tests aim to run on any JavaScript-enabled platform and have easy-to-read syntax.
+
+This book is a comprehensive guide to designing and developing Jasmine tests to produce world-class software. The recipes are elaborated using examples from a real-world application, which involves various aspects of designing and developing tests from simple to complex level. You will learn how to create tests for jQuery and Ajax, HTML and JSON fixtures, CoffeeScript, and AngularJS. By learning and applying the best practices throughout this book, you can deliver your applications with zero defects and ensure success for you and your clients.
+
+What You Will Learn
+
+* Develop JavaScript applications with Jasmine using the behavior-driven development (BDD) process
+* Apply custom matchers by enhancing your Jasmine tests to test specific features or functionality
+* Design Jasmine specs for jQuery and Ajax with HTML and JSON fixtures
+* Generate code coverage analysis for JavaScript code using Karma and Istanbul
+* Create Jasmine tests for CoffeeScript and AngularJS
+* Implement E2E (end-to-end) Jasmine specs for JavaScript applications to simulate a real-time scenario

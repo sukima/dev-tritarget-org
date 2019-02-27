@@ -5,7 +5,6 @@ modifier: Sukima
 title: ResumeBody
 type: text/vnd.tiddlywiki
 
-\define tv-wikilinks() no
 \define work-history(title,where,dates) !!! $dates$<br>$title$, $where$
 
 !! Proficiency

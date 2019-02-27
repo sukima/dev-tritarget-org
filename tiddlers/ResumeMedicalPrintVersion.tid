@@ -4,6 +4,8 @@ tags:
 title: Devin Weaver's Health Care Résumé
 type: text/vnd.tiddlywiki
 
+\define tv-wikilinks() no
+
 @@.img-thumbnail
 @@float:right;
 [img width=128 [SelfPicSqLookLeft.jpg]]
