@@ -1,0 +1,21 @@
+tags:
+title: $:/plugins/bimlas/disqus/README/FAQ
+type: text/vnd.tiddlywiki
+
+! Frequently asked questions
+
+!! Can I use on "read only" on wiki?
+
+Disqus is responsible for storing and managing comments, there is nothing to store in ~TiddlyWiki other than settings.
+
+!! Will I be notified when a new comment is posted?
+
+It depends on your [[Disqus settings|https://help.disqus.com/user-profile/updating-your-disqus-settings]].
+
+!! The links in the email notification do not work
+
+Disqus does not handle permalinks (that's how ~TiddlyWiki identifies tiddlers), so the `#` character has been removed from the URL. Add `#` to the end of your website URL before the tiddler title. For example if the mail contains https://tiddlywiki.com/PermaLinks, write to https://tiddlywiki.com/#PermaLinks.
+
+!! Counters do not always appear
+
+I don't know the reason, but it seems that until we open a conversation thread, the corresponding counter cannot be polled, so the default text will appear (you can define it in the plugin settings).

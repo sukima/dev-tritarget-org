@@ -1,0 +1,10 @@
+{
+	"title": "$:/plugins/bimlas/disqus",
+	"description": "Disqus comments",
+	"author": "bimlas",
+	"version": "1.0.0",
+	"core-version": ">=5.1.18",
+	"source": "https://gitlab.com/bimlas/tw5-disqus",
+	"plugin-type": "plugin",
+	"list": "README/README README/setup settings/settings README/FAQ"
+}

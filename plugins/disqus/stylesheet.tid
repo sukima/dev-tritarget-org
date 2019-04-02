@@ -1,0 +1,13 @@
+tags: $:/tags/Stylesheet
+title: $:/plugins/bimlas/disqus/stylesheet
+type: text/css
+
+.bimlas-disqus-toggle {
+	display: block;
+	width: 100%;
+	text-align: right;
+}
+
+.bimlas-disqus-toggle img {
+	height: 1rem;
+}
