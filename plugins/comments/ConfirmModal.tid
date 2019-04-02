@@ -1,7 +1,0 @@
-modified: 20160120015922000
-created: 20160119130707000
-title: $:/plugins/sukima/comments/ConfirmModal
-footer: {{$:/plugins/sukima/comments/ConfirmModalFooter}}
-subtitle: Terms of Use
-
-<$transclude tiddler={{$:/config/comments/TermsOfUseTiddler}} mode="block"/>

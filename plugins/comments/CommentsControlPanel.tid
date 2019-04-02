@@ -1,7 +1,0 @@
-title: $:/plugins/sukima/comments/config
-type: text/vnd.tiddlywiki
-tags: $:/tags/ControlPanel/Info
-caption: Comments
-
-|Comment Post URL |<$edit-text tiddler="$:/config/comments/host" tag="input" default=""/> |
-|Terms of Use Tiddler |<$edit-text tiddler="$:/config/comments/TermsOfUseTiddler" tag="input" default=""/> |
