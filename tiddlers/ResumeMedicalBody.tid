@@ -19,19 +19,9 @@ Work in Emergency Medicine as a Paramedic licensed in the state of Connecticut.
 
 !! Work History
 
-<<work-history title:"Senior Software Developer" where:"""[ext[Communication Services for the Deaf, Inc.|https://www.csd.org/]]""" dates:"08/2017 - 02/2019">>
+<<work-history title:"Senior Engineer" where:"""[ext[CrowdStrike|https://crowdstrike.com/]]""" dates:"04/2019 - Present">>
 
 I performed project management, leadership, and mentoring among my co-workers. Being remote I was always working on my communication skills and documentation skills. I also continued to develop my critical thinking skills.
-
-* Project management
-* Mentor
-* Teacher
-* Public Speaker
-* Team Collaboration
-* Problem solving
-* Critical thinking
-
-<<work-history title:"Senior Software Developer" where:"""[ext[SeeClickFix, Inc.|https://seeclickfix.com/]]""" dates:"04/2013 - 08/2017">>
 
 Software development provides daily opportunities for leadership, mentoring, and teaching. I excel at problem solving and critical thinking.
 
@@ -42,6 +32,10 @@ Software development provides daily opportunities for leadership, mentoring, and
 * Team Collaboration
 * Problem solving
 * Critical thinking
+
+<<work-history title:"Senior Software Developer" where:"""[ext[Communication Services for the Deaf, Inc.|https://www.csd.org/]]""" dates:"08/2017 - 02/2019">>
+
+<<work-history title:"Senior Software Developer" where:"""[ext[SeeClickFix, Inc.|https://seeclickfix.com/]]""" dates:"04/2013 - 08/2017">>
 
 <<work-history title:"Simulation Specialist" where:"Yale New Haven Health System" dates:"03/2010 - 04/2013">>
 
@@ -66,5 +60,4 @@ I maintained and facilitated the Yale Hospital Simulation Department. Supervisor
 
 !! Associations
 
-* Member of Groton Ambulance Association (15+ years)
-* Former treasurer and secretary of Groton Ambulance Association
+{{ResumeAssociations}}

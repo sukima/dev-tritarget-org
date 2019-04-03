@@ -15,6 +15,10 @@ Very proficient on command line using tmux, bash, and Vim
 
 !! Work History
 
+<<work-history title:"Senior Engineer" where:"""[ext[CrowdStrike|https://crowdstrike.com/]]""" dates:"04/2019 - Present">>
+
+TBD
+
 <<work-history title:"Senior Software Developer" where:"""[ext[Communication Services for the Deaf, Inc.|https://www.csd.org/]]""" dates:"08/2017 - 02/2019">>
 
 Maintained and grew several EmberJS applications focused on managing work tickets and assignments for ASL interpreters and interpreter agencies. Requirements gathering for features and implementing appropriate refactoring for both new features and bug fixes. Helped with back end development using Ruby on Rails. Provided mentoring to others through text communications, pair programming, and Pull Request reviews. Built custom ember-data transport layer between Discus and ~WordPress. Developed several production ready Ember Addons. Studied and mentored the use and implementation of JSON:API. Refactored legacy code to harness modern Ember and Application design patterns.
