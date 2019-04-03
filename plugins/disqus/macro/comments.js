@@ -23,6 +23,8 @@ Display Disqus comments
 	Run the macro
 	*/
 	exports.run = function(current) {
+		// Interactive DOM not available when generating static pages
+		if (!$tw.browser) return;
 
 		/* Remove current Disqus */
 		var current_disqus = document.getElementById("DISQUS-LOADER");

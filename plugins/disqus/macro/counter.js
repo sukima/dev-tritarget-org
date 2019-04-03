@@ -23,6 +23,8 @@ Display Disqus comments counter
 	Run the macro
 	*/
 	exports.run = function(current) {
+		// Interactive DOM not available when generating static pages
+		if (!$tw.browser) return;
 
 		/* Get counter loader */
 		if(document.getElementById("dsq-count-scr") === null) {
