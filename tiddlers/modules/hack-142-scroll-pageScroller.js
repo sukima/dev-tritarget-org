@@ -1,17 +1,11 @@
+/*\
 created: 20160323143348987
 modified: 20160323143823924
 module-type: macro
-tags: 
 title: $:/hack-142-scroll-pageScroller.js
 type: application/javascript
 
-/*\
-title: $:/hack-142-scroll-pageScroller.js
-type: application/javascript
-module-type: macro
-summary: overwrites $tw.pageScroller.scrollIntoView to introduce an offset [[$:/config/OffsetY]]
-
-<<hack-142>>
+overwrites $tw.pageScroller.scrollIntoView to introduce an offset [[$:/config/OffsetY]]
 
 \*/
 (function(){
@@ -34,7 +28,7 @@ exports.run = function() {
 		this.hackOnce = true;
 
 		//HACK-142: get offsetY
-		var offsetY = parseInt($tw.wiki.getTiddlerText("$:/config/OffsetY"));
+		var offsetY = parseInt($tw.wiki.getTiddlerText("$:/config/OffsetY"), 10);
 		offsetY = isNaN(offsetY) ? 0 : offsetY;
 
 		/*
@@ -91,7 +85,7 @@ exports.run = function() {
 					if(duration <= 0) {
 						t = 1;
 					} else {
-						t = ((Date.now()) - self.startTime) / duration;	
+						t = ((Date.now()) - self.startTime) / duration;
 					}
 					if(t >= 1) {
 
@@ -112,8 +106,6 @@ exports.run = function() {
 			}
 		};
 
-
-	};
 	return "";
 
 }
