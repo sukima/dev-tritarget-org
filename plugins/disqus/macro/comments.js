@@ -13,6 +13,9 @@ Display Disqus comments
 	/*global $tw: false */
 	"use strict";
 
+	var LOADER_ID = "DISQUS-LOADER";
+	var THREAD_ID = "disqus_thread";
+
 	exports.name = "disqus-comments";
 
 	exports.params = [
@@ -27,7 +30,7 @@ Display Disqus comments
 		if (!$tw.browser) return;
 
 		/* Remove current Disqus */
-		var current_disqus = document.getElementById("DISQUS-LOADER");
+		var current_disqus = document.getElementById(LOADER_ID);
 		if(current_disqus !== null) {
 			(document.head || document.body).removeChild(current_disqus);
 		}
@@ -39,11 +42,18 @@ Display Disqus comments
 		/* Load Disqus */
 		var loader = document.createElement('script');
 		loader.src = 'https://' + $tw.wiki.getTiddlerText('$:/config/bimlas/disqus/shortname') + '.disqus.com/embed.js';
-		loader.id = 'DISQUS-LOADER';
+		loader.id = LOADER_ID;
 		loader.setAttribute('data-timestamp', (new Date()).toString());
 		(document.head || document.body).appendChild(loader);
 
-		return '<div id="disqus_thread"></div>'
+		$tw.utils.nextTick(function() {
+			$tw.rootWidget.dispatchEvent({
+				type: "disqus-did-insert-element",
+				target: document.getElementById(THREAD_ID)
+			});
+		});
+
+		return '<div id="' + THREAD_ID + '"></div>'
 	};
 
 })();
