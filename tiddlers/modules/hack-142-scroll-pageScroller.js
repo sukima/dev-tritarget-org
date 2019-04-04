@@ -85,7 +85,7 @@ exports.run = function() {
 					if(duration <= 0) {
 						t = 1;
 					} else {
-						t = ((Date.now()) - self.startTime) / duration;
+						t = ((Date.now()) - self.startTime) / duration;	
 					}
 					if(t >= 1) {
 
@@ -105,6 +105,29 @@ exports.run = function() {
 				drawFrame();
 			}
 		};
+
+		$tw.rootWidget.addEventListener('disqus-did-insert-element', function(event) {
+			var pageScroller = new $tw.utils.PageScroller();
+			var threadEl = event.target;
+			pageScroller.scrollIntoView(threadEl, function() {
+				var bounds = threadEl.getBoundingClientRect();
+				var offsetTop = bounds.top >= 1
+					? bounds.top - offsetY
+					: bounds.top;
+				return {
+					bottom: bounds.bottom,
+					height: bounds.height,
+					left: bounds.left,
+					right: bounds.right,
+					top: offsetTop,
+					width: bounds.width,
+					x: bounds.x,
+					y: bounds.y
+				};
+			});
+		});
+
+	};
 
 	return "";
 
