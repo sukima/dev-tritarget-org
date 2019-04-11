@@ -17,7 +17,7 @@ build:
 server:
 	@rm -f wiki/tiddlywiki.info
 	$(MAKE) -e NODE_ENV=development build-files
-	$(tiddlywiki) wiki --server "" "" "" "" "" "" "0.0.0.0"
+	$(tiddlywiki) wiki --listen host=0.0.0.0
 
 media-build:
 	@rm -f wiki/tiddlywiki.info
