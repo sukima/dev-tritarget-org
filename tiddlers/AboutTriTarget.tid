@@ -1,12 +1,14 @@
-modified: 20190207020156000
 caption: About
 created: 20160323135449961
 creator: Sukima
+modified: 20190415040930971
 modifier: Sukima
 position: 10
 tags: NavBar
 title: AboutTriTarget
 type: text/vnd.tiddlywiki
+
+[img width="240" class="tc-float-right" [SiteLogo.svg]]
 
 This site is built with TiddlyWiki. You can view the source code for this site on GitHub.
 
