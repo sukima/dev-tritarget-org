@@ -21,6 +21,15 @@ type: text/vnd.tiddlywiki
 	fill: <<colour foreground>>;
 }
 
+.tc-splash-logo {
+	margin: 20px auto 0;
+	width: 100%;
+	text-align: center;
+}
+.tc-splash-logo svg {
+	width: 200px;
+}
+
 html body.tc-body {
 	background: <<colour page-background>>;
 }
