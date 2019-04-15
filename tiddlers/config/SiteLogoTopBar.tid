@@ -1,0 +1,16 @@
+modified: 20190415024327000
+created: 20190415024327000
+title: $:/site/SiteLogoTopBar
+tags: $:/tags/TopRightBar
+type: text/vnd.tiddlywiki
+
+<style scoped>
+.tc-site-logo {
+  float: left;
+  margin: 6px 10px 0;
+  padding: 0;
+  width: 30px;
+  filter: invert(1);
+}
+</style>
+[img class="tc-site-logo" [SiteLogo.svg]]
