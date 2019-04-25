@@ -1,25 +1,36 @@
-modified: 20160509000202000
+modified: 20190425160438000
 created: 20160509000202000
 modifier: Sukima
 creator: Sukima
 title: maybe.js
 tags: snippets JavaScript
 
-A simple maybe / optional snippet in JavaScript. For a more feature full ''monad'' look at https://gist.github.com/sukima/d117a0223a9884f2c860
+A simple maybe / optional snippet in JavaScript. For a more feature full ''monad'' look at https://github.com/sukima/maybe-simple
 
 ```javascript
-function maybe(value) {
-  var obj = null;
-  function isEmpty() { return value === undefined || value === null }
-  function nonEmpty() { return !isEmpty() }
-  obj = {
-    map: function (f) { return isEmpty() ? obj : maybe(f(value)) },
-    getOrElse: function (n) { return isEmpty() ? n : value },
-    isEmpty: isEmpty,
-    nonEmpty: nonEmpty
-  }
-  return obj;
-}
+(function(exports) {
+  exports.safeRead = function safeRead(obj, selector) {
+    if (obj == null) { return null; }
+    if (!selector || selector.length === 0) { return obj; }
+    if ('string' === typeof selector) { selector = selector.split('.'); }
+    return safeRead(obj[selector.shift()], selector);
+  };
+
+  exports.maybe = function maybe(value) {
+    if (value && value.isMaybe) return value;
+    function isEmpty() { return value == null; }
+    var obj = {
+      prop: function(k) { return maybe(safeRead(value, k)); },
+      bind: function(f) { return isEmpty() ? obj : maybe(f(value)); },
+      value: function (n) { return isEmpty() ? n : value; },
+      isEmpty: isEmpty,
+      isMaybe: true
+    };
+    return obj;
+  };
+})(window);
 ```
 
-<small>Source: https://gist.github.com/andyhd/1618403</small>
+[ext[Tests are available|/maybe-test.html]] for this snippet.
+
+<small>Original source: https://gist.github.com/andyhd/1618403</small>

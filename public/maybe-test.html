@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<!-- GistID: 9abdf469d6c4d0268973ea3e674bd50f -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Mini Maybe Tests</title>
+  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.9.2.css">
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+<script src="https://code.jquery.com/qunit/qunit-2.9.2.js"></script>
+<script>
+(function(exports) {
+  exports.safeRead = function safeRead(obj, selector) {
+    if (obj == null) { return null; }
+    if (!selector || selector.length === 0) { return obj; }
+    if ('string' === typeof selector) { selector = selector.split('.'); }
+    return safeRead(obj[selector.shift()], selector);
+  };
+
+  exports.maybe = function maybe(value) {
+    if (value && value.isMaybe) return value;
+    function isEmpty() { return value == null; }
+    var obj = {
+      prop: function(k) { return maybe(safeRead(value, k)); },
+      bind: function(f) { return isEmpty() ? obj : maybe(f(value)); },
+      value: function (n) { return isEmpty() ? n : value; },
+      isEmpty: isEmpty,
+      isMaybe: true
+    };
+    return obj;
+  };
+})(window);
+</script>
+<script>
+(function({ module, test }, undefined) {
+  module('safeRead', function() {
+    test('returns null when subject is nothing', function(assert) {
+      assert.equal(safeRead(), null);
+      assert.equal(safeRead(null), null);
+    });
+
+    test('returns object when selector is nothing', function(assert) {
+      var expected = { foo: 'bar' };
+      assert.deepEqual(safeRead(expected), expected);
+    });
+
+    test('returns null when nested selector does not exist', function(assert) {
+      var test = { foo: { bar: { baz: 'foobarbaz' } } };
+      assert.equal(safeRead(test, 'foo.not-there.baz'), null);
+    });
+
+    test('returns value nested in object', function(assert) {
+      var test = { foo: { bar: { baz: 'foobarbaz' } } };
+      assert.equal(safeRead(test, 'foo.bar.baz'), 'foobarbaz');
+    });
+  });
+
+  module('maybe', function() {
+    test('does not nest maybe() calls', function(assert) {
+      var expected = maybe();
+      var actual = maybe(expected);
+      assert.equal(actual, expected);
+    });
+
+    test('provides isMaybe flag', function(assert) {
+      assert.ok(maybe().isMaybe);
+    });
+
+    test('provides value()', function(assert) {
+      assert.equal(maybe().value(), undefined);
+      assert.equal(maybe('foo').value(), 'foo');
+    });
+
+    test('allows a default for value()', function(assert) {
+      assert.equal(maybe().value('bar'), 'bar');
+      assert.equal(maybe('foo').value('bar'), 'foo');
+    });
+
+    test('provides isEmpty()', function(assert) {
+      assert.ok(maybe().isEmpty());
+      assert.notOk(maybe('foo').isEmpty());
+    });
+
+    test('can bind results of a function call', function(assert) {
+      var callCount = 0;
+      maybe().bind(function() { callCount++; });
+      assert.equal(callCount, 0);
+      maybe(true).bind(function() { callCount++; });
+      assert.equal(callCount, 1);
+      var actual = maybe(true).bind(function() { return 'foo'; }).value();
+      assset.equal(actual, 'foo');
+    });
+
+    test('resolves nested properties safely', function(assert) {
+      var subject = maybe({ foo: { bar: { baz: 'BAZ' } } });
+      assert.equal(subject.prop('foo.bar.baz').value(), 'BAZ');
+      assert.equal(subject.prop('foo.not-exist.baz').value(), undefined);
+    });
+  });
+})(QUnit);
+</script>
+</body>
+</html>
