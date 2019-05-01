@@ -26,6 +26,7 @@
     var obj = {
       prop: function(k) { return isEmpty() ? obj : maybe(safeRead(value, k)); },
       bind: function(f) { return isEmpty() ? obj : maybe(f(value)); },
+      nothing: function(f) { return !isEmpty() ? obj : maybe(f(value)); },
       value: function (n) { return isEmpty() ? n : value; },
       isEmpty: isEmpty,
       isMaybe: true
@@ -91,6 +92,16 @@
       maybe(true).bind(function() { callCount++; });
       assert.equal(callCount, 1);
       var actual = maybe(true).bind(function() { return 'foo'; }).value();
+      assert.equal(actual, 'foo');
+    });
+
+    test('can reverse bind results of a function call', function(assert) {
+      var callCount = 0;
+      maybe().nothing(function() { callCount++; });
+      assert.equal(callCount, 1);
+      maybe(true).nothing(function() { callCount++; });
+      assert.equal(callCount, 1);
+      var actual = maybe().nothing(function() { return 'foo'; }).value();
       assert.equal(actual, 'foo');
     });
 
