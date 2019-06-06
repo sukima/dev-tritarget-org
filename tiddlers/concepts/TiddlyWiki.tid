@@ -4,7 +4,7 @@ tags: Concepts
 title: TiddlyWiki
 type: text/vnd.tiddlywiki
 
-\define main-link(text,tiddler) [[$text$|http://tiddlywii.com/#$tiddler$]]
+\define main-link(text tiddler) [[$text$|https://tiddlywiki.com/#$tiddler$]]
 
 <a href={{Tiddler Poster.png!!source}} target="_blank">
 [img width=232 [Tiddler Poster.png]]
