@@ -1,0 +1,43 @@
+modified: 20190702182303000
+created: 20190702182303000
+modifier: Sukima
+creator: Sukima
+title: Computed Properties
+tags: Ember JavaScript Concepts Coding
+
+Imagine if you will the following hierarchy:
+
+```javascript
+foo: computed(function() {}),
+bar: computed('foo', function() {}),
+baz: computed('bar', function() {}),
+```
+
+If you `this.baz` the system will walk up the tree asking if something has been marked as changed and then start recalculating back down from there. Computed Properties are ''lazy-evaluated'' and have a cache that the use of `this.set()` invalidates. The use of `notifyPropertyChange` overrides the normal operation of things and marks that specific property as changed needing to be recalculated (and anyone dependent on it also). But only when it is needed (by way of a getter like `this.baz`).
+
+This is why side effects in computed properties are so bad and why the Ember community exploded with ''Data Down; Actions Up'' enthusiasm. Computed Properties with side-effects depend on someone somewhere asking for a value to trigger a re-computation. It is like trying to mow the lawn with a lawn mower that won't start unless your neighbor asks Alexa how much milk is in the fridge.
+
+That said the case for `notifyPropertyChange` has only two uses in normal code.
+
+# Your property in question is not an Ember track-able object like Map or Set.
+# The property in question has no method of cache invalidation (i.e. `computed(() => (...))`).
+
+In the case of the later (2) you may never or should never encounter the need to invalidate its cache because the very need to do so means you need a different design and not a computed property.
+
+Basically this all comes down to ''stick with Ember'', ''use computed properties as pure functions'' (no side effects), use `this.set` and everything will mostly just work for you. If you use `Map` and `Set` or some other non-Ember like thing then yeah you may need to look into `notifyPropertyChange` but now your into advanced programming.
+
+Also note that `this.set` does extra work to see if the value really did change before notifying things. For example:
+
+```javascript
+foo: computed('bar', function() {
+  console.count('recomputed');
+  return this.bar;
+}),
+
+init() {
+  this._super(...arguments);
+  setInterval(() => this.set('bar', 'BAR'), 1000);
+}
+```
+
+Will only show recompute logged ''twice'' ever (assuming `foo` is used in a template). See if you can [[grok|https://en.wikipedia.org/wiki/Grok]] why.
