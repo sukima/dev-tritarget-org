@@ -1,0 +1,21 @@
+created: 20190719142542000
+creator: Eric Steven Raymond
+modified: 20190719143756106
+modifier: Sukima
+tags: Resource
+title: The Art of Unix Programming
+type: text/vnd.tiddlywiki
+
+''Eric Steven Raymond'', [[Thyrsus Enterprises|http://www.catb.org/~esr/]], `<esr@thyrsus.com>`
+
+Copyright © 2003 Eric S. Raymond
+
+<<<
+This book and its on-line version are distributed under the terms of the Creative Commons Attribution-~NoDerivs 1.0 license, with the additional proviso that the right to publish it on paper for sale or other for-profit use is reserved to Pearson Education, Inc. A reference copy of this license may be found at http://creativecommons.org/licenses/by-nd/1.0/legalcode.
+<<<
+
+<<.note """This is a mirror archive of the original from https://homepage.cs.uri.edu/~thenry/resources/unix_art/index.html""">>
+
+<div style="font-size: 1.6em; font-weight: bold;">
+[ext[Read the full book here|/files/the-art-of-unix-programming/index.html]]
+</div>
