@@ -1,0 +1,89 @@
+modified: 20190724184747000
+created: 20190724184747000
+modifier: Sukima
+creator: Sukima
+title: Make More Objects
+tags: Article Coding JavaScript
+
+Often in my development I find that some concepts tend to present themselves as complicated to me. When I sit back and attempt to wrap the complication in an object suddenly things become very clear.
+
+In many cases I've heard people complain that abstraction makes things harder. I know for some this is true but I am the opposite. Once I have an abstraction all I need its interface and I don't need to see the implementation. In fact when implementation is inline and not named I get more confused.
+
+This leads me to want to shout ''Make More Objects!'' because then these things can have clear interfaces to work with. That said the wrong abstractions is far worse then none at all!
+
+In this post I thought I would share one example where this came to light: DOM Events. I was working on an [[Ember]] component and realized that the process of adding and removing event handlers to a DOM node required saving the attached event so it could be removed later. This saving of state felt dirty in an already complicated component as it felt like mixing responsibilities. On top of that the component just wanted to attach and detach events but now because of the COM API was forced to handle multiple states for multiple events just so they could be torn down later.
+
+I will start with two lifecycle hooks using inline practises:
+
+```javascript
+init() {
+  this._super(...arguments);
+  this._focusHandler = event => this.handleFocus(event);
+  this._clickHandler = event => this.handleClick(event);
+},
+didInsertElement() {
+  this._super(...arguments);
+  let el = document.querySelector('#foo');
+  el.addEventListener('focus', this._focusHandler);
+  el.addEventListener('click', this._clickHandler);
+},
+willDestroyElement() {
+  this._super(...arguments);
+  let el = document.querySelector('#foo');
+  el.removeEventListener('focus', this._focusHandler);
+  el.removeEventListener('click', this._clickHandler);
+}
+```
+
+This seemed to me a little needles and adding or removing meant changing two places plus the mental overhead of remembering more state for each event. Not to mention name collisions. Now we could make it more generic by storing them in a `this._handlers` POJO but at that point why not build out an intention revealing interface instead of having to remember a pattern when really you want to focus on the components intention and not how it manages event handling.
+
+To address that I think a new object would be beneficial:
+
+```javascript
+class DOMEventDelegator {
+  constructor(element) {
+    this.element = element;
+    this.handlers = {};
+  }
+  register(eventName, handler) {
+    this.handlers[eventName], handler);
+    return this;
+  }
+  attach() {
+    for (let eventName of Object.keys(this.handlers)) {
+      this.element.addEventListener(eventName, this.handlers[eventName]);
+    }
+    return this;
+  }
+  detach() {
+    for (let eventName of Object.keys(this.handlers)) {
+      this.element.removeEventListener(eventName, this.handlers[eventName]);
+    }
+    return this;
+  }
+}
+```
+
+Fairly simple and maybe at first blush excessive. But once you see it in action the clouds in my head lift and wonderful light shines on the code:
+
+```javascript
+init() {
+  this._super(...arguments);
+  let el = document.querySelector('#foo');
+  this._eventDelegator = new DOMEventDelegator(el)
+    .register('focus', event => this.handleFocus(event))
+    .register('click', event => this.handleClick(event));
+}
+didInsertElement() {
+  this._super(...arguments);
+  this._eventDelegator.attach();
+},
+willDestroyElement() {
+  this._super(...arguments);
+  this._eventDelegator.detach();
+}
+```
+
+This to me tells a much nicer story. It also allows easy updates. Adding an event means adding one line of code to register it. So does removing an event. Not only that but this means that the attaching and detaching can be decoupled from the act of the lifecycles. Maybe this happens from an action of method called on the component. Like a popup where we want to attach a document click handler only when the popup is open and have it removed when it closes. Using a delegator like this means the task of looking up a DOM element by ID happens once and it caches the element.
+
+For me this make reading and understanding code easier. But at the cost of //yet another object// to which I would happily shout from the top of the soapbox ''Make More Objects!''
