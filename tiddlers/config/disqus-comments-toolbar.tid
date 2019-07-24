@@ -6,14 +6,19 @@ type: text/vnd.tiddlywiki
 
 <$list filter="[all[current]subfilter{$:/config/bimlas/disqus/filter}]" variable="doNotOverrideCurrent">
 	<$set name="stateTiddler" value="$:/state/bimlas/disqus">
-		<$button class=<<tv-config-toolbar-class>> set=<<stateTiddler>> setTo=<<currentTiddler>> >
+		<$button
+			class=<<tv-config-toolbar-class>>
+			set=<<stateTiddler>>
+			setTo=<<currentTiddler>>
+			tooltip="View Comments"
+			aria-label="comments"
+		>
 			<$list filter="[<tv-config-toolbar-icons>prefix[yes]]">
 				{{$:/core/images/add-comment}}
 			</$list>
 			<$list filter="[<tv-config-toolbar-text>prefix[yes]]">
 				<span class="tc-btn-text">
-					<$text text="View Disqus Comments"/>
-					<$macrocall $name="disqus-counter" current=<<currentTiddler>>/>
+					<$text text="View Comments"/>
 				</span>
 			</$list>
 		</$button>
