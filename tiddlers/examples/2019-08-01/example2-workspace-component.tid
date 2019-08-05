@@ -1,0 +1,49 @@
+modified: 20190802004019000
+created: 20190802004019000
+modifier: Sukima
+creator: Sukima
+title: 2019-08-01-example2-workspace-component
+caption: modal-workspace
+
+!! Template
+
+```handlebars
+{{yield (hash
+  content=(component "modal-workspace/content"
+    showContent=this.showContent
+  )
+  modal=(component "modal-workspace/modal"
+    currentModal=this.currentModal
+    onOpen=(action "unshiftModalStack")
+    onClose=(action "shiftModalStack")
+  )
+)}}
+```
+
+!! JavaScript
+
+```javascript
+import Component from '@ember/component';
+import { empty, reads } from '@ember/object/computed';
+
+export default Component.extend({
+  tagName: '',
+
+  showContent: empty('openModals'),
+  currentModal: reads('openModals.firstObject'),
+
+  init() {
+    this._super(...arguments);
+    this.set('openModals', []);
+  },
+
+  actions: {
+    unshiftModalStack(modalId) {
+      this.openModals.unshiftObject(modalId);
+    },
+    shiftModalStack() {
+      this.openModals.shiftObject();
+    }
+  }
+});
+```

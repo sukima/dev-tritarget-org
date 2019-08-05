@@ -1,0 +1,28 @@
+modified: 20190801202715000
+created: 20190801202715000
+modifier: Sukima
+creator: Sukima
+title: 2019-08-01-example1-template.hbs
+caption: basic-modal/template.hbs
+
+```handlebars
+{{#if this.isOpen}}
+  <div class="basic-modal" ...attributes>
+    {{yield
+      (hash
+        confirm=(action "resolveModal" "confirm")
+        reject=(action "resolveModal" "reject")
+        cancel=(action "resolveModal" "cancel")
+        error=(action "resolveModal" "error")
+      )
+      this.model
+    }}
+  </div>
+  <div
+    class="basic-modal-overlay"
+    role="button"
+    title="Dismiss Modal"
+    {{action "resolveModal" "cancel"}}
+  ></div>
+{{/if}}
+```

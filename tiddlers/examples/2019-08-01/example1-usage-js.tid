@@ -1,0 +1,20 @@
+modified: 20190801203416000
+created: 20190801203416000
+modifier: Sukima
+creator: Sukima
+title: 2019-08-01-example1-usage.js
+caption: application/controller.js
+
+```javascript
+import Controller from '@ember/controller';
+import { reads } from '@ember/object/computed';
+
+export default Controller.extend({
+  hasChanges: reads('model.hasDirtyAttributes'),
+
+  confirmAbandonDirtyChanges() {
+    return this.myModalManager.open()
+      .onConfirmed(() => this.model.rollbackAttributes());
+  }
+});
+```

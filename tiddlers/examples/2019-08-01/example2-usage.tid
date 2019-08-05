@@ -1,0 +1,61 @@
+modified: 20190802001245000
+created: 20190802001245000
+modifier: Sukima
+creator: Sukima
+title: 2019-08-01-example2-usage
+caption: Usage
+
+!! Template
+
+```handlebars
+<ModalWorkspace as |workspace|>
+
+  <workspace.content>
+    <p>Last result: {{this.result}}</p>
+    <p>This is the normal page content.</p>
+    <button {{action "doThatThing"}}>Go!</button>
+  </workspace.content>
+
+  <workspace.modal
+    @registerManager={{action (mut this.confirmModalManager)}}
+    as |modal|
+  >
+    <p>Are you sure?</p>
+    <button {{action modal.cancel}}>Cancel</button>
+    <button {{action modal.confirm}}>Yes!</button>
+  </workspace.modal>
+
+  <workspace.modal
+    @registerManager={{action (mut this.reallyConfirmModalManager)}}
+    as |modal|
+  >
+    <p>Are you really really sure?</p>
+    <button {{action modal.cancel}}>
+      On second thought maybe not.
+    </button>
+    <button {{action modal.confirm}}>
+      Of course! Get on with it.
+    </button>
+  </workspace.modal>
+
+
+</ModalWorkspace>
+```
+
+!! JavaScript
+
+```javascript
+import Controller from '@ember/controller';
+
+export default Controller.extend({
+  result: 'Pending',
+  actions: {
+    doThatThing() {
+      this.confirmModalManager.open()
+        .onConfirmed(() => this.reallyConfirmModalManager.open())
+        .onConfirmed(() => this.set('result', 'Confirmed'))
+        .onCancelled(() => this.set('result', 'Cancelled'));
+    }
+  }
+});
+```

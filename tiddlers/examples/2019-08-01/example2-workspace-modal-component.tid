@@ -1,0 +1,72 @@
+modified: 20190802010153000
+created: 20190802010153000
+modifier: Sukima
+creator: Sukima
+title: 2019-08-01-example2-workspace-modal-component
+caption: modal-workspace/modal
+
+!! Template
+
+```handlebars
+{{#if this.showModal}}
+  <div class="modal" ...attributes>
+    {{yield
+      (hash
+        confirm=(action "resolveModal" "confirm")
+        reject=(action "resolveModal" "reject")
+        cancel=(action "resolveModal" "cancel")
+        error=(action "resolveModal" "error")
+      )
+      this.model
+    }}
+  </div>
+{{/if}}
+```
+
+!! JavaScript
+
+```javascript
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import { guidFor } from '@ember/object/internals';
+import Confirmer from 'confirmed';
+
+export default Component.extend({
+  tagName: '',
+
+  showModal: computed('{modalId,currentModal}', function() {
+    return this.currentModal && this.currentModal === this.modalId;
+  }),
+
+  modalId: computed(function() {
+    return guidFor(this);
+  }),
+
+  openModal(model) {
+    return new Confirmer(resolver => {
+      this.set('model', model);
+      this.set('resolver', resolver);
+      this.onOpen(this.modalId);
+    }).onDone(() => {
+      this.onClose();
+      this.set('resolver', null);
+    });
+  },
+
+  didInsertElement() {
+    this.registerManager({
+      open: (m) => this.openModal(m),
+      confirm: (v) => this.resolver.confirm(v),
+      reject: (v) => this.resolver.reject(v),
+      cancel: (v) => this.resolver.cancel(v),
+      error: (v) => this.resolver.error(v),
+    });
+  },
+
+  actions: {
+    resolveModal(method, value) {
+      this.resolver[method](value);
+    }
+  }
+});
+```

@@ -1,0 +1,67 @@
+created: 20190801151335000
+creator: Sukima
+modified: 20190805155441411
+modifier: Sukima
+tags: Article JavaScript Coding Ember
+title: Modals: the answer no one wants to a problem everyone has
+type: text/vnd.tiddlywiki
+
+Modals, I know we all hate them but they are everywhere. As a UI developer I can definitively tell you that they cannot be avoided. As much as I like to complain about them and I believe (still) that they can be avoided with better design choices I cannot get away from them. Every UI I have ever build at some point requires a modal. For this article I am not going to fight it and focus on how to implement such a thing in [[Ember]] and some coding patterns that I have found game changing when it comes to modals.
+
+First problem to tackle is the asynchronous problem. JavaScript offers three ''synchronous'' modals: `alert()`, `confirm()`, and `prompt()`. Who wants that that? Usually people want a styled in web page modal dialog. Also the synchronous versions are invasive as they take over the browser (not just the tab), look bad unstyled, and are often times blocked by browsers because bad actors would abuse them. However, the nature of showing a div in the page and waiting on user input is asynchronous. Most modal libraries out there tackle this problem by use of events. The trouble with events is that it makes it [[difficult to reason about|https://en.wikipedia.org/wiki/Event-driven_programming#Criticism]].
+
+What would be nice is a paradigm where the act of showing a modal could be represented in a ''promise-like'' API. I explored this idea in my [[Domain Specific Promises]] article. The essence is that the open function returns a Confimer object that has an API to react to the different reasons for the modal closing (confirmed, cancelled, rejected, and error). I won't get into too much detail as the [[previous article|Domain Specific Promises]] describes the idea in detail. Instead I will cover the different kinds of modal styles and the impacts they have.
+
+Before that I should define the concept of a modal. A modal broken down is a representation of a ''mode''. In the cases we see them everyday they switch from the current context to a mode that locks you out of the previous mode. For example when quitting a document editing program a popup comes into focus which changes your mode from quitting to focus on a question concerning saving. The essence to this idea is that the dialog locks you from interacting with the stuff behind it. The exception is dialog boxes that don't lock you out and I classify that as just a dialog while a modal dialog stops you from interacting with another mode.
+
+<<.tip """To try these examples live visit https://codesandbox.io/s/ndmsd""">>
+<<.warning """These examples do ''not'' use ARIA or good accessibility practices. Please research this if you were to follow these examples in production code.""">>
+
+! Overlay Example
+
+The most popular version is the dialog that has a dark (usually transparent) background that prevents a user from clicking on the page behind it. They either have to hunt down a hard to find ✗ (cross) button or in some cases clicking the dark background closes the dialog. In essence this is modal (show dialog vs no dialog) as it pauses the mode you were in to a new mode you need to address before returning to the previous mode. I don't want to go into too much about this as it is a well covered topic. For example [[this CSS implementation|https://css-tricks.com/considerations-styling-modal/]] or more advanced ideas like [[jQuery Modal|https://jquerymodal.com/]] or [[Sweet Modal|https://sweet-modal.adepto.as/]].
+
+In [[Ember]] all of above examples can be converted to providing a [[Confirmer|Confirmed NPM Module]] object. For example Sweet Modal uses a callback but we can flatten that design with:
+
+```javascript
+function openModal() {
+  return new Confirmer(resolver => {
+    $.sweetModal.confirm(
+      'Cheezeburger?',
+      'Can I haz cheezeburger?',
+      resolver.confirm,
+      resolver.reject
+    );
+  });
+}
+```
+
+In [[Ember]] I expand on this by making a component dedicated to being a modal.
+
+<<tabs
+"""
+2019-08-01-example1-usage.hbs
+2019-08-01-example1-usage.js
+2019-08-01-example1-template.hbs
+2019-08-01-example1-component.js
+"""
+"2019-08-01-example1-usage.hbs"
+"$:/state/tabs-2019-08-01-example1"
+>>
+
+! Content Replacement Example
+
+This is my favorite option. I was running an [[Ember]] app in a popup window of a Chrome Extension. This offered a very small viewport (about 800 pixels wide) Having a mini modal dialog overlay inside a popup on top of a browser looked mad wrong. I needed a different idea; one which worked like a modal dialog but wasn't one. It dawned on my that with such a small screen I could simply replace the content with the dialog content itself.
+
+I constructed a contextual component that exposed two sub components. The content and a modal. I then realized that significance of this setup in that you could wrap the entire template in this and have multiple modals even stack them over each other. Here is such an implementation:
+
+<<tabs
+"""
+2019-08-01-example2-usage
+2019-08-01-example2-workspace-component
+2019-08-01-example2-workspace-content-component
+2019-08-01-example2-workspace-modal-component
+"""
+"2019-08-01-example2-usage"
+"$:/state/tabs-2019-08-01-example2"
+>>

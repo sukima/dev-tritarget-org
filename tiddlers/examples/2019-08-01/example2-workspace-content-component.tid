@@ -1,0 +1,24 @@
+modified: 20190802005924000
+created: 20190802005924000
+modifier: Sukima
+creator: Sukima
+title: 2019-08-01-example2-workspace-content-component
+caption: modal-workspace/content
+
+!! Template
+
+```handlebars
+{{#if @showContent}}
+  {{yield}}
+{{/if}}
+```
+
+!! JavaScript
+
+```javascript
+import Component from '@ember/component';
+
+export default Component.extend({
+  tagName: ''
+});
+```

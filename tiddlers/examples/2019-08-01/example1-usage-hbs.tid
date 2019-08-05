@@ -1,0 +1,27 @@
+modified: 20190801203007000
+created: 20190801203007000
+modifier: Sukima
+creator: Sukima
+title: 2019-08-01-example1-usage.hbs
+caption: application/template.hbs
+
+```handlebars
+<BasicModal
+  @registerManager={{action (mut this.myModalManager)}}
+  as |modal model|
+>
+
+  <p>
+    Are you sure you want to abandon your changes to {{model.name}}?
+  </p>
+
+  <button {{action modal.cancel}}>
+    Cancel
+  </button>
+
+  <button {{action modal.confirm}}>
+    Yes! Abandon!
+  </button>
+
+</BasicModal>
+```

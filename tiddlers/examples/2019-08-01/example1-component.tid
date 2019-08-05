@@ -1,0 +1,45 @@
+modified: 20190801202358000
+created: 20190801202358000
+modifier: Sukima
+creator: Sukima
+title: 2019-08-01-example1-component.js
+caption: basic-modal/component.js
+
+```javascript
+import Component from '@ember/component';
+import { bool } from '@ember/object/computed';
+import Confirmer from 'confirmed';
+
+export default Component.extend({
+  tagName: '',
+
+  isOpen: bool('resolver'),
+
+  openModal(model) {
+    return new Confirmer(resolver => {
+      this.set('resolver', resolver);
+      this.set('model', model);
+    }).onDone(() => {
+      this.set('model', null);
+      this.set('resolver', null);
+    });
+  },
+
+  didInsertElement() {
+    this._super(...arguments);
+    this.registerManager({
+      open: (m) => this.openModal(m),
+      confirm: (v) => this.resolver.confirm(v),
+      reject: (v) => this.resolver.reject(v),
+      cancel: (v) => this.resolver.cancel(v),
+      error: (v) => this.resolver.error(v)
+    });
+  },
+
+  actions: {
+    resolveModal(method, value) {
+      this.resolver[method](value);
+    }
+  }
+});
+```
