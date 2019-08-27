@@ -7,7 +7,7 @@ plugins_src := $(shell find plugins -type f)
 plugins_out := $(patsubst plugins/%,wiki/plugins/%,$(plugins_src))
 asset_files := $(patsubst public/%,wiki/output/%,$(shell find public -type f))
 
-.PHONY: build-files build clean diagrams assets tiddlywiki server media-build deploy
+.PHONY: build-files build clean generated diagrams assets tiddlywiki server media-build deploy
 
 build:
 	@rm -f wiki/tiddlywiki.info
@@ -29,12 +29,14 @@ clean:
 diagrams:
 	cd diagrams && $(MAKE)
 
+generated: tiddlers/generated/PGPKeyFile.tid tiddlers/generated/PGPKeyInfo.tid
+
 deploy: build
 	rsync -rlvz --delete --exclude-from ./config/rsync-exclude wiki/output/ $(deploy_path)
 
 assets: $(asset_files)
 
-build-files: wiki/tiddlywiki.info wiki/tiddlers diagrams $(polyfill) $(plugins_out)
+build-files: wiki/tiddlywiki.info wiki/tiddlers generated diagrams $(polyfill) $(plugins_out)
 
 tiddlywiki: build-files
 	$(tiddlywiki) wiki --build index favicon static feed
@@ -58,6 +60,27 @@ wiki/plugins/%: plugins/%
 	@mkdir -p $(dir $@)
 	cp $< $@
 
+wiki/output/key.info: wiki/output/key
+	gpg -v $< > $@
+
 wiki/output/%: public/%
 	@mkdir -p $(dir $@)
 	cp $< $@
+
+tiddlers/generated/PGPKeyFile.tid: public/key
+	@echo "Generating $@"
+	@echo "modified: $(date +%Y%m%d%H%M%S000)" >> $@
+	@echo "title: PGPKeyFile" >> $@
+	@echo "type: text/plain" >> $@
+	@echo "caption: Public Key" >> $@
+	@echo >> $@
+	@cat $< >> $@
+
+tiddlers/generated/PGPKeyInfo.tid: public/key
+	@echo "Generating $@"
+	@echo "modified: $(date +%Y%m%d%H%M%S000)" >> $@
+	@echo "title: PGPKeyInfo" >> $@
+	@echo "type: text/plain" >> $@
+	@echo "caption: Public Key Info" >> $@
+	@echo >> $@
+	@gpg -v $< >> $@

@@ -1,7 +1,7 @@
 created: 20160323130207728
 fingerprint: FA9F 1400 8BA5 A847 B097  7C06 EBD9 9C92 DE76 7C8A
 id: DE767C8A
-modified: 20160502211004619
+modified: 20190827173003137
 tags: 
 title: PGP Key
 type: text/vnd.tiddlywiki
@@ -11,4 +11,8 @@ type: text/vnd.tiddlywiki
 ;Fingerprint:
 :<code>{{!!fingerprint}}</code>
 ;Keybase.io
-:http://keybase.io/sukima
+:https://keybase.io/sukima
+;Download
+:https://tritarget.org/key
+
+<<tabs "PGPKeyInfo PGPKeyFile" "PGPKeyInfo" "$:/state/pgp-key-tabs">>
