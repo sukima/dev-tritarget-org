@@ -1,0 +1,37 @@
+modified: 20190827215901000
+created: 20190827215901000
+modifier: Sukima
+creator: Sukima
+title: ~TiddlyWiki Blog Tutorial
+tags: Article Coding JavaScript
+
+About 3½ years ago I ventured into the use of TiddlyWiki as a static site generator. I had a hunch it would facilitate my needs better than anything in the market at the time. Little did I know it would be one of the best choices I made. I should preface this with why it was such a good choice for me before I walk through some concepts I used to make ti happen.
+
+But first a little history. TiddlyWiki at the time was (and still is) one of the best note taking, brainstorming, personal productivity tools out there. I've tried many different options like Evernote™, Apple notes, plain old text files. And TiddlyWiki proved the best. That said it never clicked that it would make a good static site generator. And so I ventured from [[WordPress|https://wordpress.org]] to [[Jekyll|https://jekyllrb.com]] to [[Metalsmith|https://metalsmith.io/]] to finally TiddlyWiki.
+
+Instead of explaining what was wrong with thos tools I will simply state that the design of TiddlyWiki fit the bill. In many blog websites the content is forced or contrived into articles. I realized that I was avoiding placing useful information about my life and my learning on my website because I didn't have the energy to bundle it up in a blog post format. Instead I wanted a [[proverbial dumping ground|https://tiddlywiki.com/#Philosophy%20of%20Tiddlers]] to place my fragmented ideas and have the relationships build into something people can actually use and discover.
+
+<<.note """It is true that when I say //people// I really mean ''me'' since my site is not all that popular""">>
+
+Another alluring aspect is that the templating was designed for prose not HTML imitation. [[WikiText|https://tiddlywiki.com/#WikiText]] is designed as a way to represent rich text content and the details of the implementation is left to only advanced usage. This is very similar to the design goals of [[Markdown|https://www.markdownguide.org]] but ~WikiText is so much more. I will leave this discovery to you although I bet that if you are interested in this article that you already have an understanding of how significant TiddlyWiki is.
+
+The first order of business it to setup a project for the blog. TiddlyWiki has its own build system but it is focused on the TiddlyWiki output (that is the single HTML file it creates and the static assets for SEO and atom feed generation). But there could be more to a full blog then just the content. For example you might want to store an `.htaccess` config or random assets accessible not through TiddlyWiki (like a PGP key or a fancy zip file). And simply because you will likely need a extra level of nesting in the project root I suggest the following structure:
+
+```
+.
+├── config/
+├── diagrams/
+├── plugins/
+├── public/
+├── scripts/
+├── tiddlers/
+├── wiki/
+│   ├── output/
+│   ├── plugins/
+│   ├── tiddlers -> ../tiddlers
+│   └── tiddlywiki.info
+├── README.md
+├── LICENSE
+├── package.json
+└── yarn.lock
+```
