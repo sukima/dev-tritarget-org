@@ -9,25 +9,25 @@ About 3½ years ago I ventured into the use of TiddlyWiki as a static site gener
 
 But first a little history. TiddlyWiki at the time was (and still is) one of the best note taking, brainstorming, personal productivity tools out there. I've tried many different options like Evernote™, Apple notes, plain old text files. And TiddlyWiki proved the best. That said it never clicked that it would make a good static site generator. And so I ventured from [[WordPress|https://wordpress.org]] to [[Jekyll|https://jekyllrb.com]] to [[Metalsmith|https://metalsmith.io/]] to finally TiddlyWiki.
 
-Instead of explaining what was wrong with thos tools I will simply state that the design of TiddlyWiki fit the bill. In many blog websites the content is forced or contrived into articles. I realized that I was avoiding placing useful information about my life and my learning on my website because I didn't have the energy to bundle it up in a blog post format. Instead I wanted a [[proverbial dumping ground|https://tiddlywiki.com/#Philosophy%20of%20Tiddlers]] to place my fragmented ideas and have the relationships build into something people can actually use and discover.
+Instead of explaining what was wrong with those tools I will simply state that the design of TiddlyWiki fit the bill. In many blog websites the content is forced or contrived into articles. I realized that I was avoiding placing useful information about my life and my learning on my website because I didn't have the energy to bundle it up in a blog post format. Instead I wanted a [[proverbial dumping ground|https://tiddlywiki.com/#Philosophy%20of%20Tiddlers]] to place my fragmented ideas and have the relationships build into something people can actually use and discover.
 
 <<.note """It is true that when I say //people// I really mean ''me'' since my site is not all that popular""">>
 
 Another alluring aspect is that the templating was designed for prose not HTML imitation. [[WikiText|https://tiddlywiki.com/#WikiText]] is designed as a way to represent rich text content and the details of the implementation is left to only advanced usage. This is very similar to the design goals of [[Markdown|https://www.markdownguide.org]] but ~WikiText is so much more. I will leave this discovery to you although I bet that if you are interested in this article that you already have an understanding of how significant TiddlyWiki is.
+
+And I must explain that TiddlyWiki is self contained in that the final output is a single HTML document with ''all'' the data baked into it. That includes all the fancy JavaScript to run as a single page app. Speaking of which this app is capable of saving (downloading) itself as a single HTML document. If you press the save button {{$:/core/icons/save}} it will download this ''entire'' site into one file in your `Downloads` folder. How cool is that?! Airplane mode be damned!
 
 The first order of business it to setup a project for the blog. TiddlyWiki has its own build system but it is focused on the TiddlyWiki output (that is the single HTML file it creates and the static assets for SEO and atom feed generation). But there could be more to a full blog then just the content. For example you might want to store an `.htaccess` config or random assets accessible not through TiddlyWiki (like a PGP key or a fancy zip file). And simply because you will likely need a extra level of nesting in the project root I suggest the following structure:
 
 ```
 .
 ├── config/
-├── diagrams/
 ├── plugins/
 ├── public/
-├── scripts/
 ├── tiddlers/
 ├── wiki/
 │   ├── output/
-│   ├── plugins/
+│   ├── plugins -> ../plugins
 │   ├── tiddlers -> ../tiddlers
 │   └── tiddlywiki.info
 ├── README.md
@@ -35,3 +35,9 @@ The first order of business it to setup a project for the blog. TiddlyWiki has i
 ├── package.json
 └── yarn.lock
 ```
+
+There are a lot of parts to this so much so that it is worth a build system that can do more the [[TiddlyWikis|TiddlyWikis]] built in one. For that the easiest solution was to lean on [[Make]] which is on most all systems by default (Windows users, sorry but you will have to research your own solution or make some TiddlyWiki command plugins to suit your needs).
+
+The files needed for a website (to be uploaded to a server) will all end in the `wiki/output` folder. Every TiddlyWiki uses a `tiddlywiki.info` file. Normally this would be one file but in the case of a blog the wiki has two modes: development and production. In development we want to load the main wiki via the browser pointing to `https://localhost:8080` and have changes made by the wiki automatically saved to the file system. This is done through two TiddlyWiki plugins that we reference from the `tiddlywiki.info` file. However in production mode we don't want a final product that does not include those plugins. This is because there is no development service running on a static blog site. There is nothing to save to. Instead we will want to use a `tiddlywiki.info` config that does //not// include those development plugins.
+
+To manage this I have two `tiddlywiki.info` files in the `config/` folder any my Makefile will copy the correct one to the `wiki/` folder for TiddlyWiki to use.
