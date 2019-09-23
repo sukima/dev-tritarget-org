@@ -22,13 +22,13 @@
 
   exports.maybe = function maybe(value) {
     if (value && value.isMaybe) return value;
-    function isEmpty() { return value == null; }
+    function isNone() { return value == null; }
     var obj = {
-      prop: function(k) { return isEmpty() ? obj : maybe(safeRead(value, k)); },
-      bind: function(f) { return isEmpty() ? obj : maybe(f(value)); },
-      nothing: function(f) { return !isEmpty() ? obj : maybe(f(value)); },
-      value: function (n) { return isEmpty() ? n : value; },
-      isEmpty: isEmpty,
+      prop: function(k) { return isNone() ? obj : maybe(safeRead(value, k)); },
+      bind: function(f) { return isNone() ? obj : maybe(f(value)); },
+      nothing: function(f) { return !isNone() ? obj : maybe(f(value)); },
+      value: function (n) { return isNone() ? n : value; },
+      isNone: isNone,
       isMaybe: true
     };
     return obj;
@@ -80,9 +80,9 @@
       assert.equal(maybe('foo').value('bar'), 'foo');
     });
 
-    test('provides isEmpty()', function(assert) {
-      assert.ok(maybe().isEmpty());
-      assert.notOk(maybe('foo').isEmpty());
+    test('provides isNone()', function(assert) {
+      assert.ok(maybe().isNone());
+      assert.notOk(maybe('foo').isNone());
     });
 
     test('can bind results of a function call', function(assert) {
