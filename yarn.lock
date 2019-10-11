@@ -1845,10 +1845,10 @@ tar@^4:
     safe-buffer "^5.1.2"
     yallist "^3.0.2"
 
-tiddlywiki@5.1.20:
-  version "5.1.20"
-  resolved "https://registry.yarnpkg.com/tiddlywiki/-/tiddlywiki-5.1.20.tgz#71212db309f0cc16e7642becd1258b9fc64ad567"
-  integrity sha512-ttsftbeaGZ1k6wdvfpRX8cg/OGkEk/3pWEdSHHZn+chTvmE142fpzwMa4YmB3ewLAEXHBHFAHHWXTgWS/dWQHw==
+tiddlywiki@5.1.21:
+  version "5.1.21"
+  resolved "https://registry.yarnpkg.com/tiddlywiki/-/tiddlywiki-5.1.21.tgz#d7bfb56ddb182c61a4210f4c08fb78801912edbf"
+  integrity sha512-VuBK9N2u9ttPcaHCh4NmRX3YYB2tMPoIKCHhfNaJ62VGQj8ozmVD+PkvP/w7R50g6HaZtaSsqUJj26gRTIBa6w==
 
 to-fast-properties@^1.0.3:
   version "1.0.3"
