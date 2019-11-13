@@ -7,18 +7,22 @@ type: text/vnd.tiddlywiki
 
 I like to make all computers I log into have a little [[ASII Art|https://en.wikipedia.org/wiki/ASCII_art]] at their login banner (A.K.A. motd or [[Message of the Day|https://en.wikipedia.org/wiki/Motd_(Unix)]]). Here is my favorites I've used in the past:
 
-!! Dobby
-
-{{DobbyMotd}}
-
 !! Aurora
 
 {{AuroraMotd}}
 
-!! Zeus
-
-{{ZeusMotd}}
-
 !! Crowdstrike
 
 {{CrowdstrikeMotd}}
+
+!! Dobby
+
+{{DobbyMotd}}
+
+!! Titania
+
+{{TitaniaMotd}}
+
+!! Zeus
+
+{{ZeusMotd}}
