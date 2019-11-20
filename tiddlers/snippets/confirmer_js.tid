@@ -1,0 +1,51 @@
+modified: 20191120154202000
+created: 20191120154202000
+modifier: Sukima
+creator: Sukima
+title: Confirmer
+tags: snippets JavaScript
+
+This is a simplified snippet for copy/paste needs. The full and tested version is [[available as an NPM Package on GitHub|https://github.com/sukima/confirmed]].
+
+```javascript
+export default class Confirmer {
+
+  constructor(initFn) {
+    this.promise = new Promise((resolve, reject) => {
+      initFn({
+        error: reject,
+        confirm: (value) => resolve({ reason: 'confirmed', value }),
+        reject: (value) => resolve({ reason: 'rejected', value }),
+        cancel: (value) => resolve({ reason: 'cancelled', value }),
+      });
+    });
+  }
+
+  onDone(doneFn) {
+    return Confirmer.resolve(this.promise.finally(doneFn));
+  }
+
+  static resolve(result) {
+    if (result instanceof Confirmer) { return result; }
+    let confirmer = Object.create(Confirmer.prototype);
+    confirmer.promise = Promise.resolve(result);
+    return confirmer;
+  }
+
+}
+
+Confirmer.prototype.onConfirmed = resolutionFor('confirmed');
+Confirmer.prototype.onRejected = resolutionFor('rejected');
+Confirmer.prototype.onCancelled = resolutionFor('cancelled');
+
+function resolutionFor(reason) {
+  return function(thenFn) {
+    return Confirmer.resolve(this.promise.then(result => {
+      if (result.reason !== reason) { return result; }
+      let newValue = thenFn(result.value);
+      if (newValue instanceof Confirmer) { return newValue.promise; }
+      return Promise.resolve(newValue).then(value => ({ ...result, value }));
+    }));
+  };
+}
+```
