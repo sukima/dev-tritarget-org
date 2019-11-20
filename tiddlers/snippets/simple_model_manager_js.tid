@@ -1,0 +1,101 @@
+modified: 20191120154626000
+created: 20191120154626000
+modifier: Sukima
+creator: Sukima
+title: Simple Model Manager
+tags: snippets JavaScript Ember
+
+```javascript
+import Route from '@ember/routing/route';
+
+class Adapter {
+  ajax() {
+    return fetch(...arguments).this(r => r.json());
+  }
+  query(params) {
+    return this.ajax('/api/models');
+  }
+  create(data) {
+    return this.ajax('/api/models', { method: 'POST', data });
+  }
+  read(id) {
+    return this.ajax(`/api/models/${id}`);
+  }
+  update(id, data) {
+    return this.ajax(`/api/models/${id}`, { method: 'PATCH', data });
+  }
+  destroy(id) {
+    return this.ajax(`/api/models/${id}`, { method: 'DELETE' });
+  }
+}
+
+class Model {
+  constructor(data, adapter) {
+    let { id, ...attrs } = data;
+    this.adapter = adapter;
+    this.data = attrs;
+    this.id = id;
+    this.isNew = !!this.id;
+    this.isDirty = false;
+  }
+  setAttr(attr, value) {
+    this.setAttrs({ [attr]: value });
+    return this;
+  }
+  setAttrs(attrs) {
+    this.data = { ...this.data, ...attrs };
+    this.isDirty = true;
+    return this;
+  }
+  importData({ id = this.id, ...attrs }) {
+    this.setAttrs(attrs);
+    this.id = id;
+    this.isNew = false;
+    this.isDirty = false;
+    return this;
+  }
+  async reload() {
+    let data = await this.adapter.read(this.id);
+    return this.importData(data);
+  }
+  async save() {
+    let data = this.isNew
+      ? await this.adapter.create(this.data)
+      : await this.adapter.update(this.id, this.data);
+    return this.importData(data);
+  }
+  async destroy() {
+    await this.adapter.destroy(this.id);
+    this.isDestroyed = true;
+    return this;
+  }
+}
+
+class ModelCollection {
+  constructor(records) {
+    this.records = records;
+  }
+  async create(data) {
+    let model = new Model(data);
+    await model.save();
+    this.records.pushObject(model);
+    return model;
+  }
+  async destroy(model) {
+    await model.destroy();
+    this.records.removeObject(model);
+    return model;
+  }
+}
+
+export default class Route extends Route {
+  async model(params) {
+    let adapter = new Adapter();
+    let results = await adapter.query(params);
+    let records = results.map(data => new Model(data, adapter));
+    let collection = new ModelCollection(records);
+    collection.refreshRoute = () => this.refresh();
+    return collection;
+  }
+}
+```
