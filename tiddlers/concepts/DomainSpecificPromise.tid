@@ -24,7 +24,7 @@ Each hook is a function that can take a value and has no ties to any `this` cont
 ```javascript
 class Example {
   constructor(initFn) {
-    this._promise = new Promise((resolve, reject) => {
+    this.promise = new Promise((resolve, reject) => {
       initFn({
         error: reject,
         resolveReason1: value => resolve({ reason: 'reason1', value }),
@@ -45,14 +45,8 @@ The factory method is a static method that can take any of the following and kno
 ```javascript
 static resolve(result) {
   if (result instanceof DomainSpecificPromise) { return result; }
-  let newDomainSpecificPromise = new DomainSpecificPromise(() => {});
-  newDomainSpecificPromise._promise = Promise.resolve(result).then(value => {
-    let reason = value && value.reason;
-    if (!ALLOWED_REASONS.includes(reason)) {
-      throw new Error(`Unknown resolution reason ${reason}`);
-    }
-    return result;
-  });
+  let newDomainSpecificPromise = Object.create(DomainSpecificPromise.prototype);
+  newDomainSpecificPromise.promise = Promise.resolve(result);
   return newDomainSpecificPromise;
 }
 ```
@@ -65,14 +59,11 @@ Each resolution will have a callback. They will be a no-op if the resolution is 
 
 ```javascript
 onReason1(fn) {
-  let promise = this._promise.then(result => {
+  return DomainSpecificPromise.resolve(this.promise.then(result => {
     if (result.reason !== 'reason1') { return result; }
     let newValue = fn(result.value);
-    if (newValue instanceof Confirmer) { return newValue._promise; }
-    return Promise.resolve(newValue).then(value => {
-      return { reason: 'reason1', value };
-    });
-  });
-  return Confirmer.resolve(promise);
+    if (newValue instanceof DomainSpecificPromise) { return newValue.promise; }
+    return Promise.resolve(newValue).then(value => ({ reason: 'reason1', value }));
+  }));
 }
 ```
