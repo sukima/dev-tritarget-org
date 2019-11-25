@@ -10,7 +10,7 @@ import Route from '@ember/routing/route';
 
 class Adapter {
   ajax() {
-    return fetch(...arguments).this(r => r.json());
+    return fetch(...arguments).then(r => r.json());
   }
   query(params) {
     return this.ajax('/api/models');
