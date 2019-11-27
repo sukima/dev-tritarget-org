@@ -1,0 +1,28 @@
+caption: Usage
+created: 20191127150008000
+creator: Sukima
+modified: 20191127151442137
+modifier: Sukima
+tags: [[CSS Modal Dialogs]]
+title: css-modal-dialogs-tab2
+type: text/vnd.tiddlywiki
+
+Modals are hidden by default. They open with the class `open` or by referencing its ID from the URL fragment.
+
+```xml
+<a href="#open-modal">Open Modal Dialog</a>
+
+<div id="open-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h1>Modal Example</h1>
+    </div>
+    <div class="modal-body">
+      <p>Lorem Ipsum</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#">Close</a>
+    </div>
+  </div>
+</div>
+```
