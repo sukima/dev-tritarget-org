@@ -10,7 +10,7 @@ type: text/vnd.tiddlywiki
 Modals are hidden by default. They open with the class `open` or by referencing its ID from the URL fragment.
 
 ```xml
-<a href="#open-modal">Open Modal Dialog</a>
+<a role="button" href="#open-modal">Open Modal Dialog</a>
 
 <div
   id="open-modal"
@@ -27,7 +27,7 @@ Modals are hidden by default. They open with the class `open` or by referencing 
       <p>Lorem Ipsum</p>
     </div>
     <div class="modal-footer">
-      <a href="#">Close</a>
+      <a role="button" href="#">Close</a>
     </div>
   </div>
 </div>
