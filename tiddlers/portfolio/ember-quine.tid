@@ -1,0 +1,16 @@
+modified: 20191130141216000
+created: 20191130141216000
+modifier: Sukima
+creator: Sukima
+title: Ember Quine
+tags: Projects Portfolio
+terms: EmberJS, JavaScript
+description: An Ember addon which bundles your apps as a single HTML file along with a service to save the full app to a single HTML file for use offline
+url: https://sukima.github.io/ember-quine/
+
+<a href={{!!url}}><<preview-right "ember-quine.png">></a>
+
+Ember Quine is an Ember addon that enables an Ember app to be self downloaded as a single HTML file that runs offline (via the `file://` URI).
+
+''Demo:'' {{!!url}} <br>
+''Source:'' https://github.com/sukima/ember-quine
