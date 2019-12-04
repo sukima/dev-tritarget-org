@@ -18,3 +18,23 @@ sig        9B7E5BE3 2013-08-21   Maddy Pendleton <maddy.pendleton@gmail.com>
 sig        FBDFC85C 2018-12-11   Adam Radabaugh <adam@walkingtoast.com>
 sub  rsa4096/4B1FEF76 2013-08-20 [expires: 2019-12-12]
 sig        DE767C8A 2018-12-12   [keybind]
+modified: 20191204161332000
+title: PGPKeyInfo
+type: text/plain
+caption: Public Key Info
+
+pub  rsa4096/DE767C8A 2013-08-20 [expires: 2020-08-26]
+uid                   Devin Weaver (@sukima) <suki@tritarget.org>
+sig        DE767C8A 2019-08-27   [selfsig]
+sig        9B7E5BE3 2013-08-21   Maddy Pendleton <maddy.pendleton@gmail.com>
+sig        FBDFC85C 2018-12-11   Adam Radabaugh <adam@walkingtoast.com>
+uid                   [jpeg image of size 9051]
+sig        DE767C8A 2019-08-27   [selfsig]
+sig        9B7E5BE3 2013-08-21   Maddy Pendleton <maddy.pendleton@gmail.com>
+sig        FBDFC85C 2018-12-11   Adam Radabaugh <adam@walkingtoast.com>
+uid                   Devin Weaver (@sukima) <weaver.devin@gmail.com>
+sig        DE767C8A 2019-08-27   [selfsig]
+sig        9B7E5BE3 2013-08-21   Maddy Pendleton <maddy.pendleton@gmail.com>
+sig        FBDFC85C 2018-12-11   Adam Radabaugh <adam@walkingtoast.com>
+sub  rsa4096/4B1FEF76 2013-08-20 [expires: 2019-12-12]
+sig        DE767C8A 2018-12-12   [keybind]

@@ -6,6 +6,7 @@ polyfill := wiki/plugins/babel-polyfill/files/polyfill.min.js
 plugins_src := $(shell find plugins -type f)
 plugins_out := $(patsubst plugins/%,wiki/plugins/%,$(plugins_src))
 asset_files := $(patsubst public/%,wiki/output/%,$(shell find public -type f))
+modified_date = $(shell date +%Y%m%d%H%M%S000)
 
 .PHONY: build-files build clean generated diagrams assets tiddlywiki server media-build deploy
 
@@ -69,7 +70,7 @@ wiki/output/%: public/%
 
 tiddlers/generated/PGPKeyFile.tid: public/key
 	@echo "Generating $@"
-	@echo "modified: $(date +%Y%m%d%H%M%S000)" >> $@
+	@echo "modified: $(modified_date)" >> $@
 	@echo "title: PGPKeyFile" >> $@
 	@echo "type: text/plain" >> $@
 	@echo "caption: Public Key" >> $@
@@ -78,7 +79,7 @@ tiddlers/generated/PGPKeyFile.tid: public/key
 
 tiddlers/generated/PGPKeyInfo.tid: public/key
 	@echo "Generating $@"
-	@echo "modified: $(date +%Y%m%d%H%M%S000)" >> $@
+	@echo "modified: $(modified_date)" >> $@
 	@echo "title: PGPKeyInfo" >> $@
 	@echo "type: text/plain" >> $@
 	@echo "caption: Public Key Info" >> $@
