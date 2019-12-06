@@ -8,14 +8,14 @@ type: application/javascript
 caption: StateMachine Class
 
 function createMachine({ context = {}, id, initial, states = {} } = {}) {
-  function stateFor(value) {
-    if (!value) { return; }
-    let { meta = {} } = states[value] || {};
-    return { value, meta, context };
+  function stateFor({ target }, changed) {
+    if (!target) { return; }
+    let { meta = {} } = states[target] || {};
+    return { value: target, meta, context, changed };
   }
   return {
-    initialState: stateFor(initial),
-    transition(state, event) {
+    initialState: stateFor({ target: initial }, false),
+    transition(state, transitionEvent) {
       let currentValue = (state && state.value) || state;
       let stateConfig = states[currentValue];
       if (!stateConfig) {
@@ -23,11 +23,21 @@ function createMachine({ context = {}, id, initial, states = {} } = {}) {
           `State '${currentValue}' not found on machine${id ? ` ${id}` : ''}`
         );
       }
-      let { type: eventName = event } = event;
+      let { type: eventName = transitionEvent, value: eventValue } = transitionEvent;
       let transitions = stateConfig.on || {};
-      let transition = transitions[eventName] || currentValue;
-      let { target = transition, cond = () => true } = transition;
-      return cond() ? stateFor(target) : stateFor(currentValue);
+      let transition = transitions[eventName] || { target: currentValue, changed: false };
+      let { target = transition, changed = true, cond = () => true } = transition;
+      let stateEvent = { type: eventName, target, value: eventValue };
+      let nextState = cond(context, stateEvent)
+        ? stateFor(stateEvent, changed)
+        : stateFor({ target: currentValue }, false);
+      if (nextState.changed) {
+        let targetStateConfig = states[target] || {};
+        stateConfig.exit && stateConfig.exit(context, stateEvent);
+        transition.action && transition.action(context, stateEvent);
+        targetStateConfig.entry && targetStateConfig.entry(context, stateEvent);
+      }
+      return nextState;
     }
   };
 }

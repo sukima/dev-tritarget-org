@@ -15,14 +15,14 @@
 (function(exports) {
 
 function createMachine({ context = {}, id, initial, states = {} } = {}) {
-  function stateFor(value) {
-    if (!value) { return; }
-    let { meta = {} } = states[value] || {};
-    return { value, meta, context };
+  function stateFor({ target }, changed) {
+    if (!target) { return; }
+    let { meta = {} } = states[target] || {};
+    return { value: target, meta, context, changed };
   }
   return {
-    initialState: stateFor(initial),
-    transition(state, event) {
+    initialState: stateFor({ target: initial }, false),
+    transition(state, transitionEvent) {
       let currentValue = (state && state.value) || state;
       let stateConfig = states[currentValue];
       if (!stateConfig) {
@@ -30,11 +30,21 @@ function createMachine({ context = {}, id, initial, states = {} } = {}) {
           `State '${currentValue}' not found on machine${id ? ` ${id}` : ''}`
         );
       }
-      let { type: eventName = event } = event;
+      let { type: eventName = transitionEvent, value: eventValue } = transitionEvent;
       let transitions = stateConfig.on || {};
-      let transition = transitions[eventName] || currentValue;
-      let { target = transition, cond = () => true } = transition;
-      return cond() ? stateFor(target) : stateFor(currentValue);
+      let transition = transitions[eventName] || { target: currentValue, changed: false };
+      let { target = transition, changed = true, cond = () => true } = transition;
+      let stateEvent = { type: eventName, target, value: eventValue };
+      let nextState = cond(context, stateEvent)
+        ? stateFor(stateEvent, changed)
+        : stateFor({ target: currentValue }, false);
+      if (nextState.changed) {
+        let targetStateConfig = states[target] || {};
+        stateConfig.exit && stateConfig.exit(context, stateEvent);
+        transition.action && transition.action(context, stateEvent);
+        targetStateConfig.entry && targetStateConfig.entry(context, stateEvent);
+      }
+      return nextState;
     }
   };
 }
@@ -48,99 +58,194 @@ exports.createMachine = createMachine;
 
   module('Simple State Machine', function() {
 
-    module('Unit Tests', function() {
+    module('#transition', function() {
 
-      module('#transition', function() {
+      test('fails when initialState is undefined', function(assert) {
+        let subject = createMachine({ id: 'test-machine' });
+        assert.throws(
+          () => subject.transition(subject.initialState, 'foobar'),
+          /^Error: State 'undefined' not found on machine test-machine$/
+        );
+      });
 
-        test('fails when initialState is undefined', function(assert) {
-          let subject = createMachine({ id: 'test-machine' });
-          assert.throws(
-            () => subject.transition(subject.initialState, 'foobar'),
-            /^Error: State 'undefined' not found on machine test-machine$/
-          );
+      test('fails when state does not exist', function(assert) {
+        let subject = createMachine({ id: 'test-machine', inital: 'foobar' });
+        assert.throws(
+          () => subject.transition({ value: 'bad-state' }, 'foobar'),
+          /^Error: State 'bad-state' not found on machine test-machine$/
+        );
+      });
+
+      test('transitions to next state', function(assert) {
+        let subject = createMachine({
+          initial: 'test1',
+          states: {
+            test1: { on: { go: 'test2' } },
+          },
         });
-
-        test('fails when state does not exist', function(assert) {
-          let subject = createMachine({ id: 'test-machine', inital: 'foobar' });
-          assert.throws(
-            () => subject.transition({ value: 'bad-state' }, 'foobar'),
-            /^Error: State 'bad-state' not found on machine test-machine$/
-          );
+        let result = subject.transition(subject.initialState, 'go');
+        assert.deepEqual(result, {
+          value: 'test2',
+          meta: {},
+          context: {},
+          changed: true
         });
-
-        test('transitions to next state', function(assert) {
-          let subject = createMachine({
-            initial: 'test1',
-            states: {
-              test1: { on: { go: 'test2' } },
-            },
-          });
-          let result = subject.transition(subject.initialState, 'go');
-          assert.deepEqual(result, {
-            value: 'test2',
-            meta: {},
-            context: {}
-          });
-          result = subject.transition('test1', 'go');
-          assert.deepEqual(result, {
-            value: 'test2',
-            meta: {},
-            context: {}
-          });
+        result = subject.transition('test1', 'go');
+        assert.deepEqual(result, {
+          value: 'test2',
+          meta: {},
+          context: {},
+          changed: true
         });
+      });
 
-        test('provides meta for next state', function(assert) {
-          let subject = createMachine({
-            initial: 'test1',
-            states: {
-              test1: { on: { go: 'test2' } },
-              test2: { meta: { test: 'foo' } },
-            },
-          });
-          let result = subject.transition(subject.initialState, 'go');
-          assert.deepEqual(result.meta, { test: 'foo' });
+      test('provides meta for next state', function(assert) {
+        let subject = createMachine({
+          initial: 'test1',
+          states: {
+            test1: { on: { go: 'test2' } },
+            test2: { meta: { test: 'foo' } },
+          },
         });
+        let result = subject.transition(subject.initialState, 'go');
+        assert.deepEqual(result.meta, { test: 'foo' });
+      });
 
-        test('provides context in state object', function(assert) {
-          let subject = createMachine({
-            initial: 'test1',
-            context: { test: 'foo' },
-            states: {
-              test1: { on: { go: 'test2' } },
-            },
-          });
-          let result = subject.transition(subject.initialState, 'go');
-          assert.deepEqual(result.context, { test: 'foo' });
+      test('provides context in state object', function(assert) {
+        let subject = createMachine({
+          initial: 'test1',
+          context: { test: 'foo' },
+          states: {
+            test1: { on: { go: 'test2' } },
+          },
         });
+        let result = subject.transition(subject.initialState, 'go');
+        assert.deepEqual(result.context, { test: 'foo' });
+      });
 
-        test('does not transition when cond() is false', function(assert) {
-          let subject = createMachine({
-            initial: 'test1',
-            states: {
-              test1: {
-                on: {
-                  go: { target: 'test2', cond: () => false },
+      test('does not transition when cond() is false', function(assert) {
+        let condSpyCalls = [];
+        let subject = createMachine({
+          initial: 'test1',
+          states: {
+            test1: {
+              on: {
+                go: {
+                  target: 'test2',
+                  cond() {
+                    condSpyCalls.push([...arguments]);
+                    return false;
+                  }
                 },
               },
             },
-          });
-          let result = subject.transition(subject.initialState, 'go');
-          assert.equal(result.value, 'test1');
-          assert.notStrictEqual(result, subject.initialState);
+          },
         });
-
-        test('does not transition when event does not exist on state', function(assert) {
-          let subject = createMachine({
-            initial: 'test1',
-            states: {
-              test1: { on: {} },
-            },
-          });
-          let result = subject.transition(subject.initialState, 'go');
-          assert.equal(result.value, 'test1');
-          assert.notStrictEqual(result, subject.initialState);
+        let result = subject.transition(subject.initialState, {
+          type: 'go',
+          value: 'foobar'
         });
+        assert.equal(result.value, 'test1');
+        assert.strictEqual(result.changed, false);
+        assert.notStrictEqual(result, subject.initialState);
+        assert.equal(condSpyCalls.length, 1);
+        assert.deepEqual(condSpyCalls[0], [{}, {
+          target: 'test2',
+          type: 'go',
+          value: 'foobar'
+        }]);
+      });
 
+      test('does not transition when event does not exist on state', function(assert) {
+        let subject = createMachine({
+          initial: 'test1',
+          states: {
+            test1: { on: {} },
+          },
+        });
+        let result = subject.transition(subject.initialState, 'go');
+        assert.equal(result.value, 'test1');
+        assert.strictEqual(result.changed, false);
+        assert.notStrictEqual(result, subject.initialState);
+      });
+
+      test('calls exit action when available', function(assert) {
+        let exitSpyCalls = [];
+        let subject = createMachine({
+          initial: 'test1',
+          states: {
+            test1: {
+              exit() {
+                exitSpyCalls.push([...arguments]);
+              },
+              on: { go: 'test2' }
+            }
+          },
+        });
+        subject.transition(subject.initialState, {
+          type: 'go',
+          value: 'foobar'
+        });
+        assert.equal(exitSpyCalls.length, 1);
+        assert.deepEqual(exitSpyCalls[0], [{}, {
+          target: 'test2',
+          type: 'go',
+          value: 'foobar'
+        }]);
+      });
+
+      test('calls action on transition when available', function(assert) {
+        let actionSpyCalls = [];
+        let subject = createMachine({
+          initial: 'test1',
+          states: {
+            test1: {
+              on: {
+                go: {
+                  target: 'test2',
+                  action() {
+                    actionSpyCalls.push([...arguments]);
+                  }
+                }
+              }
+            }
+          },
+        });
+        subject.transition(subject.initialState, {
+          type: 'go',
+          value: 'foobar'
+        });
+        assert.equal(actionSpyCalls.length, 1);
+        assert.deepEqual(actionSpyCalls[0], [{}, {
+          target: 'test2',
+          type: 'go',
+          value: 'foobar'
+        }]);
+      });
+
+      test('calls entry action when available', function(assert) {
+        let entrySpyCalls = [];
+        let subject = createMachine({
+          initial: 'test1',
+          states: {
+            test1: { on: { go: 'test2' } },
+            test2: {
+              entry() {
+                entrySpyCalls.push([...arguments]);
+              }
+            }
+          },
+        });
+        subject.transition(subject.initialState, {
+          type: 'go',
+          value: 'foobar'
+        });
+        assert.equal(entrySpyCalls.length, 1);
+        assert.deepEqual(entrySpyCalls[0], [{}, {
+          target: 'test2',
+          type: 'go',
+          value: 'foobar'
+        }]);
       });
 
     });
