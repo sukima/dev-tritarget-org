@@ -12,7 +12,7 @@ caption: Usage
 ```javascript
 // Stateless finite state machine definition
 // machine.transition(...) is a pure function.
-let toggleMachine = new StateMachine({
+let toggleMachine = createMachine({
   id: 'toggle',
   initial: 'inactive',
   states: {

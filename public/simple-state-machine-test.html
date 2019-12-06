@@ -14,40 +14,32 @@
 <script>
 (function(exports) {
 
-class StateMachine {
-
-  constructor({ id, initial, states = {} } = {}) {
-    this.id = id;
-    this.states = Object.freeze({ ...states });
-    this.initialState = this.stateFor(initial);
-  }
-
-  stateFor(value) {
+function createMachine({ id, initial, states = {} } = {}) {
+  function stateFor(value) {
     if (!value) { return; }
-    let { meta } = this.states[value] || {};
+    let { meta } = states[value] || {};
     return Object.freeze({ value, meta: Object.freeze({ ...meta }) });
   }
-
-  transition(state, event) {
-    let currentValue = (state && state.value) || state;
-    let stateConfig = this.states[currentValue];
-    if (!stateConfig) {
-      throw new Error(`State '${currentValue}' not found on ${this}`);
+  return {
+    initialState: stateFor(initial),
+    transition(state, event) {
+      let currentValue = (state && state.value) || state;
+      let stateConfig = states[currentValue];
+      if (!stateConfig) {
+        throw new Error(
+          `State '${currentValue}' not found on machine${id ? ` ${id}` : ''}`
+        );
+      }
+      let { type: eventName = event } = event;
+      let transitions = stateConfig.on || {};
+      let transition = transitions[eventName] || currentValue;
+      let { target = transition, cond = () => true } = transition;
+      return cond() ? stateFor(target) : stateFor(currentValue);
     }
-    let { type: eventName = event } = event;
-    let transitions = stateConfig.on || {};
-    let transition = transitions[eventName] || currentValue;
-    let { target = transition, cond = () => true } = transition;
-    return cond() ? this.stateFor(target) : this.stateFor(currentValue);
-  }
+  };
+};
 
-  toString() {
-    return `<StateMachine${this.id ? `:${this.id}` : ''}>`;
-  }
-
-}
-
-exports.StateMachine = StateMachine;
+exports.createMachine = createMachine;
 
 })(window);
 </script>
@@ -58,74 +50,26 @@ exports.StateMachine = StateMachine;
 
     module('Unit Tests', function() {
 
-      module('#toString', function() {
-
-        test('prints with no config given', function(assert) {
-          assert.equal(new StateMachine().toString(), '<StateMachine>');
-        });
-
-        test('prints with id given', function(assert) {
-          assert.equal(new StateMachine({}).toString(), '<StateMachine>');
-        });
-
-        test('prints with no id given', function(assert) {
-          assert.equal(new StateMachine({ id: 'test' }).toString(), '<StateMachine:test>');
-        });
-
-      });
-
-      module('#stateFor', function() {
-
-        test('state is frozen', function(assert) {
-          let subject = new StateMachine({
-            states: {
-              test: { meta: { foo: 'bar' } }
-            }
-          });
-          assert.ok(Object.isFrozen(subject.stateFor('test')), 'state is frozen');
-        });
-
-        test('meta is frozen', function(assert) {
-          let subject = new StateMachine({
-            states: {
-              test: { meta: { foo: 'bar' } }
-            }
-          });
-          assert.ok(Object.isFrozen(subject.stateFor('test').meta), 'meta is frozen');
-        });
-
-        test('returns undefined when value is falsey', function(assert) {
-          let subject = new StateMachine();
-          assert.strictEqual(subject.stateFor(), undefined);
-        });
-
-        test('returns empty meta when none is defined', function(assert) {
-          let subject = new StateMachine();
-          assert.deepEqual(subject.stateFor('test').meta, {});
-        });
-
-      });
-
       module('#transition', function() {
 
         test('fails when initialState is undefined', function(assert) {
-          let subject = new StateMachine({ id: 'test-machine' });
+          let subject = createMachine({ id: 'test-machine' });
           assert.throws(
             () => subject.transition(subject.initialState, 'foobar'),
-            /^Error: State 'undefined' not found on <StateMachine:test-machine>$/
+            /^Error: State 'undefined' not found on machine test-machine$/
           );
         });
 
         test('fails when state does not exist', function(assert) {
-          let subject = new StateMachine({ id: 'test-machine', inital: 'foobar' });
+          let subject = createMachine({ id: 'test-machine', inital: 'foobar' });
           assert.throws(
             () => subject.transition({ value: 'bad-state' }, 'foobar'),
-            /^Error: State 'bad-state' not found on <StateMachine:test-machine>$/
+            /^Error: State 'bad-state' not found on machine test-machine$/
           );
         });
 
         test('transitions to next state', function(assert) {
-          let subject = new StateMachine({
+          let subject = createMachine({
             initial: 'test1',
             states: {
               test1: { on: { go: 'test2' } },
@@ -140,7 +84,7 @@ exports.StateMachine = StateMachine;
         });
 
         test('provides meta for next state', function(assert) {
-          let subject = new StateMachine({
+          let subject = createMachine({
             initial: 'test1',
             states: {
               test1: { on: { go: 'test2' } },
@@ -154,7 +98,7 @@ exports.StateMachine = StateMachine;
         });
 
         test('does not transition when cond() is false', function(assert) {
-          let subject = new StateMachine({
+          let subject = createMachine({
             initial: 'test1',
             states: {
               test1: {
@@ -170,7 +114,7 @@ exports.StateMachine = StateMachine;
         });
 
         test('does not transition when event does not exist on state', function(assert) {
-          let subject = new StateMachine({
+          let subject = createMachine({
             initial: 'test1',
             states: {
               test1: { on: {} },
@@ -188,7 +132,7 @@ exports.StateMachine = StateMachine;
     module('Traffic Light', function(hooks) {
 
       hooks.beforeEach(function() {
-        this.subject = new StateMachine({
+        this.subject = createMachine({
           id: 'test-subject',
           initial: 'green',
           states: {

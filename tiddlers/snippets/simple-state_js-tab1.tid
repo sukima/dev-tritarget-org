@@ -7,35 +7,27 @@ tags: [[Simple State Machine]]
 type: application/javascript
 caption: StateMachine Class
 
-class StateMachine {
-
-  constructor({ id, initial, states = {} } = {}) {
-    this.id = id;
-    this.states = Object.freeze({ ...states });
-    this.initialState = this.stateFor(initial);
-  }
-
-  stateFor(value) {
+function createMachine({ id, initial, states = {} } = {}) {
+  function stateFor(value) {
     if (!value) { return; }
-    let { meta } = this.states[value] || {};
+    let { meta } = states[value] || {};
     return Object.freeze({ value, meta: Object.freeze({ ...meta }) });
   }
-
-  transition(state, event) {
-    let currentValue = (state && state.value) || state;
-    let stateConfig = this.states[currentValue];
-    if (!stateConfig) {
-      throw new Error(`State '${currentValue}' not found on ${this}`);
+  return {
+    initialState: stateFor(initial),
+    transition(state, event) {
+      let currentValue = (state && state.value) || state;
+      let stateConfig = states[currentValue];
+      if (!stateConfig) {
+        throw new Error(
+          `State '${currentValue}' not found on machine${id ? ` ${id}` : ''}`
+        );
+      }
+      let { type: eventName = event } = event;
+      let transitions = stateConfig.on || {};
+      let transition = transitions[eventName] || currentValue;
+      let { target = transition, cond = () => true } = transition;
+      return cond() ? stateFor(target) : stateFor(currentValue);
     }
-    let { type: eventName = event } = event;
-    let transitions = stateConfig.on || {};
-    let transition = transitions[eventName] || currentValue;
-    let { target = transition, cond = () => true } = transition;
-    return cond() ? this.stateFor(target) : this.stateFor(currentValue);
-  }
-
-  toString() {
-    return `<StateMachine${this.id ? `:${this.id}` : ''}>`;
-  }
-
-}
+  };
+};
