@@ -14,7 +14,7 @@
 <script>
 (function(exports) {
 
-function createMachine({ context, id, initial, states = {} } = {}) {
+function createMachine({ context = {}, id, initial, states = {} } = {}) {
   function stateFor(value) {
     if (!value) { return; }
     let { meta = {} } = states[value] || {};
@@ -79,13 +79,13 @@ exports.createMachine = createMachine;
           assert.deepEqual(result, {
             value: 'test2',
             meta: {},
-            context: undefined
+            context: {}
           });
           result = subject.transition('test1', 'go');
           assert.deepEqual(result, {
             value: 'test2',
             meta: {},
-            context: undefined
+            context: {}
           });
         });
 
