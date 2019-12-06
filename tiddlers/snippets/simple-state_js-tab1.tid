@@ -13,6 +13,15 @@ function createMachine({ context = {}, id, initial, states = {} } = {}) {
     let { meta = {} } = states[target] || {};
     return { value: target, meta, context, changed };
   }
+  function findStateEvent(transitionData, eventData) {
+    if (!transitionData) { return; }
+    for (let transition of [].concat(transitionData)) {
+      if (!transition) { continue; }
+      let { target = transition, cond = () => true } = transition;
+      let stateEvent = { ...eventData, target };
+      if (cond(context, stateEvent)) { return stateEvent; }
+    }
+  }
   return {
     initialState: stateFor({ target: initial }, false),
     transition(state, transitionEvent) {
@@ -23,18 +32,17 @@ function createMachine({ context = {}, id, initial, states = {} } = {}) {
           `State '${currentValue}' not found on machine${id ? ` ${id}` : ''}`
         );
       }
-      let { type: eventName = transitionEvent, value: eventValue } = transitionEvent;
+      let { type = transitionEvent, value } = transitionEvent;
       let transitions = stateConfig.on || {};
-      let transition = transitions[eventName] || { target: currentValue, changed: false };
-      let { target = transition, changed = true, cond = () => true } = transition;
-      let stateEvent = { type: eventName, target, value: eventValue };
-      let nextState = cond(context, stateEvent)
-        ? stateFor(stateEvent, changed)
+      let transition = transitions[type];
+      let stateEvent = findStateEvent(transition, { type, value });
+      let nextState = stateEvent
+        ? stateFor(stateEvent, true)
         : stateFor({ target: currentValue }, false);
       if (nextState.changed) {
-        let targetStateConfig = states[target] || {};
+        let targetStateConfig = states[stateEvent.target] || {};
         stateConfig.exit && stateConfig.exit(context, stateEvent);
-        transition.action && transition.action(context, stateEvent);
+        transition && transition.action && transition.action(context, stateEvent);
         targetStateConfig.entry && targetStateConfig.entry(context, stateEvent);
       }
       return nextState;

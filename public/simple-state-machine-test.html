@@ -20,6 +20,15 @@ function createMachine({ context = {}, id, initial, states = {} } = {}) {
     let { meta = {} } = states[target] || {};
     return { value: target, meta, context, changed };
   }
+  function findStateEvent(transitionData, eventData) {
+    if (!transitionData) { return; }
+    for (let transition of [].concat(transitionData)) {
+      if (!transition) { continue; }
+      let { target = transition, cond = () => true } = transition;
+      let stateEvent = { ...eventData, target };
+      if (cond(context, stateEvent)) { return stateEvent; }
+    }
+  }
   return {
     initialState: stateFor({ target: initial }, false),
     transition(state, transitionEvent) {
@@ -30,18 +39,17 @@ function createMachine({ context = {}, id, initial, states = {} } = {}) {
           `State '${currentValue}' not found on machine${id ? ` ${id}` : ''}`
         );
       }
-      let { type: eventName = transitionEvent, value: eventValue } = transitionEvent;
+      let { type = transitionEvent, value } = transitionEvent;
       let transitions = stateConfig.on || {};
-      let transition = transitions[eventName] || { target: currentValue, changed: false };
-      let { target = transition, changed = true, cond = () => true } = transition;
-      let stateEvent = { type: eventName, target, value: eventValue };
-      let nextState = cond(context, stateEvent)
-        ? stateFor(stateEvent, changed)
+      let transition = transitions[type];
+      let stateEvent = findStateEvent(transition, { type, value });
+      let nextState = stateEvent
+        ? stateFor(stateEvent, true)
         : stateFor({ target: currentValue }, false);
       if (nextState.changed) {
-        let targetStateConfig = states[target] || {};
+        let targetStateConfig = states[stateEvent.target] || {};
         stateConfig.exit && stateConfig.exit(context, stateEvent);
-        transition.action && transition.action(context, stateEvent);
+        transition && transition.action && transition.action(context, stateEvent);
         targetStateConfig.entry && targetStateConfig.entry(context, stateEvent);
       }
       return nextState;
@@ -153,6 +161,54 @@ exports.createMachine = createMachine;
           target: 'test2',
           type: 'go',
           value: 'foobar'
+        }]);
+      });
+
+      test('transitions to first cond() that is true', function(assert) {
+        let cond1SpyCalls = [];
+        let cond2SpyCalls = [];
+        let subject = createMachine({
+          initial: 'test1',
+          states: {
+            test1: {
+              on: {
+                go: [
+                  {
+                    target: 'test2',
+                    cond() {
+                      cond1SpyCalls.push([...arguments]);
+                      return false;
+                    },
+                  },
+                  {
+                    target: 'test2',
+                    cond() {
+                      cond2SpyCalls.push([...arguments]);
+                      return true;
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        });
+        let result = subject.transition(subject.initialState, {
+          type: 'go',
+          value: 'foobar',
+        });
+        assert.equal(result.value, 'test2');
+        assert.strictEqual(result.changed, true);
+        assert.equal(cond1SpyCalls.length, 1);
+        assert.deepEqual(cond1SpyCalls[0], [{}, {
+          target: 'test2',
+          type: 'go',
+          value: 'foobar',
+        }]);
+        assert.equal(cond2SpyCalls.length, 1);
+        assert.deepEqual(cond2SpyCalls[0], [{}, {
+          target: 'test2',
+          type: 'go',
+          value: 'foobar',
         }]);
       });
 
