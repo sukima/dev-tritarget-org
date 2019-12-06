@@ -1,0 +1,60 @@
+created: 20191206042911000
+creator: Sukima
+modified: 20191206042911000
+modifier: Sukima
+title: simple-state_js-tab2
+tags: [[Simple State Machine]]
+type: text/vnd.tiddlywiki
+caption: Usage
+
+!! Example
+
+```javascript
+// Stateless finite state machine definition
+// machine.transition(...) is a pure function.
+let toggleMachine = new StateMachine({
+  id: 'toggle',
+  initial: 'inactive',
+  states: {
+    inactive: { on: { TOGGLE: 'active' } },
+    active: { on: { TOGGLE: 'inactive' } }
+  }
+});
+
+let { initialState } = toggleMachine;
+
+let toggledState = toggleMachine.transition(initialState, 'TOGGLE');
+toggledState.value;
+// => 'active'
+
+let untoggledState = toggleMachine.transition(toggledState, 'TOGGLE');
+untoggledState.value;
+// => 'inactive'
+```
+
+<<.warning "Following how XState works you can transition //into// an unknown state but you cannot transition //from// an unknown state">>
+
+!! Config Options
+
+!!!! Machine config
+
+* `id` (string) - an identifier for the type of machine this is. Useful for debugging.
+* `initial` (string) - the key of the initial state.
+* `states` (object) - an object mapping state names (keys) to states
+
+!!!! State config
+
+* `on` (object) - an object mapping event types (keys) to transitions
+* `meta` (object) - an object used to provide per state data. The object is //shallow// immutable;
+
+!!!! Transition config
+
+String syntax:
+
+* (string) - the state name to transition to.
+** Same as `{ target: stateName }`
+
+Object syntax:
+
+* `target?` (string) - the state name to transition to.
+* `cond?` (Guard) - the condition (predicate function) to test. If it returns `true`, the transition will be taken.

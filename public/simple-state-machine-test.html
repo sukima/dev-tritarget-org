@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<!-- GistID: -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Simple State Machine Tests</title>
+  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.9.2.css">
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+<script src="https://code.jquery.com/qunit/qunit-2.9.2.js"></script>
+<script>
+(function(exports) {
+
+class StateMachine {
+
+  constructor({ id, initial, states = {} } = {}) {
+    this.id = id;
+    this.states = Object.freeze({ ...states });
+    this.initialState = this.stateFor(initial);
+  }
+
+  stateFor(value) {
+    if (!value) { return; }
+    let { meta } = this.states[value] || {};
+    return Object.freeze({ value, meta: Object.freeze({ ...meta }) });
+  }
+
+  transition(state, event) {
+    let currentValue = (state && state.value) || state;
+    let stateConfig = this.states[currentValue];
+    if (!stateConfig) {
+      throw new Error(`State '${currentValue}' not found on ${this}`);
+    }
+    let { type: eventName = event } = event;
+    let transitions = stateConfig.on || {};
+    let transition = transitions[eventName] || currentValue;
+    let { target = transition, cond = () => true } = transition;
+    return cond() ? this.stateFor(target) : this.stateFor(currentValue);
+  }
+
+  toString() {
+    return `<StateMachine${this.id ? `:${this.id}` : ''}>`;
+  }
+
+}
+
+exports.StateMachine = StateMachine;
+
+})(window);
+</script>
+<script>
+(function({ module, test }, undefined) {
+
+  module('Simple State Machine', function() {
+
+    module('Unit Tests', function() {
+
+      module('#toString', function() {
+
+        test('prints with no config given', function(assert) {
+          assert.equal(new StateMachine().toString(), '<StateMachine>');
+        });
+
+        test('prints with id given', function(assert) {
+          assert.equal(new StateMachine({}).toString(), '<StateMachine>');
+        });
+
+        test('prints with no id given', function(assert) {
+          assert.equal(new StateMachine({ id: 'test' }).toString(), '<StateMachine:test>');
+        });
+
+      });
+
+      module('#stateFor', function() {
+
+        test('state is frozen', function(assert) {
+          let subject = new StateMachine({
+            states: {
+              test: { meta: { foo: 'bar' } }
+            }
+          });
+          assert.ok(Object.isFrozen(subject.stateFor('test')), 'state is frozen');
+        });
+
+        test('meta is frozen', function(assert) {
+          let subject = new StateMachine({
+            states: {
+              test: { meta: { foo: 'bar' } }
+            }
+          });
+          assert.ok(Object.isFrozen(subject.stateFor('test').meta), 'meta is frozen');
+        });
+
+        test('returns undefined when value is falsey', function(assert) {
+          let subject = new StateMachine();
+          assert.strictEqual(subject.stateFor(), undefined);
+        });
+
+        test('returns empty meta when none is defined', function(assert) {
+          let subject = new StateMachine();
+          assert.deepEqual(subject.stateFor('test').meta, {});
+        });
+
+      });
+
+      module('#transition', function() {
+
+        test('fails when initialState is undefined', function(assert) {
+          let subject = new StateMachine({ id: 'test-machine' });
+          assert.throws(
+            () => subject.transition(subject.initialState, 'foobar'),
+            /^Error: State 'undefined' not found on <StateMachine:test-machine>$/
+          );
+        });
+
+        test('fails when state does not exist', function(assert) {
+          let subject = new StateMachine({ id: 'test-machine', inital: 'foobar' });
+          assert.throws(
+            () => subject.transition({ value: 'bad-state' }, 'foobar'),
+            /^Error: State 'bad-state' not found on <StateMachine:test-machine>$/
+          );
+        });
+
+        test('transitions to next state', function(assert) {
+          let subject = new StateMachine({
+            initial: 'test1',
+            states: {
+              test1: { on: { go: 'test2' } },
+            },
+          });
+          let result = subject.transition(subject.initialState, 'go');
+          assert.deepEqual(result, { value: 'test2', meta: {} });
+          assert.ok(Object.isFrozen(result), 'result is frozen');
+          result = subject.transition('test1', 'go');
+          assert.deepEqual(result, { value: 'test2', meta: {} });
+          assert.ok(Object.isFrozen(result), 'result is frozen');
+        });
+
+        test('provides meta for next state', function(assert) {
+          let subject = new StateMachine({
+            initial: 'test1',
+            states: {
+              test1: { on: { go: 'test2' } },
+              test2: { meta: { test: 'foo' } },
+            },
+          });
+          let result = subject.transition(subject.initialState, 'go');
+          assert.deepEqual(result, { value: 'test2', meta: { test: 'foo' } });
+          assert.ok(Object.isFrozen(result), 'result is frozen');
+          assert.ok(Object.isFrozen(result.meta), 'result meta is frozen');
+        });
+
+        test('does not transition when cond() is false', function(assert) {
+          let subject = new StateMachine({
+            initial: 'test1',
+            states: {
+              test1: {
+                on: {
+                  go: { target: 'test2', cond: () => false },
+                },
+              },
+            },
+          });
+          let result = subject.transition(subject.initialState, 'go');
+          assert.deepEqual(result, { value: 'test1', meta: {} });
+          assert.notStrictEqual(result, subject.initialState);
+        });
+
+        test('does not transition when event does not exist on state', function(assert) {
+          let subject = new StateMachine({
+            initial: 'test1',
+            states: {
+              test1: { on: {} },
+            },
+          });
+          let result = subject.transition(subject.initialState, 'go');
+          assert.deepEqual(result, { value: 'test1', meta: {} });
+          assert.notStrictEqual(result, subject.initialState);
+        });
+
+      });
+
+    });
+
+    module('Traffic Light', function(hooks) {
+
+      hooks.beforeEach(function() {
+        this.subject = new StateMachine({
+          id: 'test-subject',
+          initial: 'green',
+          states: {
+            green: { on: {
+              change: 'yellow',
+              caution: 'blink-yellow',
+              stop: 'blink-red',
+            } },
+            yellow: { on: {
+              change: 'red',
+              caution: 'blink-yellow',
+              stop: 'blink-red',
+            } },
+            red: { on: {
+              change: 'green',
+              caution: 'blink-yellow',
+              stop: 'blink-red',
+            } },
+            'blink-yellow': { on: {
+              cancel: 'green',
+              stop: 'blink-red',
+            } },
+            'blink-red': { on: {
+              cancel: 'green',
+              caution: 'blink-yellow',
+            } },
+          }
+        });
+      });
+
+      test('initial state is green', function(assert) {
+        let resultState = this.subject.initialState;
+        assert.equal(resultState.value, 'green');
+      });
+
+      test('can reach blinking yellow state from green', function(assert) {
+        let resultState = { value: 'green' };
+        resultState = this.subject.transition(resultState, 'caution');
+        assert.equal(resultState.value, 'blink-yellow');
+        resultState = this.subject.transition(resultState, 'cancel');
+        assert.equal(resultState.value, 'green');
+      });
+
+      test('can reach blinking red state from green', function(assert) {
+        let resultState = { value: 'green' };
+        resultState = this.subject.transition(resultState, 'stop');
+        assert.equal(resultState.value, 'blink-red');
+        resultState = this.subject.transition(resultState, 'cancel');
+        assert.equal(resultState.value, 'green');
+      });
+
+      test('can reach blinking yellow state from yellow', function(assert) {
+        let resultState = { value: 'yellow' };
+        resultState = this.subject.transition(resultState, 'caution');
+        assert.equal(resultState.value, 'blink-yellow');
+        resultState = this.subject.transition(resultState, 'cancel');
+        assert.equal(resultState.value, 'green');
+      });
+
+      test('can reach blinking red state from yellow', function(assert) {
+        let resultState = { value: 'yellow' };
+        resultState = this.subject.transition(resultState, 'stop');
+        assert.equal(resultState.value, 'blink-red');
+        resultState = this.subject.transition(resultState, 'cancel');
+        assert.equal(resultState.value, 'green');
+      });
+
+      test('can reach blinking yellow state from red', function(assert) {
+        let resultState = { value: 'red' };
+        resultState = this.subject.transition(resultState, 'caution');
+        assert.equal(resultState.value, 'blink-yellow');
+        resultState = this.subject.transition(resultState, 'cancel');
+        assert.equal(resultState.value, 'green');
+      });
+
+      test('can reach blinking red state from red', function(assert) {
+        let resultState = { value: 'red' };
+        resultState = this.subject.transition(resultState, 'stop');
+        assert.equal(resultState.value, 'blink-red');
+        resultState = this.subject.transition(resultState, 'cancel');
+        assert.equal(resultState.value, 'green');
+      });
+
+      test('can cycle through all lights', function(assert) {
+        let resultState = this.subject.initialState;
+        assert.equal(resultState.value, 'green');
+        resultState = this.subject.transition(resultState, 'change');
+        assert.equal(resultState.value, 'yellow');
+        resultState = this.subject.transition(resultState, 'change');
+        assert.equal(resultState.value, 'red');
+        resultState = this.subject.transition(resultState, 'change');
+        assert.equal(resultState.value, 'green');
+      });
+    });
+
+  });
+
+})(QUnit);
+</script>
+</body>
+</html>
