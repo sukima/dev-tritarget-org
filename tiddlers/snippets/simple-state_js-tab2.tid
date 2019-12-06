@@ -45,7 +45,7 @@ untoggledState.value;
 !!!! State config
 
 * `on` (object) - an object mapping event types (keys) to transitions
-* `meta` (object) - an object used to provide per state data. The object is //shallow// immutable;
+* `meta` (object) - an object used to provide per state data
 
 !!!! Transition config
 
