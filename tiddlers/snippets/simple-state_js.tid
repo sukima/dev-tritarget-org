@@ -6,7 +6,7 @@ title: Simple State Machine
 tags: snippets JavaScript
 type: text/vnd.tiddlywiki
 
-Super simple Finite State Machine. This attempts to follow the conventions of [[XState|https://github.com/davidkpiano/xstate/tree/master/packages/xstate-fsm]] with the exceptions of context, actions, interpreter, and the added concept of meta content.
+Super simple Finite State Machine. This attempts to follow the conventions of [[XState|https://github.com/davidkpiano/xstate/tree/master/packages/xstate-fsm]] with the exceptions of actions, interpreter, and the added concept of meta content.
 
 <<tabs "simple-state_js-tab1 simple-state_js-tab2" "simple-state_js-tab1">>
 

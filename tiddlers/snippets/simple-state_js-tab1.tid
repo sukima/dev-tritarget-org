@@ -1,17 +1,17 @@
+modified: 20191206115412000
 created: 20191206042911000
 creator: Sukima
-modified: 20191206042911000
 modifier: Sukima
 title: simple-state_js-tab1
 tags: [[Simple State Machine]]
 type: application/javascript
 caption: StateMachine Class
 
-function createMachine({ id, initial, states = {} } = {}) {
+function createMachine({ context, id, initial, states = {} } = {}) {
   function stateFor(value) {
     if (!value) { return; }
     let { meta = {} } = states[value] || {};
-    return { value, meta };
+    return { value, meta, context };
   }
   return {
     initialState: stateFor(initial),
@@ -30,4 +30,4 @@ function createMachine({ id, initial, states = {} } = {}) {
       return cond() ? stateFor(target) : stateFor(currentValue);
     }
   };
-};
+}

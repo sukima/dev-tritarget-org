@@ -14,11 +14,11 @@
 <script>
 (function(exports) {
 
-function createMachine({ id, initial, states = {} } = {}) {
+function createMachine({ context, id, initial, states = {} } = {}) {
   function stateFor(value) {
     if (!value) { return; }
     let { meta = {} } = states[value] || {};
-    return { value, meta };
+    return { value, meta, context };
   }
   return {
     initialState: stateFor(initial),
@@ -37,7 +37,7 @@ function createMachine({ id, initial, states = {} } = {}) {
       return cond() ? stateFor(target) : stateFor(currentValue);
     }
   };
-};
+}
 
 exports.createMachine = createMachine;
 
@@ -76,9 +76,17 @@ exports.createMachine = createMachine;
             },
           });
           let result = subject.transition(subject.initialState, 'go');
-          assert.deepEqual(result, { value: 'test2', meta: {} });
+          assert.deepEqual(result, {
+            value: 'test2',
+            meta: {},
+            context: undefined
+          });
           result = subject.transition('test1', 'go');
-          assert.deepEqual(result, { value: 'test2', meta: {} });
+          assert.deepEqual(result, {
+            value: 'test2',
+            meta: {},
+            context: undefined
+          });
         });
 
         test('provides meta for next state', function(assert) {
@@ -90,7 +98,19 @@ exports.createMachine = createMachine;
             },
           });
           let result = subject.transition(subject.initialState, 'go');
-          assert.deepEqual(result, { value: 'test2', meta: { test: 'foo' } });
+          assert.deepEqual(result.meta, { test: 'foo' });
+        });
+
+        test('provides context in state object', function(assert) {
+          let subject = createMachine({
+            initial: 'test1',
+            context: { test: 'foo' },
+            states: {
+              test1: { on: { go: 'test2' } },
+            },
+          });
+          let result = subject.transition(subject.initialState, 'go');
+          assert.deepEqual(result.context, { test: 'foo' });
         });
 
         test('does not transition when cond() is false', function(assert) {
@@ -105,7 +125,7 @@ exports.createMachine = createMachine;
             },
           });
           let result = subject.transition(subject.initialState, 'go');
-          assert.deepEqual(result, { value: 'test1', meta: {} });
+          assert.equal(result.value, 'test1');
           assert.notStrictEqual(result, subject.initialState);
         });
 
@@ -117,7 +137,7 @@ exports.createMachine = createMachine;
             },
           });
           let result = subject.transition(subject.initialState, 'go');
-          assert.deepEqual(result, { value: 'test1', meta: {} });
+          assert.equal(result.value, 'test1');
           assert.notStrictEqual(result, subject.initialState);
         });
 
