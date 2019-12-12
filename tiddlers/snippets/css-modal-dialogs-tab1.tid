@@ -39,12 +39,17 @@ caption: CSS
   max-height: calc(100vh - 150px);
   display: flex;
   flex-direction: column;
+}
 
 .modal .modal-content > * {
   width: 100%;
 }
 
-.modal .modal-content .modal-footer {
+.modal .modal-body {
+  overflow-y: auto;
+}
+
+.modal .modal-footer {
   text-align: right;
 }
 
