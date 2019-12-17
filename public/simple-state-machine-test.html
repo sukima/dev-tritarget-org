@@ -79,440 +79,441 @@ exports.createMachine = createMachine;
 <script>
 (function({ module, test }, undefined) {
 
-  module('Simple State Machine', function() {
+module('Unit | Utility | Simple State Machine', function() {
 
-    module('#transition', function() {
+  module('#transition', function() {
 
-      test('fails when initialState is undefined', function(assert) {
-        let subject = createMachine({ id: 'test-machine' });
-        assert.throws(
-          () => subject.transition(subject.initialState, 'foobar'),
-          /^Error: State 'undefined' not found on machine test-machine$/
-        );
+    test('fails when initialState is undefined', function(assert) {
+      let subject = createMachine({ id: 'test-machine' });
+      assert.throws(
+        () => subject.transition(subject.initialState, 'foobar'),
+        /^Error: State 'undefined' not found on machine test-machine$/
+      );
+    });
+
+    test('fails when state does not exist', function(assert) {
+      let subject = createMachine({ id: 'test-machine', inital: 'foobar' });
+      assert.throws(
+        () => subject.transition({ value: 'bad-state' }, 'foobar'),
+        /^Error: State 'bad-state' not found on machine test-machine$/
+      );
+    });
+
+    test('transitions to next state', function(assert) {
+      let subject = createMachine({
+        initial: 'test1',
+        states: {
+          test1: { on: { go: 'test2' } },
+        },
       });
-
-      test('fails when state does not exist', function(assert) {
-        let subject = createMachine({ id: 'test-machine', inital: 'foobar' });
-        assert.throws(
-          () => subject.transition({ value: 'bad-state' }, 'foobar'),
-          /^Error: State 'bad-state' not found on machine test-machine$/
-        );
+      let result = subject.transition(subject.initialState, 'go');
+      assert.deepEqual(result, {
+        actions: [],
+        value: 'test2',
+        meta: {},
+        context: {},
+        changed: true,
       });
+      result = subject.transition('test1', 'go');
+      assert.deepEqual(result, {
+        actions: [],
+        value: 'test2',
+        meta: {},
+        context: {},
+        changed: true,
+      });
+    });
 
-      test('transitions to next state', function(assert) {
-        let subject = createMachine({
-          initial: 'test1',
-          states: {
-            test1: { on: { go: 'test2' } },
+    test('provides meta for next state', function(assert) {
+      let subject = createMachine({
+        initial: 'test1',
+        states: {
+          test1: { on: { go: 'test2' } },
+          test2: { meta: { test: 'foo' } },
+        },
+      });
+      let result = subject.transition(subject.initialState, 'go');
+      assert.deepEqual(result.meta, { test: 'foo' });
+    });
+
+    test('provides context in state object', function(assert) {
+      let subject = createMachine({
+        initial: 'test1',
+        context: { test: 'foo' },
+        states: {
+          test1: { on: { go: 'test2' } },
+        },
+      });
+      let result = subject.transition(subject.initialState, 'go');
+      assert.deepEqual(result.context, { test: 'foo' });
+    });
+
+    test('does not transition when cond() is false', function(assert) {
+      let condSpyCalls = [];
+      let subject = createMachine({
+        initial: 'test1',
+        states: {
+          test1: {
+            on: {
+              go: {
+                target: 'test2',
+                cond() {
+                  condSpyCalls.push([...arguments]);
+                  return false;
+                },
+              },
+            },
           },
-        });
-        let result = subject.transition(subject.initialState, 'go');
-        assert.deepEqual(result, {
-          actions: [],
-          value: 'test2',
-          meta: {},
-          context: {},
-          changed: true
-        });
-        result = subject.transition('test1', 'go');
-        assert.deepEqual(result, {
-          actions: [],
-          value: 'test2',
-          meta: {},
-          context: {},
-          changed: true
-        });
+        },
       });
+      let result = subject.transition(subject.initialState, {
+        type: 'go',
+        value: 'foobar',
+      });
+      assert.equal(result.value, 'test1');
+      assert.strictEqual(result.changed, false);
+      assert.notStrictEqual(result, subject.initialState);
+      assert.equal(condSpyCalls.length, 1);
+      assert.deepEqual(condSpyCalls[0], [{}, {
+        target: 'test2',
+        type: 'go',
+        value: 'foobar',
+      }]);
+    });
 
-      test('provides meta for next state', function(assert) {
-        let subject = createMachine({
-          initial: 'test1',
-          states: {
-            test1: { on: { go: 'test2' } },
-            test2: { meta: { test: 'foo' } },
+    test('does not transition when guard is false', function(assert) {
+      let condSpyCalls = [];
+      let subject = createMachine({
+        initial: 'test1',
+        states: {
+          test1: {
+            on: {
+              go: {
+                target: 'test2',
+                cond: 'testGuard',
+              },
+            },
           },
-        });
-        let result = subject.transition(subject.initialState, 'go');
-        assert.deepEqual(result.meta, { test: 'foo' });
-      });
-
-      test('provides context in state object', function(assert) {
-        let subject = createMachine({
-          initial: 'test1',
-          context: { test: 'foo' },
-          states: {
-            test1: { on: { go: 'test2' } },
+        },
+      }, {
+        guards: {
+          testGuard() {
+            condSpyCalls.push([...arguments]);
+            return false;
           },
-        });
-        let result = subject.transition(subject.initialState, 'go');
-        assert.deepEqual(result.context, { test: 'foo' });
+        },
       });
+      let result = subject.transition(subject.initialState, {
+        type: 'go',
+        value: 'foobar',
+      });
+      assert.equal(result.value, 'test1');
+      assert.strictEqual(result.changed, false);
+      assert.notStrictEqual(result, subject.initialState);
+      assert.equal(condSpyCalls.length, 1);
+      assert.deepEqual(condSpyCalls[0], [{}, {
+        target: 'test2',
+        type: 'go',
+        value: 'foobar',
+      }]);
+    });
 
-      test('does not transition when cond() is false', function(assert) {
-        let condSpyCalls = [];
-        let subject = createMachine({
-          initial: 'test1',
-          states: {
-            test1: {
-              on: {
-                go: {
+    test('transitions to first cond() that is true', function(assert) {
+      let cond1SpyCalls = [];
+      let cond2SpyCalls = [];
+      let subject = createMachine({
+        initial: 'test1',
+        states: {
+          test1: {
+            on: {
+              go: [
+                {
                   target: 'test2',
                   cond() {
-                    condSpyCalls.push([...arguments]);
+                    cond1SpyCalls.push([...arguments]);
                     return false;
-                  }
+                  },
                 },
-              },
-            },
-          },
-        });
-        let result = subject.transition(subject.initialState, {
-          type: 'go',
-          value: 'foobar'
-        });
-        assert.equal(result.value, 'test1');
-        assert.strictEqual(result.changed, false);
-        assert.notStrictEqual(result, subject.initialState);
-        assert.equal(condSpyCalls.length, 1);
-        assert.deepEqual(condSpyCalls[0], [{}, {
-          target: 'test2',
-          type: 'go',
-          value: 'foobar'
-        }]);
-      });
-
-      test('does not transition when guard is false', function(assert) {
-        let condSpyCalls = [];
-        let subject = createMachine({
-          initial: 'test1',
-          states: {
-            test1: {
-              on: {
-                go: {
+                {
                   target: 'test2',
-                  cond: 'testGuard'
+                  cond() {
+                    cond2SpyCalls.push([...arguments]);
+                    return true;
+                  },
                 },
-              },
+              ],
             },
           },
-        }, {
-          guards: {
-            testGuard() {
-              condSpyCalls.push([...arguments]);
-              return false;
-            }
-          }
-        });
-        let result = subject.transition(subject.initialState, {
-          type: 'go',
-          value: 'foobar'
-        });
-        assert.equal(result.value, 'test1');
-        assert.strictEqual(result.changed, false);
-        assert.notStrictEqual(result, subject.initialState);
-        assert.equal(condSpyCalls.length, 1);
-        assert.deepEqual(condSpyCalls[0], [{}, {
-          target: 'test2',
-          type: 'go',
-          value: 'foobar'
-        }]);
+        },
       });
+      let result = subject.transition(subject.initialState, {
+        type: 'go',
+        value: 'foobar',
+      });
+      assert.equal(result.value, 'test2');
+      assert.strictEqual(result.changed, true);
+      assert.equal(cond1SpyCalls.length, 1);
+      assert.deepEqual(cond1SpyCalls[0], [{}, {
+        target: 'test2',
+        type: 'go',
+        value: 'foobar',
+      }]);
+      assert.equal(cond2SpyCalls.length, 1);
+      assert.deepEqual(cond2SpyCalls[0], [{}, {
+        target: 'test2',
+        type: 'go',
+        value: 'foobar',
+      }]);
+    });
 
-      test('transitions to first cond() that is true', function(assert) {
-        let cond1SpyCalls = [];
-        let cond2SpyCalls = [];
-        let subject = createMachine({
-          initial: 'test1',
-          states: {
-            test1: {
-              on: {
-                go: [
-                  {
-                    target: 'test2',
-                    cond() {
-                      cond1SpyCalls.push([...arguments]);
-                      return false;
-                    },
-                  },
-                  {
-                    target: 'test2',
-                    cond() {
-                      cond2SpyCalls.push([...arguments]);
-                      return true;
-                    },
-                  },
+    test('does not transition when event does not exist on state', function(assert) {
+      let subject = createMachine({
+        initial: 'test1',
+        states: {
+          test1: { on: {} },
+        },
+      });
+      let result = subject.transition(subject.initialState, 'go');
+      assert.equal(result.value, 'test1');
+      assert.strictEqual(result.changed, false);
+      assert.notStrictEqual(result, subject.initialState);
+    });
+
+    test('provides actions with function callbacks', function(assert) {
+      let spyCalls = [];
+      let subject = createMachine({
+        initial: 'test1',
+        context: { test: 'foo' },
+        states: {
+          test1: {
+            exit() { spyCalls.push({ spyType: 'exit', args: [...arguments] }); },
+            on: {
+              go: {
+                target: 'test2',
+                actions: [
+                  function() { spyCalls.push({ spyType: 'action', args: [...arguments] }); },
                 ],
               },
             },
           },
-        });
-        let result = subject.transition(subject.initialState, {
-          type: 'go',
-          value: 'foobar',
-        });
-        assert.equal(result.value, 'test2');
-        assert.strictEqual(result.changed, true);
-        assert.equal(cond1SpyCalls.length, 1);
-        assert.deepEqual(cond1SpyCalls[0], [{}, {
-          target: 'test2',
-          type: 'go',
-          value: 'foobar',
-        }]);
-        assert.equal(cond2SpyCalls.length, 1);
-        assert.deepEqual(cond2SpyCalls[0], [{}, {
-          target: 'test2',
-          type: 'go',
-          value: 'foobar',
-        }]);
-      });
-
-      test('does not transition when event does not exist on state', function(assert) {
-        let subject = createMachine({
-          initial: 'test1',
-          states: {
-            test1: { on: {} },
+          test2: {
+            entry() { spyCalls.push({ spyType: 'entry', args: [...arguments] }); },
           },
-        });
-        let result = subject.transition(subject.initialState, 'go');
-        assert.equal(result.value, 'test1');
-        assert.strictEqual(result.changed, false);
-        assert.notStrictEqual(result, subject.initialState);
+        },
       });
-
-      test('provides actions with function callbacks', function(assert) {
-        let spyCalls = [];
-        let subject = createMachine({
-          initial: 'test1',
-          context: { test: 'foo' },
-          states: {
-            test1: {
-              exit() { spyCalls.push({ spyType: 'exit', args: [...arguments] }); },
-              on: {
-                go: {
-                  target: 'test2',
-                  actions: [
-                    function() { spyCalls.push({ spyType: 'action', args: [...arguments] }); },
-                  ]
-                }
-              }
-            },
-            test2: {
-              entry() { spyCalls.push({ spyType: 'entry', args: [...arguments] }); },
-            }
+      let state = subject.transition(subject.initialState, {
+        type: 'go',
+        value: 'foobar',
+      });
+      assert.equal(state.actions.length, 3, 'available actions');
+      assert.deepEqual(state.actions.map(item => item.type), ['exit', 'action', 'entry']);
+      state.actions.forEach(item => item.exec());
+      assert.equal(spyCalls.length, 3, 'callbacks called');
+      assert.deepEqual(spyCalls[0], {
+        spyType: 'exit',
+        args: [
+          { test: 'foo' },
+          {
+            target: 'test2',
+            type: 'go',
+            value: 'foobar',
           },
-        });
-        let state = subject.transition(subject.initialState, {
-          type: 'go',
-          value: 'foobar'
-        });
-        assert.equal(state.actions.length, 3, 'available actions');
-        assert.deepEqual(state.actions.map(item => item.type), ['exit', 'action', 'entry']);
-        state.actions.forEach(item => item.exec());
-        assert.equal(spyCalls.length, 3, 'callbacks called');
-        assert.deepEqual(spyCalls[0], {
-          spyType: 'exit',
-          args: [
-            { test: 'foo' },
-            {
-              target: 'test2',
-              type: 'go',
-              value: 'foobar'
-            }
-          ]
-        });
-        assert.deepEqual(spyCalls[1], {
-          spyType: 'action',
-          args: [
-            { test: 'foo' },
-            {
-              target: 'test2',
-              type: 'go',
-              value: 'foobar'
-            }
-          ]
-        });
-        assert.deepEqual(spyCalls[2], {
-          spyType: 'entry',
-          args: [
-            { test: 'foo' },
-            {
-              target: 'test2',
-              type: 'go',
-              value: 'foobar'
-            }
-          ]
-        });
+        ],
       });
-
-      test('provides actions with named callbacks', function(assert) {
-        let spyCalls = [];
-        let subject = createMachine({
-          initial: 'test1',
-          context: { test: 'foo' },
-          states: {
-            test1: {
-              exit: 'testExit',
-              on: {
-                go: {
-                  target: 'test2',
-                  actions: ['testAction']
-                }
-              }
-            },
-            test2: { entry: 'testEntry' }
+      assert.deepEqual(spyCalls[1], {
+        spyType: 'action',
+        args: [
+          { test: 'foo' },
+          {
+            target: 'test2',
+            type: 'go',
+            value: 'foobar',
           },
-        }, {
-          actions: {
-            testExit() { spyCalls.push({ spyType: 'exit', args: [...arguments] }); },
-            testAction() { spyCalls.push({ spyType: 'action', args: [...arguments] }); },
-            testEntry() { spyCalls.push({ spyType: 'entry', args: [...arguments] }); },
-          }
-        });
-        let state = subject.transition(subject.initialState, {
-          type: 'go',
-          value: 'foobar'
-        });
-        assert.equal(state.actions.length, 3, 'available actions');
-        assert.deepEqual(state.actions.map(item => item.type), ['exit', 'action', 'entry']);
-        state.actions.forEach(item => item.exec());
-        assert.equal(spyCalls.length, 3, 'callbacks called');
-        assert.deepEqual(spyCalls[0], {
-          spyType: 'exit',
-          args: [
-            { test: 'foo' },
-            {
-              target: 'test2',
-              type: 'go',
-              value: 'foobar'
-            }
-          ]
-        });
-        assert.deepEqual(spyCalls[1], {
-          spyType: 'action',
-          args: [
-            { test: 'foo' },
-            {
-              target: 'test2',
-              type: 'go',
-              value: 'foobar'
-            }
-          ]
-        });
-        assert.deepEqual(spyCalls[2], {
-          spyType: 'entry',
-          args: [
-            { test: 'foo' },
-            {
-              target: 'test2',
-              type: 'go',
-              value: 'foobar'
-            }
-          ]
-        });
+        ],
       });
-
+      assert.deepEqual(spyCalls[2], {
+        spyType: 'entry',
+        args: [
+          { test: 'foo' },
+          {
+            target: 'test2',
+            type: 'go',
+            value: 'foobar',
+          },
+        ],
+      });
     });
 
-    module('Traffic Light', function(hooks) {
-
-      hooks.beforeEach(function() {
-        this.subject = createMachine({
-          id: 'test-subject',
-          initial: 'green',
-          states: {
-            green: { on: {
-              change: 'yellow',
-              caution: 'blink-yellow',
-              stop: 'blink-red',
-            } },
-            yellow: { on: {
-              change: 'red',
-              caution: 'blink-yellow',
-              stop: 'blink-red',
-            } },
-            red: { on: {
-              change: 'green',
-              caution: 'blink-yellow',
-              stop: 'blink-red',
-            } },
-            'blink-yellow': { on: {
-              cancel: 'green',
-              stop: 'blink-red',
-            } },
-            'blink-red': { on: {
-              cancel: 'green',
-              caution: 'blink-yellow',
-            } },
-          }
-        });
+    test('provides actions with named callbacks', function(assert) {
+      let spyCalls = [];
+      let subject = createMachine({
+        initial: 'test1',
+        context: { test: 'foo' },
+        states: {
+          test1: {
+            exit: 'testExit',
+            on: {
+              go: {
+                target: 'test2',
+                actions: ['testAction'],
+              },
+            },
+          },
+          test2: { entry: 'testEntry' },
+        },
+      }, {
+        actions: {
+          testExit() { spyCalls.push({ spyType: 'exit', args: [...arguments] }); },
+          testAction() { spyCalls.push({ spyType: 'action', args: [...arguments] }); },
+          testEntry() { spyCalls.push({ spyType: 'entry', args: [...arguments] }); },
+        },
       });
-
-      test('initial state is green', function(assert) {
-        let resultState = this.subject.initialState;
-        assert.equal(resultState.value, 'green');
+      let state = subject.transition(subject.initialState, {
+        type: 'go',
+        value: 'foobar',
       });
-
-      test('can reach blinking yellow state from green', function(assert) {
-        let resultState = { value: 'green' };
-        resultState = this.subject.transition(resultState, 'caution');
-        assert.equal(resultState.value, 'blink-yellow');
-        resultState = this.subject.transition(resultState, 'cancel');
-        assert.equal(resultState.value, 'green');
+      assert.equal(state.actions.length, 3, 'available actions');
+      assert.deepEqual(state.actions.map(item => item.type), ['exit', 'action', 'entry']);
+      state.actions.forEach(item => item.exec());
+      assert.equal(spyCalls.length, 3, 'callbacks called');
+      assert.deepEqual(spyCalls[0], {
+        spyType: 'exit',
+        args: [
+          { test: 'foo' },
+          {
+            target: 'test2',
+            type: 'go',
+            value: 'foobar',
+          },
+        ],
       });
-
-      test('can reach blinking red state from green', function(assert) {
-        let resultState = { value: 'green' };
-        resultState = this.subject.transition(resultState, 'stop');
-        assert.equal(resultState.value, 'blink-red');
-        resultState = this.subject.transition(resultState, 'cancel');
-        assert.equal(resultState.value, 'green');
+      assert.deepEqual(spyCalls[1], {
+        spyType: 'action',
+        args: [
+          { test: 'foo' },
+          {
+            target: 'test2',
+            type: 'go',
+            value: 'foobar',
+          },
+        ],
       });
-
-      test('can reach blinking yellow state from yellow', function(assert) {
-        let resultState = { value: 'yellow' };
-        resultState = this.subject.transition(resultState, 'caution');
-        assert.equal(resultState.value, 'blink-yellow');
-        resultState = this.subject.transition(resultState, 'cancel');
-        assert.equal(resultState.value, 'green');
-      });
-
-      test('can reach blinking red state from yellow', function(assert) {
-        let resultState = { value: 'yellow' };
-        resultState = this.subject.transition(resultState, 'stop');
-        assert.equal(resultState.value, 'blink-red');
-        resultState = this.subject.transition(resultState, 'cancel');
-        assert.equal(resultState.value, 'green');
-      });
-
-      test('can reach blinking yellow state from red', function(assert) {
-        let resultState = { value: 'red' };
-        resultState = this.subject.transition(resultState, 'caution');
-        assert.equal(resultState.value, 'blink-yellow');
-        resultState = this.subject.transition(resultState, 'cancel');
-        assert.equal(resultState.value, 'green');
-      });
-
-      test('can reach blinking red state from red', function(assert) {
-        let resultState = { value: 'red' };
-        resultState = this.subject.transition(resultState, 'stop');
-        assert.equal(resultState.value, 'blink-red');
-        resultState = this.subject.transition(resultState, 'cancel');
-        assert.equal(resultState.value, 'green');
-      });
-
-      test('can cycle through all lights', function(assert) {
-        let resultState = this.subject.initialState;
-        assert.equal(resultState.value, 'green');
-        resultState = this.subject.transition(resultState, 'change');
-        assert.equal(resultState.value, 'yellow');
-        resultState = this.subject.transition(resultState, 'change');
-        assert.equal(resultState.value, 'red');
-        resultState = this.subject.transition(resultState, 'change');
-        assert.equal(resultState.value, 'green');
+      assert.deepEqual(spyCalls[2], {
+        spyType: 'entry',
+        args: [
+          { test: 'foo' },
+          {
+            target: 'test2',
+            type: 'go',
+            value: 'foobar',
+          },
+        ],
       });
     });
 
   });
+
+  module('Traffic Light', function(hooks) {
+
+    hooks.beforeEach(function() {
+      this.subject = createMachine({
+        id: 'test-subject',
+        initial: 'green',
+        states: {
+          green: { on: {
+            change: 'yellow',
+            caution: 'blink-yellow',
+            stop: 'blink-red',
+          } },
+          yellow: { on: {
+            change: 'red',
+            caution: 'blink-yellow',
+            stop: 'blink-red',
+          } },
+          red: { on: {
+            change: 'green',
+            caution: 'blink-yellow',
+            stop: 'blink-red',
+          } },
+          'blink-yellow': { on: {
+            cancel: 'green',
+            stop: 'blink-red',
+          } },
+          'blink-red': { on: {
+            cancel: 'green',
+            caution: 'blink-yellow',
+          } },
+        },
+      });
+    });
+
+    test('initial state is green', function(assert) {
+      let resultState = this.subject.initialState;
+      assert.equal(resultState.value, 'green');
+    });
+
+    test('can reach blinking yellow state from green', function(assert) {
+      let resultState = { value: 'green' };
+      resultState = this.subject.transition(resultState, 'caution');
+      assert.equal(resultState.value, 'blink-yellow');
+      resultState = this.subject.transition(resultState, 'cancel');
+      assert.equal(resultState.value, 'green');
+    });
+
+    test('can reach blinking red state from green', function(assert) {
+      let resultState = { value: 'green' };
+      resultState = this.subject.transition(resultState, 'stop');
+      assert.equal(resultState.value, 'blink-red');
+      resultState = this.subject.transition(resultState, 'cancel');
+      assert.equal(resultState.value, 'green');
+    });
+
+    test('can reach blinking yellow state from yellow', function(assert) {
+      let resultState = { value: 'yellow' };
+      resultState = this.subject.transition(resultState, 'caution');
+      assert.equal(resultState.value, 'blink-yellow');
+      resultState = this.subject.transition(resultState, 'cancel');
+      assert.equal(resultState.value, 'green');
+    });
+
+    test('can reach blinking red state from yellow', function(assert) {
+      let resultState = { value: 'yellow' };
+      resultState = this.subject.transition(resultState, 'stop');
+      assert.equal(resultState.value, 'blink-red');
+      resultState = this.subject.transition(resultState, 'cancel');
+      assert.equal(resultState.value, 'green');
+    });
+
+    test('can reach blinking yellow state from red', function(assert) {
+      let resultState = { value: 'red' };
+      resultState = this.subject.transition(resultState, 'caution');
+      assert.equal(resultState.value, 'blink-yellow');
+      resultState = this.subject.transition(resultState, 'cancel');
+      assert.equal(resultState.value, 'green');
+    });
+
+    test('can reach blinking red state from red', function(assert) {
+      let resultState = { value: 'red' };
+      resultState = this.subject.transition(resultState, 'stop');
+      assert.equal(resultState.value, 'blink-red');
+      resultState = this.subject.transition(resultState, 'cancel');
+      assert.equal(resultState.value, 'green');
+    });
+
+    test('can cycle through all lights', function(assert) {
+      let resultState = this.subject.initialState;
+      assert.equal(resultState.value, 'green');
+      resultState = this.subject.transition(resultState, 'change');
+      assert.equal(resultState.value, 'yellow');
+      resultState = this.subject.transition(resultState, 'change');
+      assert.equal(resultState.value, 'red');
+      resultState = this.subject.transition(resultState, 'change');
+      assert.equal(resultState.value, 'green');
+    });
+
+  });
+
+});
 
 })(QUnit);
 </script>
