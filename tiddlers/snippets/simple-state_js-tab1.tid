@@ -14,7 +14,8 @@ function createMachine(
   function stateFor({ target }, changed) {
     if (!target) { return; }
     let { meta = {} } = states[target] || {};
-    return { value: target, meta, context, changed };
+    let newContext = { ...context };
+    return { value: target, meta, context: newContext, changed };
   }
   function findStateEvent(transitionData, eventData) {
     if (!transitionData) { return; }
@@ -29,11 +30,11 @@ function createMachine(
       if (guards[cond](context, stateEvent)) { return stateEvent; }
     }
   }
-  function boundAction(type, event) {
+  function boundAction(type, event, ctx) {
     return function(action) {
       if (!action) { return; }
       if (typeof action !== 'function') { action = actions[action]; }
-      let exec = action && ((...args) => action(context, event, ...args));
+      let exec = action && ((...args) => action(ctx, event, ...args));
       return { type, exec };
     };
   }
@@ -55,9 +56,9 @@ function createMachine(
       if (nextState.changed) {
         let targetStateConfig = states[stateEvent.target] || {};
         nextState.actions = [
-          boundAction('exit', stateEvent)(stateConfig.exit),
-          ...(transition.actions || []).map(boundAction('action', stateEvent)),
-          boundAction('entry', stateEvent)(targetStateConfig.entry),
+          boundAction('exit', stateEvent, nextState.context)(stateConfig.exit),
+          ...(transition.actions || []).map(boundAction('action', stateEvent, nextState.context)),
+          boundAction('entry', stateEvent, nextState.context)(targetStateConfig.entry),
         ].filter(action => !!action);
       }
       return nextState;
