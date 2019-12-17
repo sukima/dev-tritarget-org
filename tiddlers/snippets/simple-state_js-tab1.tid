@@ -11,10 +11,10 @@ function createMachine(
   { context = {}, id, initial, states = {} } = {},
   { actions = {}, guards = {} } = {}
 ) {
-  function stateFor({ target }, changed) {
+  function stateFor({ target }, stateContext = context, changed) {
     if (!target) { return; }
     let { meta = {} } = states[target] || {};
-    let newContext = { ...context };
+    let newContext = { ...stateContext };
     return { value: target, meta, context: newContext, changed };
   }
   function findStateEvent(transitionData, eventData) {
@@ -39,7 +39,7 @@ function createMachine(
     };
   }
   return {
-    initialState: stateFor({ target: initial }, false),
+    initialState: stateFor({ target: initial }, context, false),
     transition(state, transitionEvent) {
       let currentValue = (state && state.value) || state;
       let stateConfig = states[currentValue];
@@ -51,8 +51,8 @@ function createMachine(
       let transition = transitions[type];
       let stateEvent = findStateEvent(transition, { type, value });
       let nextState = stateEvent
-        ? stateFor(stateEvent, true)
-        : stateFor({ target: currentValue }, false);
+        ? stateFor(stateEvent, state.context, true)
+        : stateFor({ target: currentValue }, state.context, false);
       if (nextState.changed) {
         let targetStateConfig = states[stateEvent.target] || {};
         nextState.actions = [

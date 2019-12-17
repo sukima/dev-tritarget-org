@@ -18,10 +18,10 @@ function createMachine(
   { context = {}, id, initial, states = {} } = {},
   { actions = {}, guards = {} } = {}
 ) {
-  function stateFor({ target }, changed) {
+  function stateFor({ target }, stateContext = context, changed) {
     if (!target) { return; }
     let { meta = {} } = states[target] || {};
-    let newContext = { ...context };
+    let newContext = { ...stateContext };
     return { value: target, meta, context: newContext, changed };
   }
   function findStateEvent(transitionData, eventData) {
@@ -46,7 +46,7 @@ function createMachine(
     };
   }
   return {
-    initialState: stateFor({ target: initial }, false),
+    initialState: stateFor({ target: initial }, context, false),
     transition(state, transitionEvent) {
       let currentValue = (state && state.value) || state;
       let stateConfig = states[currentValue];
@@ -58,8 +58,8 @@ function createMachine(
       let transition = transitions[type];
       let stateEvent = findStateEvent(transition, { type, value });
       let nextState = stateEvent
-        ? stateFor(stateEvent, true)
-        : stateFor({ target: currentValue }, false);
+        ? stateFor(stateEvent, state.context, true)
+        : stateFor({ target: currentValue }, state.context, false);
       if (nextState.changed) {
         let targetStateConfig = states[stateEvent.target] || {};
         nextState.actions = [
@@ -420,20 +420,25 @@ module('Unit | Utility | Simple State Machine', function() {
         states: {
           test1: {
             on: {
-              go: { target: 'test2', actions: ['testAction'] },
+              go: { target: 'test1', actions: ['testAction'] },
             },
           },
         },
       }, {
         actions: {
-          testAction(ctx) { ctx.test = 'bar'; },
+          testAction(ctx, event) { ctx.test = `${ctx.test}${event.value}`; },
         },
       });
-      let result = subject.transition(subject.initialState, 'go');
-      result.actions[0].exec();
+      let result1 = subject.transition(subject.initialState, { type: 'go', value: 'bar' });
+      result1.actions[0].exec();
       assert.equal(initialContext.test, 'foo');
-      assert.equal(result.context.test, 'bar');
-      assert.notStrictEqual(initialContext, result.context);
+      assert.equal(result1.context.test, 'foobar');
+      assert.notStrictEqual(initialContext, result1.context);
+      let result2 = subject.transition(result1, { type: 'go', value: 'baz' });
+      result2.actions[0].exec();
+      assert.equal(result1.context.test, 'foobar');
+      assert.equal(result2.context.test, 'foobarbaz');
+      assert.notStrictEqual(result1.context, result2.context);
     });
 
   });
