@@ -7,7 +7,10 @@ tags: [[Simple State Machine]]
 type: application/javascript
 caption: StateMachine Class
 
-function createMachine({ context = {}, id, initial, states = {} } = {}) {
+function createMachine(
+  { context = {}, id, initial, states = {} } = {},
+  { actions = {}, guards = {} } = {}
+) {
   function stateFor({ target }, changed) {
     if (!target) { return; }
     let { meta = {} } = states[target] || {};
@@ -19,8 +22,20 @@ function createMachine({ context = {}, id, initial, states = {} } = {}) {
       if (!transition) { continue; }
       let { target = transition, cond = () => true } = transition;
       let stateEvent = { ...eventData, target };
-      if (cond(context, stateEvent)) { return stateEvent; }
+      if (typeof cond === 'function') {
+        if (cond(context, stateEvent)) { return stateEvent; }
+        continue;
+      }
+      if (guards[cond](context, stateEvent)) { return stateEvent; }
     }
+  }
+  function boundAction(type, event) {
+    return function(action) {
+      if (!action) { return; }
+      if (typeof action !== 'function') { action = actions[action]; }
+      let exec = action && ((...args) => action(context, event, ...args));
+      return { type, exec };
+    };
   }
   return {
     initialState: stateFor({ target: initial }, false),
@@ -28,9 +43,7 @@ function createMachine({ context = {}, id, initial, states = {} } = {}) {
       let currentValue = (state && state.value) || state;
       let stateConfig = states[currentValue];
       if (!stateConfig) {
-        throw new Error(
-          `State '${currentValue}' not found on machine${id ? ` ${id}` : ''}`
-        );
+        throw new Error(`State '${currentValue}' not found on machine${id ? ` ${id}` : ''}`);
       }
       let { type = transitionEvent, value } = transitionEvent;
       let transitions = stateConfig.on || {};
@@ -41,11 +54,13 @@ function createMachine({ context = {}, id, initial, states = {} } = {}) {
         : stateFor({ target: currentValue }, false);
       if (nextState.changed) {
         let targetStateConfig = states[stateEvent.target] || {};
-        stateConfig.exit && stateConfig.exit(context, stateEvent);
-        transition && transition.action && transition.action(context, stateEvent);
-        targetStateConfig.entry && targetStateConfig.entry(context, stateEvent);
+        nextState.actions = [
+          boundAction('exit', stateEvent)(stateConfig.exit),
+          ...(transition.actions || []).map(boundAction('action', stateEvent)),
+          boundAction('entry', stateEvent)(targetStateConfig.entry),
+        ].filter(action => !!action);
       }
       return nextState;
-    }
+    },
   };
 }

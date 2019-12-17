@@ -14,7 +14,10 @@
 <script>
 (function(exports) {
 
-function createMachine({ context = {}, id, initial, states = {} } = {}) {
+function createMachine(
+  { context = {}, id, initial, states = {} } = {},
+  { actions = {}, guards = {} } = {}
+) {
   function stateFor({ target }, changed) {
     if (!target) { return; }
     let { meta = {} } = states[target] || {};
@@ -26,8 +29,20 @@ function createMachine({ context = {}, id, initial, states = {} } = {}) {
       if (!transition) { continue; }
       let { target = transition, cond = () => true } = transition;
       let stateEvent = { ...eventData, target };
-      if (cond(context, stateEvent)) { return stateEvent; }
+      if (typeof cond === 'function') {
+        if (cond(context, stateEvent)) { return stateEvent; }
+        continue;
+      }
+      if (guards[cond](context, stateEvent)) { return stateEvent; }
     }
+  }
+  function boundAction(type, event) {
+    return function(action) {
+      if (!action) { return; }
+      if (typeof action !== 'function') { action = actions[action]; }
+      let exec = action && ((...args) => action(context, event, ...args));
+      return { type, exec };
+    };
   }
   return {
     initialState: stateFor({ target: initial }, false),
@@ -35,9 +50,7 @@ function createMachine({ context = {}, id, initial, states = {} } = {}) {
       let currentValue = (state && state.value) || state;
       let stateConfig = states[currentValue];
       if (!stateConfig) {
-        throw new Error(
-          `State '${currentValue}' not found on machine${id ? ` ${id}` : ''}`
-        );
+        throw new Error(`State '${currentValue}' not found on machine${id ? ` ${id}` : ''}`);
       }
       let { type = transitionEvent, value } = transitionEvent;
       let transitions = stateConfig.on || {};
@@ -48,12 +61,14 @@ function createMachine({ context = {}, id, initial, states = {} } = {}) {
         : stateFor({ target: currentValue }, false);
       if (nextState.changed) {
         let targetStateConfig = states[stateEvent.target] || {};
-        stateConfig.exit && stateConfig.exit(context, stateEvent);
-        transition && transition.action && transition.action(context, stateEvent);
-        targetStateConfig.entry && targetStateConfig.entry(context, stateEvent);
+        nextState.actions = [
+          boundAction('exit', stateEvent)(stateConfig.exit),
+          ...(transition.actions || []).map(boundAction('action', stateEvent)),
+          boundAction('entry', stateEvent)(targetStateConfig.entry),
+        ].filter(action => !!action);
       }
       return nextState;
-    }
+    },
   };
 }
 
@@ -93,6 +108,7 @@ exports.createMachine = createMachine;
         });
         let result = subject.transition(subject.initialState, 'go');
         assert.deepEqual(result, {
+          actions: [],
           value: 'test2',
           meta: {},
           context: {},
@@ -100,6 +116,7 @@ exports.createMachine = createMachine;
         });
         result = subject.transition('test1', 'go');
         assert.deepEqual(result, {
+          actions: [],
           value: 'test2',
           meta: {},
           context: {},
@@ -148,6 +165,43 @@ exports.createMachine = createMachine;
               },
             },
           },
+        });
+        let result = subject.transition(subject.initialState, {
+          type: 'go',
+          value: 'foobar'
+        });
+        assert.equal(result.value, 'test1');
+        assert.strictEqual(result.changed, false);
+        assert.notStrictEqual(result, subject.initialState);
+        assert.equal(condSpyCalls.length, 1);
+        assert.deepEqual(condSpyCalls[0], [{}, {
+          target: 'test2',
+          type: 'go',
+          value: 'foobar'
+        }]);
+      });
+
+      test('does not transition when guard is false', function(assert) {
+        let condSpyCalls = [];
+        let subject = createMachine({
+          initial: 'test1',
+          states: {
+            test1: {
+              on: {
+                go: {
+                  target: 'test2',
+                  cond: 'testGuard'
+                },
+              },
+            },
+          },
+        }, {
+          guards: {
+            testGuard() {
+              condSpyCalls.push([...arguments]);
+              return false;
+            }
+          }
         });
         let result = subject.transition(subject.initialState, {
           type: 'go',
@@ -225,83 +279,136 @@ exports.createMachine = createMachine;
         assert.notStrictEqual(result, subject.initialState);
       });
 
-      test('calls exit action when available', function(assert) {
-        let exitSpyCalls = [];
+      test('provides actions with function callbacks', function(assert) {
+        let spyCalls = [];
         let subject = createMachine({
           initial: 'test1',
+          context: { test: 'foo' },
           states: {
             test1: {
-              exit() {
-                exitSpyCalls.push([...arguments]);
-              },
-              on: { go: 'test2' }
-            }
-          },
-        });
-        subject.transition(subject.initialState, {
-          type: 'go',
-          value: 'foobar'
-        });
-        assert.equal(exitSpyCalls.length, 1);
-        assert.deepEqual(exitSpyCalls[0], [{}, {
-          target: 'test2',
-          type: 'go',
-          value: 'foobar'
-        }]);
-      });
-
-      test('calls action on transition when available', function(assert) {
-        let actionSpyCalls = [];
-        let subject = createMachine({
-          initial: 'test1',
-          states: {
-            test1: {
+              exit() { spyCalls.push({ spyType: 'exit', args: [...arguments] }); },
               on: {
                 go: {
                   target: 'test2',
-                  action() {
-                    actionSpyCalls.push([...arguments]);
-                  }
+                  actions: [
+                    function() { spyCalls.push({ spyType: 'action', args: [...arguments] }); },
+                  ]
                 }
               }
+            },
+            test2: {
+              entry() { spyCalls.push({ spyType: 'entry', args: [...arguments] }); },
             }
           },
         });
-        subject.transition(subject.initialState, {
+        let state = subject.transition(subject.initialState, {
           type: 'go',
           value: 'foobar'
         });
-        assert.equal(actionSpyCalls.length, 1);
-        assert.deepEqual(actionSpyCalls[0], [{}, {
-          target: 'test2',
-          type: 'go',
-          value: 'foobar'
-        }]);
+        assert.equal(state.actions.length, 3, 'available actions');
+        assert.deepEqual(state.actions.map(item => item.type), ['exit', 'action', 'entry']);
+        state.actions.forEach(item => item.exec());
+        assert.equal(spyCalls.length, 3, 'callbacks called');
+        assert.deepEqual(spyCalls[0], {
+          spyType: 'exit',
+          args: [
+            { test: 'foo' },
+            {
+              target: 'test2',
+              type: 'go',
+              value: 'foobar'
+            }
+          ]
+        });
+        assert.deepEqual(spyCalls[1], {
+          spyType: 'action',
+          args: [
+            { test: 'foo' },
+            {
+              target: 'test2',
+              type: 'go',
+              value: 'foobar'
+            }
+          ]
+        });
+        assert.deepEqual(spyCalls[2], {
+          spyType: 'entry',
+          args: [
+            { test: 'foo' },
+            {
+              target: 'test2',
+              type: 'go',
+              value: 'foobar'
+            }
+          ]
+        });
       });
 
-      test('calls entry action when available', function(assert) {
-        let entrySpyCalls = [];
+      test('provides actions with named callbacks', function(assert) {
+        let spyCalls = [];
         let subject = createMachine({
           initial: 'test1',
+          context: { test: 'foo' },
           states: {
-            test1: { on: { go: 'test2' } },
-            test2: {
-              entry() {
-                entrySpyCalls.push([...arguments]);
+            test1: {
+              exit: 'testExit',
+              on: {
+                go: {
+                  target: 'test2',
+                  actions: ['testAction']
+                }
               }
-            }
+            },
+            test2: { entry: 'testEntry' }
           },
+        }, {
+          actions: {
+            testExit() { spyCalls.push({ spyType: 'exit', args: [...arguments] }); },
+            testAction() { spyCalls.push({ spyType: 'action', args: [...arguments] }); },
+            testEntry() { spyCalls.push({ spyType: 'entry', args: [...arguments] }); },
+          }
         });
-        subject.transition(subject.initialState, {
+        let state = subject.transition(subject.initialState, {
           type: 'go',
           value: 'foobar'
         });
-        assert.equal(entrySpyCalls.length, 1);
-        assert.deepEqual(entrySpyCalls[0], [{}, {
-          target: 'test2',
-          type: 'go',
-          value: 'foobar'
-        }]);
+        assert.equal(state.actions.length, 3, 'available actions');
+        assert.deepEqual(state.actions.map(item => item.type), ['exit', 'action', 'entry']);
+        state.actions.forEach(item => item.exec());
+        assert.equal(spyCalls.length, 3, 'callbacks called');
+        assert.deepEqual(spyCalls[0], {
+          spyType: 'exit',
+          args: [
+            { test: 'foo' },
+            {
+              target: 'test2',
+              type: 'go',
+              value: 'foobar'
+            }
+          ]
+        });
+        assert.deepEqual(spyCalls[1], {
+          spyType: 'action',
+          args: [
+            { test: 'foo' },
+            {
+              target: 'test2',
+              type: 'go',
+              value: 'foobar'
+            }
+          ]
+        });
+        assert.deepEqual(spyCalls[2], {
+          spyType: 'entry',
+          args: [
+            { test: 'foo' },
+            {
+              target: 'test2',
+              type: 'go',
+              value: 'foobar'
+            }
+          ]
+        });
       });
 
     });
