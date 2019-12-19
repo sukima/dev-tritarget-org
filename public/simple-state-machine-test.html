@@ -22,7 +22,7 @@ function createMachine(
     if (!target) { return; }
     let { meta = {} } = states[target] || {};
     let newContext = { ...stateContext };
-    return { value: target, meta, context: newContext, changed };
+    return { value: target, meta, context: newContext, changed, actions: [] };
   }
   function findStateEvent(transitionData, eventData) {
     if (!transitionData) { return; }
@@ -276,6 +276,7 @@ module('Unit | Utility | Simple State Machine', function() {
       });
       let result = subject.transition(subject.initialState, 'go');
       assert.equal(result.value, 'test1');
+      assert.deepEqual(result.actions, []);
       assert.strictEqual(result.changed, false);
       assert.notStrictEqual(result, subject.initialState);
     });

@@ -15,7 +15,7 @@ function createMachine(
     if (!target) { return; }
     let { meta = {} } = states[target] || {};
     let newContext = { ...stateContext };
-    return { value: target, meta, context: newContext, changed };
+    return { value: target, meta, context: newContext, changed, actions: [] };
   }
   function findStateEvent(transitionData, eventData) {
     if (!transitionData) { return; }
