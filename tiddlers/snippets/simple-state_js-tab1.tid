@@ -17,17 +17,17 @@ function createMachine(
     let newContext = { ...stateContext };
     return { value: target, meta, context: newContext, changed, actions: [] };
   }
-  function findStateEvent(transitionData, eventData) {
+  function findStateEvent(transitionData, eventData, stateContext = context) {
     if (!transitionData) { return; }
     for (let transition of [].concat(transitionData)) {
       if (!transition) { continue; }
       let { target = transition, cond = () => true } = transition;
       let stateEvent = { ...eventData, target };
       if (typeof cond === 'function') {
-        if (cond(context, stateEvent)) { return stateEvent; }
+        if (cond(stateContext, stateEvent)) { return stateEvent; }
         continue;
       }
-      if (guards[cond](context, stateEvent)) { return stateEvent; }
+      if (guards[cond](stateContext, stateEvent)) { return stateEvent; }
     }
   }
   function boundAction(type, event, ctx) {
@@ -49,7 +49,7 @@ function createMachine(
       let { type = transitionEvent, value } = transitionEvent;
       let transitions = stateConfig.on || {};
       let transition = transitions[type];
-      let stateEvent = findStateEvent(transition, { type, value });
+      let stateEvent = findStateEvent(transition, { type, value }, state.context);
       let nextState = stateEvent
         ? stateFor(stateEvent, state.context, true)
         : stateFor({ target: currentValue }, state.context, false);
