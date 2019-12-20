@@ -39,7 +39,7 @@ function createMachine(
     };
   }
   return {
-    initialState: stateFor({ target: initial }, context, false),
+    id, initialState: stateFor({ target: initial }, context, false),
     transition(state, transitionEvent) {
       let currentValue = (state && state.value) || state;
       let stateConfig = states[currentValue];
