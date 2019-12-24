@@ -12,14 +12,14 @@ Modals are hidden by default. They open with the class `open` or by referencing 
 ```xml
 <a role="button" href="#open-modal">Open Modal Dialog</a>
 
-<div
-  id="open-modal"
-  role="dialog"
-  class="modal"
-  aria-labeledby="modal-title"
-  aria-describedby="modal-description"
->
-  <div class="modal-content" aria-modal="true">
+<div id="open-modal" class="modal">
+  <div
+    class="modal-content"
+    role="dialog"
+    aria-modal="true"
+    aria-labeledby="modal-title"
+    aria-describedby="modal-description"
+  >
     <div id="modal-title" class="modal-header">
       <h1>Modal Example</h1>
     </div>
