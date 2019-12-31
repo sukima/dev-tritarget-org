@@ -18,10 +18,10 @@ function createMachine(
     return { value: target, meta, context: newContext, changed, actions: [] };
   }
   function findStateEvent(transitionData, eventData, stateContext = context) {
-    if (!transitionData) { return; }
     for (let transition of [].concat(transitionData)) {
       if (!transition) { continue; }
       let { target = transition, cond = () => true } = transition;
+      if (typeof target !== 'string') { target = ''; }
       let stateEvent = { ...eventData, target };
       if (typeof cond === 'function') {
         if (cond(stateContext, stateEvent)) { return stateEvent; }
@@ -29,6 +29,7 @@ function createMachine(
       }
       if (guards[cond](stateContext, stateEvent)) { return stateEvent; }
     }
+    return {};
   }
   function boundAction(type, event, state) {
     return function(action) {
@@ -49,19 +50,18 @@ function createMachine(
       }
       let { type = transitionEvent, value } = transitionEvent;
       let transitions = stateConfig.on || {};
-      let transition = transitions[type];
+      let transition = transitions[type] || {};
       let stateEvent = findStateEvent(transition, { type, value }, state.context);
-      let nextState = stateEvent
+      let nextState = stateEvent.target && stateEvent.target !== currentValue
         ? stateFor(stateEvent, state.context, true)
         : stateFor({ target: currentValue }, state.context, false);
+      nextState.actions = [].concat(transition.actions || []).map(boundAction('action', stateEvent, nextState));
       if (nextState.changed) {
         let targetConfig = states[stateEvent.target] || {};
-        nextState.actions = [
-          ...[].concat(stateConfig.exit || []).map(boundAction('exit', stateEvent, nextState)),
-          ...[].concat(transition.actions || []).map(boundAction('action', stateEvent, nextState)),
-          ...[].concat(targetConfig.entry || []).map(boundAction('entry', stateEvent, nextState)),
-        ].filter(action => !!action);
+        nextState.actions.unshift(...[].concat(stateConfig.exit || []).map(boundAction('exit', stateEvent, nextState)));
+        nextState.actions.push(...[].concat(targetConfig.entry || []).map(boundAction('entry', stateEvent, nextState)));
       }
+      nextState.actions = nextState.actions.filter(action => !!action);
       return nextState;
     },
   };
