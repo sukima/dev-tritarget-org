@@ -36,12 +36,13 @@ function createMachine(
       if (guards[cond](stateContext, stateEvent)) { return stateEvent; }
     }
   }
-  function boundAction(type, event, ctx) {
+  function boundAction(type, event, state) {
     return function(action) {
       if (!action) { return; }
-      if (typeof action !== 'function') { action = actions[action]; }
-      let exec = action && ((...args) => action(ctx, event, ...args));
-      return { type, exec };
+      if (!action.exec) { action = { exec: action }; }
+      if (typeof action.exec !== 'function') { action.exec = actions[action.exec]; }
+      let exec = action.exec && ((...args) => action.exec(state.context, event, { action, state }, ...args));
+      return { type: (action.type || type), exec };
     };
   }
   return {
@@ -62,9 +63,9 @@ function createMachine(
       if (nextState.changed) {
         let targetConfig = states[stateEvent.target] || {};
         nextState.actions = [
-          ...[].concat(stateConfig.exit || []).map(boundAction('exit', stateEvent, nextState.context)),
-          ...[].concat(transition.actions || []).map(boundAction('action', stateEvent, nextState.context)),
-          ...[].concat(targetConfig.entry || []).map(boundAction('entry', stateEvent, nextState.context)),
+          ...[].concat(stateConfig.exit || []).map(boundAction('exit', stateEvent, nextState)),
+          ...[].concat(transition.actions || []).map(boundAction('action', stateEvent, nextState)),
+          ...[].concat(targetConfig.entry || []).map(boundAction('entry', stateEvent, nextState)),
         ].filter(action => !!action);
       }
       return nextState;
@@ -353,7 +354,14 @@ module('Unit | Utility | Simple State Machine', function() {
         context: { test: 'foo' },
         states: {
           test1: {
-            exit() { spyCalls.push({ spyType: 'exit', args: [...arguments] }); },
+            exit: [
+              function() { spyCalls.push({ spyType: 'exit', args: [...arguments] }); },
+              {
+                type: 'foobar',
+                value: 'foobar-value',
+                exec() { spyCalls.push({ spyType: 'exit', args: [...arguments] }); },
+              },
+            ],
             on: {
               go: {
                 target: 'test2',
@@ -372,43 +380,22 @@ module('Unit | Utility | Simple State Machine', function() {
         type: 'go',
         value: 'foobar',
       });
-      assert.equal(state.actions.length, 3, 'available actions');
-      assert.deepEqual(state.actions.map(item => item.type), ['exit', 'action', 'entry']);
       state.actions.forEach(item => item.exec());
-      assert.equal(spyCalls.length, 3, 'callbacks called');
-      assert.deepEqual(spyCalls[0], {
-        spyType: 'exit',
-        args: [
-          { test: 'foo' },
-          {
-            target: 'test2',
-            type: 'go',
-            value: 'foobar',
-          },
-        ],
-      });
-      assert.deepEqual(spyCalls[1], {
-        spyType: 'action',
-        args: [
-          { test: 'foo' },
-          {
-            target: 'test2',
-            type: 'go',
-            value: 'foobar',
-          },
-        ],
-      });
-      assert.deepEqual(spyCalls[2], {
-        spyType: 'entry',
-        args: [
-          { test: 'foo' },
-          {
-            target: 'test2',
-            type: 'go',
-            value: 'foobar',
-          },
-        ],
-      });
+      assert.deepEqual(state.actions.map(item => item.type), ['exit', 'foobar', 'action', 'entry']);
+      assert.equal(spyCalls.length, 4, 'callbacks called');
+      assert.equal(spyCalls[0].spyType, 'exit');
+      assert.deepEqual(spyCalls[0].args[0], { test: 'foo' });
+      assert.deepEqual(spyCalls[0].args[1], { target: 'test2', type: 'go', value: 'foobar' });
+      assert.equal(spyCalls[1].spyType, 'exit');
+      assert.deepEqual(spyCalls[1].args[0], { test: 'foo' });
+      assert.deepEqual(spyCalls[1].args[1], { target: 'test2', type: 'go', value: 'foobar' });
+      assert.equal(spyCalls[1].args[2].action.value, 'foobar-value');
+      assert.equal(spyCalls[2].spyType, 'action');
+      assert.deepEqual(spyCalls[2].args[0], { test: 'foo' });
+      assert.deepEqual(spyCalls[2].args[1], { target: 'test2', type: 'go', value: 'foobar' });
+      assert.equal(spyCalls[3].spyType, 'entry');
+      assert.deepEqual(spyCalls[3].args[0], { test: 'foo' });
+      assert.deepEqual(spyCalls[3].args[1], { target: 'test2', type: 'go', value: 'foobar' });
     });
 
     test('provides actions with named callbacks', function(assert) {
@@ -418,7 +405,14 @@ module('Unit | Utility | Simple State Machine', function() {
         context: { test: 'foo' },
         states: {
           test1: {
-            exit: 'testExit',
+            exit: [
+              'testExit',
+              {
+                type: 'foobar',
+                value: 'foobar-value',
+                exec: 'testExit',
+              },
+            ],
             on: {
               go: {
                 target: 'test2',
@@ -439,43 +433,22 @@ module('Unit | Utility | Simple State Machine', function() {
         type: 'go',
         value: 'foobar',
       });
-      assert.equal(state.actions.length, 3, 'available actions');
-      assert.deepEqual(state.actions.map(item => item.type), ['exit', 'action', 'entry']);
       state.actions.forEach(item => item.exec());
-      assert.equal(spyCalls.length, 3, 'callbacks called');
-      assert.deepEqual(spyCalls[0], {
-        spyType: 'exit',
-        args: [
-          { test: 'foo' },
-          {
-            target: 'test2',
-            type: 'go',
-            value: 'foobar',
-          },
-        ],
-      });
-      assert.deepEqual(spyCalls[1], {
-        spyType: 'action',
-        args: [
-          { test: 'foo' },
-          {
-            target: 'test2',
-            type: 'go',
-            value: 'foobar',
-          },
-        ],
-      });
-      assert.deepEqual(spyCalls[2], {
-        spyType: 'entry',
-        args: [
-          { test: 'foo' },
-          {
-            target: 'test2',
-            type: 'go',
-            value: 'foobar',
-          },
-        ],
-      });
+      assert.deepEqual(state.actions.map(item => item.type), ['exit', 'foobar', 'action', 'entry']);
+      assert.equal(spyCalls.length, 4, 'callbacks called');
+      assert.equal(spyCalls[0].spyType, 'exit');
+      assert.deepEqual(spyCalls[0].args[0], { test: 'foo' });
+      assert.deepEqual(spyCalls[0].args[1], { target: 'test2', type: 'go', value: 'foobar' });
+      assert.equal(spyCalls[1].spyType, 'exit');
+      assert.deepEqual(spyCalls[1].args[0], { test: 'foo' });
+      assert.deepEqual(spyCalls[1].args[1], { target: 'test2', type: 'go', value: 'foobar' });
+      assert.equal(spyCalls[1].args[2].action.value, 'foobar-value');
+      assert.equal(spyCalls[2].spyType, 'action');
+      assert.deepEqual(spyCalls[2].args[0], { test: 'foo' });
+      assert.deepEqual(spyCalls[2].args[1], { target: 'test2', type: 'go', value: 'foobar' });
+      assert.equal(spyCalls[3].spyType, 'entry');
+      assert.deepEqual(spyCalls[3].args[0], { test: 'foo' });
+      assert.deepEqual(spyCalls[3].args[1], { target: 'test2', type: 'go', value: 'foobar' });
     });
 
     test('shallow clones context', function(assert) {

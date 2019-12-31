@@ -30,12 +30,13 @@ function createMachine(
       if (guards[cond](stateContext, stateEvent)) { return stateEvent; }
     }
   }
-  function boundAction(type, event, ctx) {
+  function boundAction(type, event, state) {
     return function(action) {
       if (!action) { return; }
-      if (typeof action !== 'function') { action = actions[action]; }
-      let exec = action && ((...args) => action(ctx, event, ...args));
-      return { type, exec };
+      if (!action.exec) { action = { exec: action }; }
+      if (typeof action.exec !== 'function') { action.exec = actions[action.exec]; }
+      let exec = action.exec && ((...args) => action.exec(state.context, event, { action, state }, ...args));
+      return { type: (action.type || type), exec };
     };
   }
   return {
@@ -56,9 +57,9 @@ function createMachine(
       if (nextState.changed) {
         let targetConfig = states[stateEvent.target] || {};
         nextState.actions = [
-          ...[].concat(stateConfig.exit || []).map(boundAction('exit', stateEvent, nextState.context)),
-          ...[].concat(transition.actions || []).map(boundAction('action', stateEvent, nextState.context)),
-          ...[].concat(targetConfig.entry || []).map(boundAction('entry', stateEvent, nextState.context)),
+          ...[].concat(stateConfig.exit || []).map(boundAction('exit', stateEvent, nextState)),
+          ...[].concat(transition.actions || []).map(boundAction('action', stateEvent, nextState)),
+          ...[].concat(targetConfig.entry || []).map(boundAction('entry', stateEvent, nextState)),
         ].filter(action => !!action);
       }
       return nextState;
