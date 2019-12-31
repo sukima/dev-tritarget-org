@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- GistID: -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -61,11 +60,11 @@ function createMachine(
         ? stateFor(stateEvent, state.context, true)
         : stateFor({ target: currentValue }, state.context, false);
       if (nextState.changed) {
-        let targetStateConfig = states[stateEvent.target] || {};
+        let targetConfig = states[stateEvent.target] || {};
         nextState.actions = [
-          boundAction('exit', stateEvent, nextState.context)(stateConfig.exit),
-          ...(transition.actions || []).map(boundAction('action', stateEvent, nextState.context)),
-          boundAction('entry', stateEvent, nextState.context)(targetStateConfig.entry),
+          ...[].concat(stateConfig.exit || []).map(boundAction('exit', stateEvent, nextState.context)),
+          ...[].concat(transition.actions || []).map(boundAction('action', stateEvent, nextState.context)),
+          ...[].concat(targetConfig.entry || []).map(boundAction('entry', stateEvent, nextState.context)),
         ].filter(action => !!action);
       }
       return nextState;
