@@ -60,13 +60,13 @@ function createMachine(
       let nextState = stateEvent.target && stateEvent.target !== ''
         ? stateFor(stateEvent, state.context, true)
         : stateFor({ target: currentValue }, state.context, false);
-      if (nextState.changed) {
-        nextState.actions = [
-          ...[].concat(stateConfig.exit || []).map(boundAction('exit', stateEvent, nextState)),
-          ...[].concat(transition.actions || []).map(boundAction('action', stateEvent, nextState)),
-          ...nextState.actions
-        ];
-      }
+      nextState.actions = [
+        ...(nextState.changed
+          ? [].concat(stateConfig.exit || []).map(boundAction('exit', stateEvent, nextState))
+          : []),
+        ...[].concat(transition.actions || []).map(boundAction('action', stateEvent, nextState)),
+        ...nextState.actions,
+      ];
       nextState.actions = nextState.actions.filter(action => !!action);
       return nextState;
     },
