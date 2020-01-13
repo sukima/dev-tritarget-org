@@ -8,7 +8,7 @@ type: application/javascript
 caption: StateMachine Class
 
 function createMachine(
-  { context = {}, id, initial, states = {} } = {},
+  { context = {}, id, initial, states = {}, on = {} } = {},
   { actions = {}, guards = {} } = {}
 ) {
   function stateFor(stateEvent, stateContext = context, changed) {
@@ -54,7 +54,7 @@ function createMachine(
         throw new Error(`State '${currentValue}' not found on machine${id ? ` ${id}` : ''}`);
       }
       let { type = transitionEvent, value } = transitionEvent;
-      let transitions = stateConfig.on || {};
+      let transitions = { ...on, ...(stateConfig.on || {}) };
       let transition = transitions[type] || {};
       let stateEvent = findStateEvent(transition, { type, value }, state.context);
       let nextState = stateEvent.target && stateEvent.target !== ''

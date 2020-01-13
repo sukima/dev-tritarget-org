@@ -14,7 +14,7 @@
 (function(exports) {
 
 function createMachine(
-  { context = {}, id, initial, states = {} } = {},
+  { context = {}, id, initial, states = {}, on = {} } = {},
   { actions = {}, guards = {} } = {}
 ) {
   function stateFor(stateEvent, stateContext = context, changed) {
@@ -60,7 +60,7 @@ function createMachine(
         throw new Error(`State '${currentValue}' not found on machine${id ? ` ${id}` : ''}`);
       }
       let { type = transitionEvent, value } = transitionEvent;
-      let transitions = stateConfig.on || {};
+      let transitions = { ...on, ...(stateConfig.on || {}) };
       let transition = transitions[type] || {};
       let stateEvent = findStateEvent(transition, { type, value }, state.context);
       let nextState = stateEvent.target && stateEvent.target !== ''
@@ -351,6 +351,23 @@ module('Unit | Utility | Simple State Machine', function() {
       assert.deepEqual(result.actions, []);
       assert.strictEqual(result.changed, false);
       assert.notStrictEqual(result, subject.initialState);
+    });
+
+    test('handles top-level transitions', function(assert) {
+      let subject = createMachine({
+        initial: 'test1',
+        states: {
+          test1: {},
+          test2: {},
+        },
+        on: {
+          go: 'test2',
+        },
+      });
+      let result = subject.transition(subject.initialState, 'go');
+      assert.equal(result.value, 'test2');
+      assert.deepEqual(result.actions, []);
+      assert.strictEqual(result.changed, true);
     });
 
     test('provides actions with function callbacks', function(assert) {
