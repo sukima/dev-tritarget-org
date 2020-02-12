@@ -1,0 +1,39 @@
+modified: 20200212180513000
+created: 20200212180513000
+creator: Sukima
+modifier: Sukima
+title: simple-interpreter_js-tab1
+tags: [[Simple Interpreter]]
+type: application/javascript
+caption: Interpreter Class
+
+function interpret(machine) {
+  let listeners = new Set();
+  let status = 'not-started';
+  let state = machine.initialState;
+  const service = {
+    subscribe(listener) {
+      listeners.add(listener);
+      listener(state);
+      return { unsubscribe: () => listeners.delete(listener) };
+    },
+    send(event) {
+      state = machine.transition(state, event);
+      state.actions.forEach(({ exec }) => exec(state.context, event));
+      listeners.forEach(listener => listener(state, event));
+      return service;
+    },
+    start() {
+      status = 'running';
+      state.actions.forEach(({ exec }) => exec && exec(state.context, '#init'));
+      return service;
+    },
+    stop() {
+      status = 'stopped';
+      listeners.clear();
+      return service;
+    },
+    get status() { return status; },
+  };
+  return service;
+};

@@ -1,0 +1,42 @@
+created: 20200212181713000
+creator: Sukima
+modified: 20200212181713000
+modifier: Sukima
+title: CSS based view states
+tags: snippets CSS JavaScript
+type: text/vnd.tiddlywiki
+
+A unique way to have a really cheap way to manage HTML states is to use CSS. For example if you have a way to update the `body` tag's `data-state` attribute you can use that in CSS to show hide parts of the DOM. First you need a list of possible states that the app could be in.
+
+<<.tip """You could use the [[Simple State Machine]] and [[Simple Interpreter]] micro libs to handle the actual app logic.""">
+
+In this example we will place the `data-state` attribute on body and elements can have either a list of app states in `data-show` or `data-hide` attributes toggle their display (respectively).
+
+```css
+[data-show] {
+  display: none;
+}
+
+/* One per app state */
+[data-state~="inactive"] [data-show~="inactive"],
+[data-state~="active"] [data-show~="active"] {
+  display: initial;
+}
+
+/* One per app state */
+[data-state~="inactive"] [data-hide~="inactive"],
+[data-state~="active"] [data-hide~="active"] {
+  display: none;
+}
+```
+
+```xml
+<body data-state="inactive">
+
+  <p data-show="inactive">Only seen when inactive</p>
+  <p data-show="active">Only seen when active</p>
+  <p data-show="inactive active">Only seen when inactive or active</p>
+  <p data-hide="active">Seen unless active</p>
+  <p data-hide="inactive active">Seen unless inactive or active</p>
+
+</body>

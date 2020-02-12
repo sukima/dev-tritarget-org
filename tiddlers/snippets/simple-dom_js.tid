@@ -1,0 +1,12 @@
+created: 20200212174437000
+creator: Sukima
+modified: 20200212174437000
+modifier: Sukima
+title: Simple DOM micro lib
+tags: JavaScript snippets
+type: text/vnd.tiddlywiki
+
+This is a micro lib which allows you to define different DOM states and then render them at the appropriate time.
+
+<<tabs "simple-dom_js-tab1 simple-dom_js-tab2" "simple-dom_js-tab1">>
+

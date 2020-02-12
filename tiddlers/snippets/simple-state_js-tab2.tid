@@ -24,12 +24,12 @@ let toggleMachine = createMachine({
 let { initialState } = toggleMachine;
 
 let toggledState = toggleMachine.transition(initialState, 'TOGGLE');
-toggledState.value;
-// => 'active'
+
+toggledState.value; // => 'active'
 
 let untoggledState = toggleMachine.transition(toggledState, 'TOGGLE');
-untoggledState.value;
-// => 'inactive'
+
+untoggledState.value; // => 'inactive'
 ```
 
 <<.warning "Following how XState works you can transition //into// an unknown state but you cannot transition //from// an unknown state">>

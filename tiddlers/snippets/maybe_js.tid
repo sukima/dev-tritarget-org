@@ -3,7 +3,7 @@ created: 20160509000202000
 modifier: Sukima
 creator: Sukima
 title: maybe.js
-tags: snippets JavaScript
+tags: snippets Coding JavaScript
 
 A simple maybe / optional snippet in JavaScript. For a more feature full ''monad'' look at https://github.com/sukima/maybe-simple
 

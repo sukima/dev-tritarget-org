@@ -1,0 +1,80 @@
+created: 20200212174918000
+creator: Sukima
+modified: 20200212174918000
+modifier: Sukima
+title: simple-dom_js-tab1
+tags: [[Simple DOM micro lib]]
+type: application/javascript
+caption: Code
+
+function dom(selector, cloneService = {}) {
+  const service = {
+    ...cloneService,
+    _attrs: { ...cloneService._attrs },
+    _styles: { ...cloneService._styles },
+    _addClasses: new Set(cloneService._addClasses),
+    _deleteClasses: new Set(cloneService._deleteClasses),
+    get element() {
+      return typeof(selector) === 'string'
+        ? document.querySelector(selector)
+        : selector;
+    },
+    render() {
+      let { element } = service;
+      let classNames = new Set([...element.classList, ...service._addClasses]);
+      service._deleteClasses.forEach(k => classNames.delete(k));
+      service._contentHtml && (element.innerHTML = service._contentHtml);
+      service._contentText && (element.innerText = service._contentText);
+      service._styles && (element.style = service._styles);
+      element.className = [...classNames].join(' ');
+      Object.entries(service._attrs).forEach(([key, value]) => {
+        value = value === true ? '' : value;
+        value = value === false ? null : value;
+        let method = value == null ? 'removeAttribute' : 'setAttribute';
+        element[method](key, value);
+      });
+      return service;
+    },
+    addClass(className) {
+      let _deleteClasses = new Set(service._deleteClasses);
+      _deleteClasses.delete(className);
+      return dom(selector, {
+        ...service, _deleteClasses,
+        _addClasses: new Set([...service._addClasses, className])
+      });
+    },
+    removeClass(className) {
+      return dom(selector, {
+        ...service,
+        _deleteClasses: new Set([...service._deleteClasses, className])
+      });
+    },
+    hide() { return service.attr('hidden', ''); },
+    show() { return service.attr('hidden', null); },
+    attr(key, value) { return service.attrs({ [key]: value }); },
+    attrs(_attrs) { return dom(selector, { ...service, _attrs: { ...service._attrs, ..._attrs } }); },
+    styles(_styles = service._styles) { return dom(selector, { ...service, _styles }); },
+    text(_contentText) { return dom(selector, { ...service, _contentHtml: null, _contentText }); },
+    html(_contentHtml) { return dom(selector, { ...service, _contentHtml, _contentText: null }); },
+    clear() { return service.html(''); },
+    on(eventName, callback) {
+      service.element.addEventListener(eventName, callback);
+      return service;
+    },
+    off(eventName, callback) {
+      service.element.removeEventListener(eventName, callback);
+      return service;
+    },
+    one(eventName, callback) {
+      function handler(e) {
+        service.off(eventName, handler);
+        callback(e);
+      }
+      return service.on(eventName, handler);
+    },
+    waitFor(eventName) {
+      return new Promise(resolve => service.one(eventName, resolve));
+    },
+  };
+  return service;
+};

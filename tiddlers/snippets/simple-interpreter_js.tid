@@ -1,0 +1,13 @@
+modified: 20200212180108000
+created: 20200212180108000
+creator: Sukima
+modifier: Sukima
+title: Simple Interpreter
+tags: snippets JavaScript
+type: text/vnd.tiddlywiki
+
+This is designed to be used with the [[Simple State Machine]] micro lib.
+
+See also, [[CSS based view states]].
+
+<<tabs "simple-interpreter_js-tab1 simple-interpreter_js-tab2" "simple-interpreter_js-tab1">>

@@ -1,0 +1,46 @@
+modified: 20200212180630000
+created: 20200212180630000
+creator: Sukima
+modifier: Sukima
+title: simple-interpreter_js-tab2
+tags: [[Simple Interpreter]]
+type: text/vnd.tiddlywiki
+caption: Usage
+
+!! Example
+
+```javascript
+// Have a simple-state machine ready
+let toggleMachine = createMachine({
+  id: 'toggle',
+  initial: 'inactive',
+  states: {
+    inactive: { on: { TOGGLE: 'active' } },
+    active: { on: { TOGGLE: 'inactive' } }
+  }
+});
+
+let service = interpret(toggleMachine);
+
+service.status; // => 'not started'
+
+service.subscribe(function(state) {
+  document.body.setAttribute('data-state', state.value);
+});
+
+service.start();
+
+service.status; // => 'running'
+
+document.body.getAttribute('data-state'); // => 'inactive'
+
+service.send('TOGGLE'),
+
+document.body.getAttribute('data-state'); // => 'active'
+
+service.stop();
+
+document.body.getAttribute('data-state'); // => 'active'
+
+service.status; // => 'stopped'
+```

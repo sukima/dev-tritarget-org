@@ -8,6 +8,10 @@ type: text/vnd.tiddlywiki
 
 Super simple Finite State Machine. This attempts to follow the conventions of [[XState|https://github.com/davidkpiano/xstate/tree/master/packages/xstate-fsm]] with the exceptions of multiple actions, interpreter, and the added concept of meta content.
 
+<<.tip """You can optionally use the [[Simple Interpreter]] to manage these FSMs.""">>
+
+See also, [[CSS based view states]].
+
 <<tabs "simple-state_js-tab1 simple-state_js-tab2" "simple-state_js-tab1">>
 
 [ext[Tests are available|/simple-state-machine-test.html]] for this snippet.
