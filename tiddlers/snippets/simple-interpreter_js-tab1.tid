@@ -7,33 +7,58 @@ tags: [[Simple Interpreter]]
 type: application/javascript
 caption: Interpreter Class
 
-function interpret(machine) {
-  let listeners = new Set();
-  let status = 'not-started';
-  let state = machine.initialState;
-  const service = {
-    subscribe(listener) {
-      listeners.add(listener);
-      listener(state);
-      return { unsubscribe: () => listeners.delete(listener) };
-    },
-    send(event) {
-      state = machine.transition(state, event);
-      state.actions.forEach(({ exec }) => exec(state.context, event));
-      listeners.forEach(listener => listener(state, event));
-      return service;
-    },
-    start() {
-      status = 'running';
-      state.actions.forEach(({ exec }) => exec && exec(state.context, '#init'));
-      return service;
-    },
-    stop() {
-      status = 'stopped';
-      listeners.clear();
-      return service;
-    },
-    get status() { return status; },
+
+(function() {
+  let activeService = null;
+  let batchedTransitions = new Map();
+  function nop() {}
+  function interpret(machine) {
+    let listeners = new Set();
+    let status = 'not-started';
+    let state = machine.initialState;
+    function capture(fn) {
+      return function (...args) {
+        activeService = service;
+        let ret = fn(...args);
+        activeService = null;
+        let fifo = batchedTransitions.get(service) || [];
+        let next = fifo.shift();
+        if (next) { service.send(next); }
+        return ret;
+      };
+    }
+    const service = {
+      subscribe: capture(function (listener) {
+        listeners.add(listener);
+        listener(state);
+        return { unsubscribe: () => listeners.delete(listener) };
+      }),
+      send: capture(function (event) {
+        state = machine.transition(state, event);
+        state.actions.forEach(({ exec = nop }) => exec(state.context, event));
+        listeners.forEach(listener => listener(state, event));
+        return service;
+      }),
+      start: capture(function () {
+        status = 'running';
+        state.actions.forEach(({ exec = nop }) => exec(state.context, '#init'));
+        return service;
+      }),
+      stop() {
+        status = 'stopped';
+        listeners.clear();
+        return service;
+      },
+      get status() { return status; },
+    };
+    return service;
   };
-  return service;
-};
+  interpret.send = function send(event) {
+    return function() {
+      let fifo = batchedTransitions.get(activeService) || [];
+      fifo.push(event);
+      batchedTransitions.set(activeService, fifo);
+    };
+  };
+  return interpret;
+})();
