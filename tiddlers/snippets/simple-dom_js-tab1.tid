@@ -8,10 +8,33 @@ type: application/javascript
 caption: Code
 
 function dom(selector, cloneService = {}) {
-  const service = {
+  if (Array.isArray(selector)) {
+    return (...args) => selector.forEach((fn) => fn(...args));
+  }
+  function service(...args) {
+    let resolve = (value) => typeof(value) === 'function' ? value(...args) : value;
+    let { element } = service;
+    let addClasses = [...service._addClasses].map(resolve);
+    let classNames = new Set([...element.classList, ...addClasses]);
+    service._deleteClasses.forEach(k => classNames.delete(resolve(k)));
+    service._contentHtml && (element.innerHTML = resolve(service._contentHtml));
+    service._contentText && (element.innerText = resolve(service._contentText));
+    service._styles && (element.style = resolve(service._styles));
+    service._value && (element.value = resolve(service._value));
+    classNames.size > 0 && (element.className = [...classNames].join(' '));
+    Object.entries(service._attrs).forEach(([key, value]) => {
+      value = resolve(value);
+      value = value === true ? '' : value;
+      value = value === false ? null : value;
+      let method = value == null ? 'removeAttribute' : 'setAttribute';
+      element[method](key, value);
+    });
+    return service;
+  }
+  return Object.assign(service, {
     ...cloneService,
     _attrs: { ...cloneService._attrs },
-    _styles: { ...cloneService._styles },
+    _styles: cloneService._styles && { ...cloneService._styles },
     _addClasses: new Set(cloneService._addClasses),
     _deleteClasses: new Set(cloneService._deleteClasses),
     get element() {
@@ -19,25 +42,14 @@ function dom(selector, cloneService = {}) {
         ? document.querySelector(selector)
         : selector;
     },
-    render(...args) {
-      const resolve = (value) => typeof(value) === 'function' ? value(...args) : value;
-      let { element } = service;
-      let addClasses = [...service._addClasses].map(resolve);
-      let classNames = new Set([...element.classList, ...addClasses]);
-      service._deleteClasses.forEach(k => classNames.delete(resolve(k)));
-      service._contentHtml && (element.innerHTML = resolve(service._contentHtml));
-      service._contentText && (element.innerText = resolve(service._contentText));
-      service._styles && (element.style = resolve(service._styles));
-      service._value && (element.value = resolve(service._value));
-      element.className = [...classNames].join(' ');
-      Object.entries(service._attrs).forEach(([key, value]) => {
-        value = resolve(value);
-        value = value === true ? '' : value;
-        value = value === false ? null : value;
-        let method = value == null ? 'removeAttribute' : 'setAttribute';
-        element[method](key, value);
-      });
-      return service;
+    toggleClass(className, isEnabled) {
+      let classNameFn = typeof(className) === 'function' ? className : () => className;
+      let isEnabledFn = isEnabled === undefined
+        ? (...args) => !service.element.classList.contains(classNameFn(...args))
+        : typeof(isEnabled) === 'function' ? isEnabled : () => isEnabled;
+      return service
+        .addClass((...args) => (isEnabledFn(...args) && classNameFn(...args)))
+        .removeClass((...args) => (!isEnabledFn(...args) && classNameFn(...args)));
     },
     addClass(className) {
       let _deleteClasses = new Set(service._deleteClasses);
@@ -80,15 +92,5 @@ function dom(selector, cloneService = {}) {
     waitFor(eventName) {
       return new Promise(resolve => service.one(eventName, resolve));
     },
-  };
-  return service;
-};
-dom.chain = function chain(renderers = []) {
-  return {
-    render(...args) {
-      renderers.forEach(render => {
-        render.render ? render.render(...args) : render(...args);
-      });
-    },
-  };
+  });
 };

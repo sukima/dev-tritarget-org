@@ -12,8 +12,8 @@ caption: Usage
 ```javascript
 let theThing = dom('#the-thing');
 let isTheThingHidden = () => theThing.element.getAttribute('hidden');
-let hideTheThing = theThing.hide().render;
-let showTheThing = theThing.show().render;
+let hideTheThing = theThing.hide();
+let showTheThing = theThing.show();
 
 dom('#toggle-button').on('click', function() {
   if (isThingHidden()) {
@@ -22,4 +22,20 @@ dom('#toggle-button').on('click', function() {
     hideTheThing();
   }
 });
+
+let doSomeThings = dom('#another-thing')
+  .toggleClass('--is-a-thing')
+  .text('chainable');
+
+doSomeThings();
+
+let doAllTheThings = dom([
+  dom('#another-thing1').text('foo'),
+  dom('#another-thing2').html('<b>bar</b>'),
+  dom('#another-thing3').addClass('--foobar'),
+  dom('input[name="email"]').value((aValue) => aValue),
+  dom('input[name="password"]').value(''),
+]);
+
+doAllTheThings('a value');
 ```
