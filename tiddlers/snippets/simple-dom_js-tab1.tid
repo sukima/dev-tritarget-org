@@ -28,6 +28,7 @@ function dom(selector, cloneService = {}) {
       service._contentHtml && (element.innerHTML = resolve(service._contentHtml));
       service._contentText && (element.innerText = resolve(service._contentText));
       service._styles && (element.style = resolve(service._styles));
+      service._value && (element.value = resolve(service._value));
       element.className = [...classNames].join(' ');
       Object.entries(service._attrs).forEach(([key, value]) => {
         value = resolve(value);
@@ -59,6 +60,7 @@ function dom(selector, cloneService = {}) {
     styles(_styles = service._styles) { return dom(selector, { ...service, _styles }); },
     text(_contentText) { return dom(selector, { ...service, _contentHtml: null, _contentText }); },
     html(_contentHtml) { return dom(selector, { ...service, _contentHtml, _contentText: null }); },
+    value(_value) { return dom(selector, { ...service, _value }); },
     clear() { return service.html(''); },
     on(eventName, callback) {
       service.element.addEventListener(eventName, callback);
@@ -80,4 +82,13 @@ function dom(selector, cloneService = {}) {
     },
   };
   return service;
+};
+dom.chain = function chain(renderers = []) {
+  return {
+    render(...args) {
+      renderers.forEach(render => {
+        render.render ? render.render(...args) : render(...args);
+      });
+    },
+  };
 };
