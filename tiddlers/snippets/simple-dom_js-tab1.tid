@@ -19,15 +19,18 @@ function dom(selector, cloneService = {}) {
         ? document.querySelector(selector)
         : selector;
     },
-    render() {
+    render(...args) {
+      const resolve = (value) => typeof(value) === 'function' ? value(...args) : value;
       let { element } = service;
-      let classNames = new Set([...element.classList, ...service._addClasses]);
-      service._deleteClasses.forEach(k => classNames.delete(k));
-      service._contentHtml && (element.innerHTML = service._contentHtml);
-      service._contentText && (element.innerText = service._contentText);
-      service._styles && (element.style = service._styles);
+      let addClasses = [...service._addClasses].map(resolve);
+      let classNames = new Set([...element.classList, ...addClasses]);
+      service._deleteClasses.forEach(k => classNames.delete(resolve(k)));
+      service._contentHtml && (element.innerHTML = resolve(service._contentHtml));
+      service._contentText && (element.innerText = resolve(service._contentText));
+      service._styles && (element.style = resolve(service._styles));
       element.className = [...classNames].join(' ');
       Object.entries(service._attrs).forEach(([key, value]) => {
+        value = resolve(value);
         value = value === true ? '' : value;
         value = value === false ? null : value;
         let method = value == null ? 'removeAttribute' : 'setAttribute';
