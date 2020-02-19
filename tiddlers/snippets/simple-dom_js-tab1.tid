@@ -12,15 +12,16 @@ function dom(selector, cloneService = {}) {
     return (...args) => selector.forEach((fn) => fn(...args));
   }
   function service(...args) {
+    let has = (i) => i != null;
     let resolve = (value) => typeof(value) === 'function' ? value(...args) : value;
     for (let element of service.elements) {
       let addClasses = [...service._addClasses].map(resolve);
       let classNames = new Set([...element.classList, ...addClasses]);
       service._deleteClasses.forEach(k => classNames.delete(resolve(k)));
-      service._contentHtml && (element.innerHTML = resolve(service._contentHtml));
-      service._contentText && (element.innerText = resolve(service._contentText));
-      service._styles && (element.style = resolve(service._styles));
-      service._value && (element.value = resolve(service._value));
+      has(service._contentHtml) && (element.innerHTML = resolve(service._contentHtml));
+      has(service._contentText) && (element.innerText = resolve(service._contentText));
+      has(service._styles) && (element.style = resolve(service._styles));
+      has(service._value) && (element.value = resolve(service._value));
       classNames.size > 0 && (element.className = [...classNames].join(' '));
       Object.entries(service._attrs).forEach(([key, value]) => {
         value = resolve(value);
