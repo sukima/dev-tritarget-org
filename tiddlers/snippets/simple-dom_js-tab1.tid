@@ -13,23 +13,23 @@ function dom(selector, cloneService = {}) {
   }
   function service(...args) {
     let resolve = (value) => typeof(value) === 'function' ? value(...args) : value;
-    let { element } = service;
-    let addClasses = [...service._addClasses].map(resolve);
-    let classNames = new Set([...element.classList, ...addClasses]);
-    service._deleteClasses.forEach(k => classNames.delete(resolve(k)));
-    service._contentHtml && (element.innerHTML = resolve(service._contentHtml));
-    service._contentText && (element.innerText = resolve(service._contentText));
-    service._styles && (element.style = resolve(service._styles));
-    service._value && (element.value = resolve(service._value));
-    classNames.size > 0 && (element.className = [...classNames].join(' '));
-    Object.entries(service._attrs).forEach(([key, value]) => {
-      value = resolve(value);
-      value = value === true ? '' : value;
-      value = value === false ? null : value;
-      let method = value == null ? 'removeAttribute' : 'setAttribute';
-      element[method](key, value);
-    });
-    return service;
+    for (let element of service.elements) {
+      let addClasses = [...service._addClasses].map(resolve);
+      let classNames = new Set([...element.classList, ...addClasses]);
+      service._deleteClasses.forEach(k => classNames.delete(resolve(k)));
+      service._contentHtml && (element.innerHTML = resolve(service._contentHtml));
+      service._contentText && (element.innerText = resolve(service._contentText));
+      service._styles && (element.style = resolve(service._styles));
+      service._value && (element.value = resolve(service._value));
+      classNames.size > 0 && (element.className = [...classNames].join(' '));
+      Object.entries(service._attrs).forEach(([key, value]) => {
+        value = resolve(value);
+        value = value === true ? '' : value;
+        value = value === false ? null : value;
+        let method = value == null ? 'removeAttribute' : 'setAttribute';
+        element[method](key, value);
+      });
+    }
   }
   return Object.assign(service, {
     ...cloneService,
@@ -38,9 +38,10 @@ function dom(selector, cloneService = {}) {
     _addClasses: new Set(cloneService._addClasses),
     _deleteClasses: new Set(cloneService._deleteClasses),
     get element() {
-      return typeof(selector) === 'string'
-        ? document.querySelector(selector)
-        : selector;
+      return typeof(selector) === 'string' ? document.querySelector(selector) : selector;
+    },
+    get elements() {
+      return typeof(selector) === 'string' ? document.querySelectorAll(selector) : [].concat(selector);
     },
     toggleClass(className, isEnabled) {
       let classNameFn = typeof(className) === 'function' ? className : () => className;
