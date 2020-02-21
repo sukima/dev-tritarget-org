@@ -87,7 +87,7 @@ function dom(selector, cloneService = {}) {
     subscribe(eventName, callback) {
       service.on(eventName, callback);
       return { unsubscribe: () => service.off(eventName, callback) };
-    }
+    },
     one(eventName, callback) {
       let actor = service.subscribe(eventName, (event) => {
         actor.unsubscribe();
