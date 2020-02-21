@@ -84,12 +84,16 @@ function dom(selector, cloneService = {}) {
       service.element.removeEventListener(eventName, callback);
       return service;
     },
+    subscribe(eventName, callback) {
+      service.on(eventName, callback);
+      return { unsubscribe: () => service.off(eventName, callback) };
+    }
     one(eventName, callback) {
-      function handler(e) {
-        service.off(eventName, handler);
-        callback(e);
-      }
-      return service.on(eventName, handler);
+      let actor = service.subscribe(eventName, (event) => {
+        actor.unsubscribe();
+        callback(event);
+      });
+      return service;
     },
     waitFor(eventName) {
       return new Promise(resolve => service.one(eventName, resolve));
