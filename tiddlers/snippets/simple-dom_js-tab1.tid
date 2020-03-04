@@ -44,6 +44,12 @@ function dom(selector, cloneService = {}) {
     get elements() {
       return typeof(selector) === 'string' ? document.querySelectorAll(selector) : [].concat(selector);
     },
+    find(_selector) {
+      return dom(service.element.querySelector(_selector));
+    },
+    finsAll(_selector) {
+      return dom(service.element.querySelectorAll(_selector));
+    },
     toggleClass(className, isEnabled) {
       let classNameFn = typeof(className) === 'function' ? className : () => className;
       let isEnabledFn = isEnabled === undefined
