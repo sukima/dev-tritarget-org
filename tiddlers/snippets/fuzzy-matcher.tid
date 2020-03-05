@@ -1,0 +1,18 @@
+created: 20200305170215000
+creator: suki
+modified: 20200305170215000
+modifier: suki
+title: Fuzzy Matcher
+tags: snippets JavaScript Tips
+type: text/vnd.tiddlywiki
+
+```javascript
+function fuzzyMatcher(term) {
+  const escapeRegexp = /[-[\]{}()*+?.,\\^$|#\s]/g; 
+  let regexp = term
+    .split('')
+    .map((c) => c.replace(escapeRegexp, '\\$&'))
+    .join('.*');
+  return new RegExp(regexp, 'i');
+}
+```
