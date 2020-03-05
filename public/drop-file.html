@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Drop File Example</title>
+<!-- App Styles {{{1 -->
+<style>
+#example {
+  display: flex;
+}
+
+#file-gallery {
+  display: flex;
+}
+
+#introduction {
+  display: none;
+}
+
+#introduction:only-child {
+  display: block;
+}
+
+#drop-container, #file-gallery {
+  position: relative;
+  margin: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #eee;
+  border: thick dashed transparent;
+  width: 400px;
+}
+
+[data-state~="dragging"] #drop-container {
+  border: thick dashed #000;
+}
+
+.file-gallery-item {
+  position: relative;
+}
+
+.file-gallery-item .image {
+  width: 64px;
+  height: 64px;
+  padding: 20px;
+}
+
+.file-gallery-item .close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #fff;
+  box-shadow: 1px 1px 1px #666;
+  border: none;
+  border-radius: 50%;
+  padding: 5px 5px;
+  line-height: 12px;
+  font-size: 18px;
+}
+
+#dropzone-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+#idle-message, #error-message, [role="button"] {
+  cursor: pointer;
+}
+
+.meter {
+  height: 20px;
+  position: relative;
+  background: #555;
+  border-radius: 25px;
+  padding: 5px;
+  box-shadow: inset 0 -1px 1px rgba(255,255,255,0.3);
+  width: 300px;
+}
+
+.meter > span {
+  display: block;
+  height: 20px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  background-color: #f0a3a3;
+  background-image: linear-gradient(to bottom, #f0a3a3, #f42323);
+  box-shadow: inset 0 2px 9px  rgba(255,255,255,0.3), inset 0 -2px 6px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+#accessable-bar {
+  opacity: 0;
+}
+
+#drop-container > * {
+  display: none;
+}
+
+[data-state~="idle"] #drop-container [data-show~="idle"],
+[data-state~="dragging"] #drop-container [data-show~="dragging"],
+[data-state~="processing"] #drop-container [data-show~="processing"],
+[data-state~="error"] #drop-container [data-show~="error"],
+[data-state~="completed"] #drop-container [data-show~="completed"] {
+  display: block;
+}
+</style>
+
+<!-- Dependencies {{{1 -->
+<script src="https://unpkg.com/xstate@4/dist/xstate.js"></script>
+<script>
+define.defs = {};
+define.modules = {};
+function define(name, fn) {
+  define.defs[name] = fn;
+}
+function require(name) {
+  if (define.modules.hasOwnProperty(name)) return define.modules[name];
+  if (define.defs.hasOwnProperty(name)) {
+    var fn = define.defs[name];
+    define.defs[name] = function () { throw new Error("Circular Dependency"); };
+    return define.modules[name] = fn();
+  }
+  throw new Error("Module not found: " + name);
+}
+</script>
+<!-- }}}1 -->
+</head>
+<body>
+<!-- App HTML {{{1 -->
+<div id="example">
+  <div id="file-gallery">
+    <div id="introduction">
+      <h2>No images yet</h2>
+      <p>Try adding an image with the file picker &#9755;</p>
+    </div>
+  </div>
+  <div id="drop-container">
+    <!--
+      The current dragenter/dragleave events leave little to be desired. They
+      trigger on all elements not just the one with a listener. Because of that
+      most solutions use the dragover as it is more consistent. Ultimatly, using
+      a dragenter results in the entering event triggering only some of the time
+      and is not cicistent to the user's movements. Adding a dragleave on an
+      element with dragover causes a flicker as the two events are repeatedly
+      fired sporatically. To avoid these user interaction issues it is better to
+      have two elements monitor the dragover and react according to which
+      element it is triggered on. To do that we need an overlay that covers the
+      dropzone and an event on the document to cover the leaving. This setup
+      produces a more organic user interaction and allows us to add-and-forget
+      event handlers to these elements and use the state machine logic to do the
+      right thing dispite the deluge of events being fired.
+    -->
+    <div id="dropzone-overlay" aria-dropeffect="copy" data-show="dragging"></div>
+    <div id="idle-message" role="button" data-show="idle">
+      <h2>Import data</h2>
+      <p>Drag a file to import here <strong>or</strong> click to browse for a file.</p>
+    </div>
+    <div id="dragging-message" data-show="dragging">
+      <h2>Drop file here</h2>
+      <p>Or press <kbd>Escape</kbd> to cancel.</p>
+    </div>
+    <div id="processing-message" data-show="processing">
+      <h2>Importing&hellip;</h2>
+      <div class="meter">
+        <span id="progress-bar">
+          <progress id="accessable-bar" max="100"></progress>
+        </span>
+      </div>
+    </div>
+    <div id="completed-message" data-show="completed">
+      <h2>Imported</h2>
+      <p>Image imported sucessfully.</p>
+    </div>
+    <div id="error-message" role="button" data-show="error">
+      <h2>Error</h2>
+      <p id="error"></p>
+    </div>
+    <input id="file-picker" type="file" name="import-file">
+  </div>
+</div>
+<template id="gallery-item">
+  <div class="file-gallery-item">
+    <button type="button" class="close-button" aria-label="Remove image">&times;</button>
+    <img class="image">
+  </div>
+</template>
+<!-- }}}1 -->
+<script>
+
+// App Code
+document.addEventListener('DOMContentLoaded', () => require('app').boot());
+
+define('app', function() { // {{{1
+  const dom = require('simple-dom');
+  const { createMachine, trackableCancelableService } = require('app-machine');
+  const { interpret } = require('xstate');
+  const { processFile } = require('services');
+
+  let interpreter = interpret(createMachine().withConfig({
+    actions: {
+      resetFileInput: dom('#file-picker').value(''),
+      browseForFile: () => dom('#file-picker').element.click(),
+      showError: dom('#error').text(ctx => ctx.error.message),
+      renderImageFile: ctx => {
+        let parent = dom('#file-gallery').element;
+        let template = dom('#gallery-item').element.content;
+        let fragment = document.importNode(template, true);
+        let item = dom(fragment.children[0]);
+        item.find('img').attr('src', ctx.fileData)();
+        item.find('button').on('click', e => parent.removeChild(item.element));
+        parent.appendChild(fragment);
+      },
+    },
+    services: {
+      processFile: trackableCancelableService(processFile),
+    }
+  }));
+
+  let renderState = dom([
+    dom(document.body).attr('data-state', state => state.toStrings().join(' ')),
+    dom('#progress-bar').styles(state => ({ width: `${state.context.progress}%` })),
+    dom('#accessable-bar')
+      .value(state => state.context.progress)
+      .text(state => `${state.context.progress}%`),
+  ]);
+
+  function transition(type, transFn = value => ({ value })) {
+    return (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      interpreter.send({ type, ...transFn(event) });
+    };
+  }
+
+  dom('#idle-message').on('click', transition('BROWSE'));
+  dom('#completed-message').on('click', transition('BROWSE'));
+  dom('#error-message').on('click', transition('BROWSE'));
+  dom('#file-picker')
+    .on('change', transition('PICK_FILE', event => ({ files: event.target.files })));
+  dom(document.body).on('dragover', transition('DRAG_LEAVE'));
+  dom('#drop-container').on('dragover', transition('DRAG_OVER'));
+  dom('#dropzone-overlay')
+    .on('dragover', transition('DRAG_OVER'))
+    .on('dragleave', transition('DRAG_LEAVE'))
+    .on('drop', transition('PICK_FILE', event => ({ files: event.dataTransfer.files })));
+
+  return {
+    boot() {
+      interpreter.onTransition(renderState);
+      interpreter.start();
+    },
+  };
+});
+
+define('app-machine', function() { // {{{1
+  const { Machine, assign } = require('xstate');
+
+  function createMachine() {
+    return Machine({
+      id: 'app',
+      strict: true,
+      initial: 'idle',
+      context: {
+        progress: 0,
+      },
+      states: {
+        'idle': {
+          on: { DRAG_OVER: 'dragging' },
+        },
+        'dragging': {
+          on: {
+            DRAG_LEAVE: [
+              { target: 'error', cond: 'hasError' },
+              { target: 'idle' },
+            ],
+          },
+        },
+        'processing': {
+          entry: 'resetProgress',
+          exit: 'resetFileInput',
+          invoke: { src: 'processFile' },
+          on: {
+            PROGRESS: { actions: 'updateProgress' },
+            ERROR: { target: 'error', actions: 'storeError' },
+            DONE: { target: 'completed', actions: 'storeFileData' },
+          }
+        },
+        'error': {
+          entry: 'showError',
+          on: { DRAG_OVER: 'dragging' },
+        },
+        'completed': {
+          entry: 'renderImageFile',
+          after: { 5000: 'idle' },
+        },
+      },
+      on: {
+        BROWSE: { actions: 'browseForFile' },
+        PICK_FILE: { target: 'processing', actions: 'storeFile' },
+      },
+    }, {
+      guards: {
+        hasError: ctx => !!ctx.error,
+      },
+      actions: {
+        resetProgress: assign({ progress: 0, error: null }),
+        updateProgress: assign({ progress: (_, { value }) => value }),
+        storeFile: assign({ files: (_, { files }) => files }),
+        storeFileData: assign({ fileData: (_, { data }) => data }),
+        storeError: assign({ error: (_, { data }) => data }),
+      },
+    });
+  };
+
+  function trackableCancelableService(serviceFn) {
+    return (context) => (callback) => {
+      let manager = {
+        context,
+        done: data => callback({ type: 'DONE', data }),
+        error: data => callback({ type: 'ERROR', data }),
+        progress: value => callback({ type: 'PROGRESS', value }),
+        onabort: () => {},
+      };
+      serviceFn(manager);
+      return () => manager.onabort();
+    };
+  }
+
+  return { createMachine, trackableCancelableService };
+});
+
+define('services', function() { // {{{1
+  function processFile(manager) {
+    const { min, round } = Math;
+    let { files: [file] } = manager.context;
+    if (!file.type.match('image.*')) {
+      return manager.error(new Error('Not an image file'));
+    }
+    let reader = new FileReader();
+    manager.onabort = () => reader.abort();
+    reader.onprogress = event => {
+      if (!event.lengthComputable) { return; }
+      let { loaded, total } = event;
+      let percent = round(loaded / total) * 100;
+      manager.progress(min(100, percent));
+    };
+    reader.onerror = event => manager.error(event.target.error);
+    reader.onload = event => manager.done(event.target.result);
+    reader.readAsDataURL(file);
+  }
+  return { processFile };
+});
+
+define('simple-dom', function() { // {{{1
+  function dom(selector, cloneService = {}) {
+    if (Array.isArray(selector)) {
+      return (...args) => selector.forEach((fn) => fn(...args));
+    }
+    function service(...args) {
+      let has = (i) => i != null;
+      let resolve = (value) => typeof(value) === 'function' ? value(...args) : value;
+      for (let element of service.elements) {
+        let addClasses = [...service._addClasses].map(resolve);
+        let classNames = new Set([...element.classList, ...addClasses]);
+        service._deleteClasses.forEach(k => classNames.delete(resolve(k)));
+        has(service._contentHtml) && (element.innerHTML = resolve(service._contentHtml));
+        has(service._contentText) && (element.innerText = resolve(service._contentText));
+        has(service._styles) && (element.style = resolve(service._styles));
+        has(service._value) && (element.value = resolve(service._value));
+        classNames.size > 0 && (element.className = [...classNames].join(' '));
+        Object.entries(service._attrs).forEach(([key, value]) => {
+          value = resolve(value);
+          value = value === true ? '' : value;
+          value = value === false ? null : value;
+          let method = value == null ? 'removeAttribute' : 'setAttribute';
+          element[method](key, value);
+        });
+      }
+    }
+    return Object.assign(service, {
+      ...cloneService,
+      _attrs: { ...cloneService._attrs },
+      _styles: cloneService._styles && { ...cloneService._styles },
+      _addClasses: new Set(cloneService._addClasses),
+      _deleteClasses: new Set(cloneService._deleteClasses),
+      get element() {
+        return typeof(selector) === 'string' ? document.querySelector(selector) : selector;
+      },
+      get elements() {
+        return typeof(selector) === 'string' ? document.querySelectorAll(selector) : [].concat(selector);
+      },
+      find(_selector) {
+        return dom(service.element.querySelector(_selector));
+      },
+      findAll(_selector) {
+        return dom(service.element.querySelectorAll(_selector));
+      },
+      toggleClass(className, isEnabled) {
+        let classNameFn = typeof(className) === 'function' ? className : () => className;
+        let isEnabledFn = isEnabled === undefined
+          ? (...args) => !service.element.classList.contains(classNameFn(...args))
+          : typeof(isEnabled) === 'function' ? isEnabled : () => isEnabled;
+        return service
+          .addClass((...args) => (isEnabledFn(...args) && classNameFn(...args)))
+          .removeClass((...args) => (!isEnabledFn(...args) && classNameFn(...args)));
+      },
+      addClass(className) {
+        let _deleteClasses = new Set(service._deleteClasses);
+        _deleteClasses.delete(className);
+        return dom(selector, {
+          ...service, _deleteClasses,
+          _addClasses: new Set([...service._addClasses, className])
+        });
+      },
+      removeClass(className) {
+        return dom(selector, {
+          ...service,
+          _deleteClasses: new Set([...service._deleteClasses, className])
+        });
+      },
+      hide() { return service.attr('hidden', ''); },
+      show() { return service.attr('hidden', null); },
+      attr(key, value) { return service.attrs({ [key]: value }); },
+      attrs(_attrs) { return dom(selector, { ...service, _attrs: { ...service._attrs, ..._attrs } }); },
+      styles(_styles = service._styles) { return dom(selector, { ...service, _styles }); },
+      text(_contentText) { return dom(selector, { ...service, _contentHtml: null, _contentText }); },
+      html(_contentHtml) { return dom(selector, { ...service, _contentHtml, _contentText: null }); },
+      value(_value) { return dom(selector, { ...service, _value }); },
+      clear() { return service.html(''); },
+      on(eventName, callback) {
+        service.element.addEventListener(eventName, callback);
+        return service;
+      },
+      off(eventName, callback) {
+        service.element.removeEventListener(eventName, callback);
+        return service;
+      },
+      subscribe(eventName, callback) {
+        service.on(eventName, callback);
+        return { unsubscribe: () => service.off(eventName, callback) };
+      },
+      one(eventName, callback) {
+        let actor = service.subscribe(eventName, (event) => {
+          actor.unsubscribe();
+          callback(event);
+        });
+        return service;
+      },
+      waitFor(eventName) {
+        return new Promise(resolve => service.one(eventName, resolve));
+      },
+    });
+  };
+  return dom;
+});
+
+define('xstate', function() { // {{{1
+  return XState;
+});
+
+// }}}
+</script>
+</body>
+</html>
+<!-- vim:set ts=2 sw=2 et fdm=marker: -->
