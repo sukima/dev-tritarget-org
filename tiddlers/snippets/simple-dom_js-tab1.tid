@@ -47,7 +47,7 @@ function dom(selector, cloneService = {}) {
     find(_selector) {
       return dom(service.element.querySelector(_selector));
     },
-    finsAll(_selector) {
+    findAll(_selector) {
       return dom(service.element.querySelectorAll(_selector));
     },
     toggleClass(className, isEnabled) {
