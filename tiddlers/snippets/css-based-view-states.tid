@@ -13,19 +13,13 @@ A unique way to have a really cheap way to manage HTML states is to use CSS. For
 In this example we will place the `data-state` attribute on body and elements can have either a list of app states in `data-show` or `data-hide` attributes toggle their display (respectively).
 
 ```css
-[data-show] {
-  display: none;
-}
-
-/* One per app state */
-[data-state~="inactive"] [data-show~="inactive"],
-[data-state~="active"] [data-show~="active"] {
-  display: initial;
-}
-
-/* One per app state */
+/* One for each state */
+[data-state~="inactive"] [data-show]:not([data-show~="inactive"]),
+[data-state~="active"] [data-show]:not([data-show~="active"]),
+/* One for each state */
 [data-state~="inactive"] [data-hide~="inactive"],
-[data-state~="active"] [data-hide~="active"] {
+[data-state~="active"] [data-hide~="active"]
+{
   display: none;
 }
 ```
