@@ -1,0 +1,28 @@
+created: 20200324160835000
+creator: Sukima
+modified: 20200324160835000
+modifier: Sukima
+title: pattern-matcher-tab2
+type: text/vnd.tiddlywiki
+caption: Usage
+
+```javascript
+try {
+  …
+} catch (error) {
+  return cond([
+    [cond.of(ApplicationError), () => this.flashMessage('something wrong')],
+    [cond.any, cond.rethrow]
+  ])(error);
+}
+
+let isValid = cond.every([
+  i => i.hasSomething('foo'),
+  i => i.hasSomething('bar'),
+  i => i.hasSomething('baz')
+]);
+
+if (isValid(subject)) {
+  …
+}
+```

@@ -1,0 +1,44 @@
+created: 20200324160835000
+creator: Sukima
+modified: 20200324160835000
+modifier: Sukima
+title: pattern-matcher-tab1
+type: text/vnd.tiddlywiki
+caption: Code
+
+```javascript
+function cond(pattern) {
+  return (subject) => {
+    for (let [predicate, proc] of patterns) {
+      if (!cond.normalize(predicate)(subject)) continue;
+      return proc(subject);
+    }
+  };
+}
+cond.all = (patterns) => {
+  return (subject) => {
+    let results = [];
+    for (let [predicate, proc] of patterns) {
+      let result = cond.normalize(predicate)(subject) ? proc(subject) : undefined;
+      results.push(result);
+    }
+    return results;
+  };
+};
+cond.normalize = (predicate) => {
+  if (predicate && typeof predicate.test === 'function') return i => predicate.test(i);
+  if (typeof predicate === 'function') return predicate;
+  return i => i === predicate;
+};
+cond.every = predicates => subject => cond.all(predicates.map(i => [i, cond.true]))(subject).every(cond.return);
+cond.some = predicates => subject => cond.all(predicates.map(i => [i, cond.true]))(subject).some(cond.return);
+cond.none = predicates => subject => cond.all(predicates.map(i => [i, cond.true]))(subject).every(i => !i);
+cond.of = instance => i => i instanceof type;
+cond.type = type => i => typeof i === type;
+cond.value = value => () => value;
+cond.true = cond.value(true);
+cond.false = cond.value(false);
+cond.any = cond.true;
+cond.return = i => i;
+cond.rethrow = i => { throw i; };
+```
