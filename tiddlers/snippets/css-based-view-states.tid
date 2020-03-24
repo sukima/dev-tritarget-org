@@ -8,7 +8,7 @@ type: text/vnd.tiddlywiki
 
 A unique way to have a really cheap way to manage HTML states is to use CSS. For example if you have a way to update the `body` tag's `data-state` attribute you can use that in CSS to show hide parts of the DOM. First you need a list of possible states that the app could be in.
 
-<<.tip """You could use the [[Simple State Machine]] and [[Simple Interpreter]] micro libs to handle the actual app logic.""">
+<<.tip """You could use the [[Simple State Machine]] and [[Simple Interpreter]] micro libs to handle the actual app logic.""">>
 
 In this example we will place the `data-state` attribute on body and elements can have either a list of app states in `data-show` or `data-hide` attributes toggle their display (respectively).
 
