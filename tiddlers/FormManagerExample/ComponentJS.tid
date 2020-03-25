@@ -1,0 +1,41 @@
+created: 20200324212857644
+modified: 20200325120047206
+title: FormManagerExample/ComponentJS
+type: text/vnd.tiddlywiki
+
+Using [[this pattern|XStateGlimmerComponent]] for the component we will want to track the joined state. Our state machine will have two parallel states and we need to track that. I found it was clearer in the template if the tracking was done in one property and the CSS handled the layout logic based on that. In this case we will track `this.state` and expose the cumulative states using XState's [[toStrings method|https://xstate.js.org/docs/guides/states.html#state-methods-and-properties]]:
+
+```javascript
+get stateStrings() {
+  return this.state.toStrings().join(' ');
+}
+```
+
+The next concern is to link up the template specific logic using the `.withConfig()` method when we create the component's machine.
+
+```javascript
+let actions = {
+  resetIP4Address: ctx => this.address.value = ctx.ip4Address,
+  resetIP6Address: ctx => this.address.value = ctx.ip6Address,
+  cacheIP4Address: assign({ ip4Address: () => this.address.value }),
+  cacheIP6Address: assign({ ip6Address: () => this.address.value }),
+  setFamilyPickerToIP4: () => this.family.value = 'ip4',
+  setFamilyPickerToIP6: () => this.family.value = 'ip6',
+  setProtocolPickerToICMP4: () => this.protocol.value = 'icmp4',
+  setProtocolPickerToICMP6: () => this.protocol.value = 'icmp6'
+};
+this.machine = interpret(createMachine().withConfig({ actions });
+this.machine
+  .onTransition(state => this.state = state)
+  .start();
+```
+
+Another property we need is that the ''None'' address family option needs to dynamically disable in some cases. Since the machine uses its `context.canSelectNone` we can use that in another getter to drive the template.
+
+```javascript
+get isNoneDisabled() {
+  return !this.state.context.canSelectNone;
+}
+```
+
+''See the [[full component source|FormManagerExample/ComponentSource]].''

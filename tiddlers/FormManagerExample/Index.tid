@@ -1,0 +1,40 @@
+created: 20200325020817367
+modified: 20200325120649335
+title: FormManagerExample
+type: text/vnd.tiddlywiki
+
+{{FormManagerExample/Abstract}}
+
+Here is a [[UML state diagram|https://en.wikipedia.org/wiki/UML_state_machine]] showing the form and the side effects it manages:
+
+{{FormManagerExample.svg}}
+
+! Demo
+
+{{FormManagerExample/Demo}}
+
+<<.tip """This is working demo and you can view the HTML source by //editing// [[this demo tiddler|FormManagerExample/DemoHtml]] {{$:/core/images/edit-button}}""">>
+
+[[Ember Octane Demo|https://canary.ember-twiddle.com/22065b43933d534ec411f5da610a36bb]]
+
+! Implementation
+
+{{FormManagerExample/Implementation}}
+
+!! State Machine
+
+{{FormManagerExample/MachineSection}}
+
+!! Component (JavaScript)
+
+{{FormManagerExample/ComponentJS}}
+
+!! Component (Template)
+
+{{FormManagerExample/ComponentTemplate}}
+
+!! Component (Styles)
+
+{{FormManagerExample/ComponentSCSS}}
+
+I hope this offers a unique insight to how Statecharts can be used in UI. The inspiration for this use case was derived from the Parallel State page on [[statecharts.io|https://statecharts.github.io/glossary/parallel-state.html#usage]].

@@ -1,0 +1,12 @@
+created: 20200324215636668
+modified: 20200324221156799
+title: FormManagerExample/MachineSection
+type: text/vnd.tiddlywiki
+
+I added the XState machine definition to its own file `-state-machine.js` which exports a `createMachine()` function.
+
+''View the XState [[machine definition|FormManagerExample/StateMachine]].''
+
+Notice that some of the internal logic (actions, guards) specific to the machine itself is defined as part of this function. This allows the utility of this function to be used in multiple contexts. For example this ''same code'' can be used in both the Ember component and also in the [[single HTML vanilla demo|FormManagerExample/Demo]]. It can also be used to visualize the machine in [[XState's visualizer|https://xstate.js.org/viz/?gist=fe29cd4a9c87326ff5f8fb7d26a32289]].
+
+The actions/guards/services that are not implemented are specific to the application the machine is being used in. In this case we can add those implementation details with the `.withConfig()` method (see below).

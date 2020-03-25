@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Form Manager Example Demo</title>
+<script
+  src="https://unpkg.com/xstate@4.8.0/dist/xstate.js"
+  integrity="sha384-P1/8kAQRBrpZKJfsuiDHIYdgFd4sa++9kLR2Cd/wsErLZMeCpNCVbTI8FXItK1Bh"
+  crossorigin="anonymous"
+></script>
+<style>
+  [data-state~="addressFamily.none"][data-state~="protocol.any"] #networkingFields,
+  [data-state~="addressFamily.none"][data-state~="protocol.icmp4"] #networkingFields,
+  [data-state~="addressFamily.none"][data-state~="protocol.icmp6"] #networkingFields,
+  [data-state~="addressFamily.none"] [data-hide~="addressFamily.none"],
+  [data-state~="addressFamily.ip4"] [data-hide~="addressFamily.ip4"],
+  [data-state~="addressFamily.ip6"] [data-hide~="addressFamily.ip6"],
+  [data-state~="protocol.icmp4"] [data-hide~="protocol.icmp4"],
+  [data-state~="protocol.icmp6"] [data-hide~="protocol.icmp6"],
+  [data-state~="protocol.other"] [data-hide~="protocol.other"],
+  [data-state~="protocol.any"] [data-hide~="protocol.any"] {
+    display: none;
+  }
+</style>
+</head>
+<body>
+  <fieldset>
+    <legend>Modes</legend>
+    <div>
+      <label for="addressFamily">Address Family</label>
+      <select id="addressFamily" name="addressFamily">
+        <option value="none">None</option>
+        <option value="ip4">IP4</option>
+        <option value="ip6">IP6</option>
+      </select>
+    </div>
+    <div>
+      <label for="protocol">Protocol</label>
+      <select id="protocol" name="protocol">
+        <option value="any" selected>Any</option>
+        <option value="icmp4">ICMPv4</option>
+        <option value="icmp6">ICMPv6</option>
+        <option value="tcp">TCP</option>
+        <option value="udp">UDP</option>
+      </select>
+    </div>
+  </fieldset>
+  <fieldset data-hide="protocol.other protocol.any">
+    <legend>ICMP</legend>
+    <label for="icmpType">Type</label>
+    <input type="number" id="icmpType" name="icmpType">
+    <label for="icmpCode">Code</label>
+    <input type="number" id="icmpCode" name="icmpCode">
+  </fieldset>
+  <fieldset id="networkingFields">
+    <legend>Networking</legend>
+    <div data-hide="addressFamily.none">
+      <label for="address">Address</label>
+      <input type="text" id="address" name="address">
+      <span class="hint-text" data-hide="addressFamily.ip6">(E.x. <code>192.168.0.1</code>)</span>
+      <span class="hint-text" data-hide="addressFamily.ip4">(E.x. <code>::c0a8:0001</code>)</span>
+    </div>
+    <div data-hide="protocol.icmp4 protocol.icmp6 protocol.any">
+      <label for="port">port</label>
+      <input type="number" id="port" name="port">
+    </div>
+  </fieldset>
+  <fieldset>
+    <legend>Machine state(s)</legend>
+    <code><output id="state"></output></code>
+  </fieldset>
+<script>
+function createMachine() {
+  const { Machine, assign } = XState;
+  return Machine({
+    id: 'example-form-manager',
+    type: 'parallel',
+    context: {
+      canSelectNone: true,
+      ip4Address: '',
+      ip6Address: ''
+    },
+    states: {
+      'addressFamily': {
+        initial: 'none',
+        states: {
+          'ip4': {
+            entry: ['setFamilyPickerToIP4', 'resetIP4Address'],
+            exit: 'cacheIP4Address',
+            on: {
+              PICK_PROTOCOL: { target: 'ip6', cond: 'isProtocolICMP6' }
+            }
+          },
+          'ip6': {
+            entry: ['setFamilyPickerToIP6', 'resetIP6Address'],
+            exit: 'cacheIP6Address',
+            on: {
+              PICK_PROTOCOL: { target: 'ip4', cond: 'isProtocolICMP4' }
+            }
+          },
+          'none': {
+            on: {
+              PICK_PROTOCOL: [
+                { target: 'ip4', cond: 'isProtocolICMP4' },
+                { target: 'ip6', cond: 'isProtocolICMP6' }
+              ]
+            }
+          }
+        },
+        on: {
+          PICK_FAMILY: [
+            { target: '.ip4', cond: 'isFamilyIP4' },
+            { target: '.ip6', cond: 'isFamilyIP6' },
+            { target: '.none', cond: 'canSelectNone' },
+          ]
+        }
+      },
+      'protocol': {
+        initial: 'any',
+        states: {
+          'icmp4': {
+            entry: ['lockFamilyNone', 'setProtocolPickerToICMP4'],
+            exit: 'unlockFamilyNone',
+            on: {
+              PICK_FAMILY: { target: 'icmp6', cond: 'isFamilyIP6' }
+            }
+          },
+          'icmp6': {
+            entry: ['lockFamilyNone', 'setProtocolPickerToICMP6'],
+            exit: 'unlockFamilyNone',
+            on: {
+              PICK_FAMILY: { target: 'icmp4', cond: 'isFamilyIP4' }
+            }
+          },
+          'other': {},
+          'any': {}
+        },
+        on: {
+          PICK_PROTOCOL: [
+            { target: '.icmp4', cond: 'isProtocolICMP4' },
+            { target: '.icmp6', cond: 'isProtocolICMP6' },
+            { target: '.any', cond: 'isProtocolAny' },
+            { target: '.other' },
+          ]
+        }
+      }
+    }
+  }, {
+    actions: {
+      lockFamilyNone: assign({ canSelectNone: false }),
+      unlockFamilyNone: assign({ canSelectNone: true })
+    },
+    guards: {
+      canSelectNone: ctx => ctx.canSelectNone,
+      isFamilyIP4: (_, { value }) => value === 'ip4',
+      isFamilyIP6: (_, { value }) => value === 'ip6',
+      isFamilyNone: (_, { value }) => value === 'none',
+      isProtocolICMP4: (_, { value }) => value === 'icmp4',
+      isProtocolICMP6: (_, { value }) => value === 'icmp6',
+      isProtocolAny: (_, { value }) => value === 'any'
+    }
+  });
+}
+function createApp() {
+  const { interpret, assign } = XState;
+  let dom = {
+    body: document.body,
+    addressFamily: document.querySelector('#addressFamily'),
+    address: document.querySelector('#address'),
+    protocol: document.querySelector('#protocol'),
+    state: document.querySelector('#state')
+  };
+  let app = interpret(createMachine().withConfig({
+    actions: {
+      resetIP4Address: ctx => dom.address.value = ctx.ip4Address,
+      resetIP6Address: ctx => dom.address.value = ctx.ip6Address,
+      cacheIP4Address: assign({ ip4Address: () => dom.address.value }),
+      cacheIP6Address: assign({ ip6Address: () => dom.address.value }),
+      setFamilyPickerToIP4: () => dom.addressFamily.value = 'ip4',
+      setFamilyPickerToIP6: () => dom.addressFamily.value = 'ip6',
+      setProtocolPickerToICMP4: () => dom.protocol.value = 'icmp4',
+      setProtocolPickerToICMP6: () => dom.protocol.value = 'icmp6',
+    }
+  }));
+  function sendEventWithValue(eventName) {
+    return function(event) {
+      let { target: { value } } = event;
+      app.send(eventName, { value });
+    };
+  }
+  dom.addressFamily.addEventListener('change', sendEventWithValue('PICK_FAMILY'));
+  dom.protocol.addEventListener('change', sendEventWithValue('PICK_PROTOCOL'));
+  app
+    .onTransition(state => {
+      let option = dom.addressFamily.querySelector('option[value="none"]');
+      option.disabled = !state.context.canSelectNone;
+    })
+    .onTransition(state => dom.body.dataset.state = state.toStrings().join(' '))
+    .onTransition(state => dom.state.value = state.toStrings().join(', '))
+    .start();
+}
+document.addEventListener('DOMContentLoaded', createApp);
+</script>
+</body>
+</html>

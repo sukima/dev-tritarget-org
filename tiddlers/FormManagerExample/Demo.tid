@@ -1,0 +1,10 @@
+created: 20200323200644643
+modified: 20200324001218378
+title: FormManagerExample/Demo
+type: text/vnd.tiddlywiki
+
+<$wikify name="FormManagerExampleDataURI" text="""<<datauri "FormManagerExample/DemoHtml">>""" >
+
+<iframe src=<<FormManagerExampleDataURI>> sandbox="allow-scripts" style="margin-left:100px;width:600px;height:270px;">
+
+</$wikify>

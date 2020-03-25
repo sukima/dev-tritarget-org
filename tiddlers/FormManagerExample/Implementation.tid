@@ -1,0 +1,21 @@
+created: 20200324212651828
+modified: 20200324212652896
+title: FormManagerExample/Implementation
+type: text/vnd.tiddlywiki
+
+Notice above how things are related. The address family matches the protocol when ICMP is selected and visa versa. The ''None'' option is disabled appropriately and if you enter values for the address it toggles between the two families. This is all managed from the statechart illustrated above.
+
+For simplicity the above [[Demo|FormManagerExample/Demo]] and the code examples here rely on direct DOM use in some cases where the logic was simpler to do so. In Ember though there are so many ways to approach a solution and I don't want these examples to discourage you from using XState or Statecharts in your own way. These are just an example on how ''I'' ended up implementing things.
+
+For this tutorial I will place all the relevant files into one component. Just know this is not the only way to organize things.
+
+```
+app/components/
+└── network-form
+    ├── -state-machine.js
+    ├── component.js
+    ├── styles.scss
+    └── template.hbs
+```
+
+<<.warning """This tutorial uses Octane examples even though the ideas presented can also be implemented using Computed Properties""">>

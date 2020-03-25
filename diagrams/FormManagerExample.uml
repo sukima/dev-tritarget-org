@@ -1,0 +1,44 @@
+@startuml
+
+[*] --> RuleFormManager
+
+state RuleFormManager {
+
+  state AddressFamily {
+    [*] -> none
+    ip4 : entry / setFamilyPickerToIP4
+    ip4 : entry / resetIP4Address
+    ip4 : exit / cacheIP4Address
+    ip6 : entry / setFamilyPickerToIP6
+    ip6 : entry / resetIP6Address
+    ip6 : exit / cacheIP6Address
+    none --> ip4 : PICK_PROTOCOL\n[isProtocolICMPv4]
+    none --> ip6 : PICK_PROTOCOL\n[isProtocolICMPv6]
+    ip4 --> ip6 : PICK_PROTOCOL\n[isProtocolICMPv6]
+    ip6 --> ip4 : PICK_PROTOCOL\n[isProtocolICMPv4]
+    AddressFamily --> ip4 : PICK_FAMILY\n[isFamilyIP4]
+    AddressFamily --> ip6 : PICK_FAMILY\n[isFamilyIP6]
+    AddressFamily --> none : PICK_FAMILY\n[canSelectNone]
+  }
+
+  ||
+
+  state Protocol {
+    [*] -l-> any
+    icmp4 : entry / setProtocolPickerToICMP4
+    icmp4 : entry / lockFamilyNone
+    icmp4 : exit / unlockFamilyNone
+    icmp6 : entry / setProtocolPickerToICMP6
+    icmp6 : entry / lockFamilyNone
+    icmp6 : exit / unlockFamilyNone
+    icmp4 -d-> icmp6 : PICK_FAMILY\n[isFamilyIP6]
+    icmp6 -u-> icmp4 : PICK_FAMILY\n[isFamilyIP4]
+    Protocol --> icmp4 : PICK_PROTOCOL\n[isProtocolICMPv4]
+    Protocol --> icmp6 : PICK_PROTOCOL\n[isProtocolICMPv6]
+    Protocol --> any : PICK_PROTOCOL\n[isProtocolAny]
+    Protocol --> other : PICK_PROTOCOL
+  }
+
+}
+
+@enduml

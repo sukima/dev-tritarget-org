@@ -1,0 +1,15 @@
+created: 20200324212758316
+modified: 20200324212759381
+title: FormManagerExample/Abstract
+type: text/vnd.tiddlywiki
+
+This is an unusual use case but one that a Statechart is uniquely fitted to solve. We had a form which handled the nuances of entering Firewall rules. Specifically it allowed a user to enter networking information. With networking we had three distinct ''families'' and four possible //types// of ''protocols'' Depending on the combination of these two values we wanted to show a different form. Some hide erroneous fields (like address, port numbers, etc.) and others needed special fields (like ICMP type and codes). To add further complication some protocols depend on the family and visa-versa. To better illustrate this relationship here is a possible user interaction:
+
+# User chooses the IP4 address family
+# This allows the user to enter an IPv4 network address (for example `192.168.0.1`)
+# But then they realize they really wanted to use the ICMPv6 protocol.
+# By selecting this we no longer can use an IPv4 network address and instead need an IPv6 address. This means the address family needs to react.
+
+This simple edge case explodes in complexity the more possible combinations between the to. The math works out as 12 possible views of the form with 144 possible transitions between them (`3! * 4!`). Once we realize that the act of changing one value has the potential to change the other and effect other form elements we know there are side effects that come from transitioning states. That means there are potentially 144 opportunities for side effects and 144 opportunities for bugs and missed edge cases. This is too much to manage in a simple component using a set of booleans and fancy computed property footwork. Or least it was for me.
+
+To help solidify this abstract situation an example of one side effect is that of the address field. The form in question for legacy design reasons could only handle one input for the network address. When a user enters an IPv4 address but changes the family to IPv6 we want to clear out the address. But when they go back to IPv4 we want the value previously entered to repopulate. The acts of caching and populating that field are ''side effects'' that need to be defined in a deterministic way so that their triggering can be controlled based on the different states we are in and states we are going to.

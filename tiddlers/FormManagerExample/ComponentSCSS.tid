@@ -1,0 +1,24 @@
+created: 20200324223831052
+modified: 20200325005821862
+title: FormManagerExample/ComponentSCSS
+type: text/vnd.tiddlywiki
+
+With some creative CSS selectors we can make the template react to state changes without muddying the template with `{{#if}}/{{else}}/{{/if}}` conditions everywhere. It also has the added advantage that the input elements never de-render and so their values stay even when the interaction changes the view state. Basically the user can enter data change the state to make the input hidden and return with the entered data intact.
+
+```css
+[data-state~="addressFamily.none"][data-state~="protocol.any"] .networkingFields,
+[data-state~="addressFamily.none"][data-state~="protocol.icmp4"] .networkingFields,
+[data-state~="addressFamily.none"][data-state~="protocol.icmp6"] .networkingFields,
+[data-state~="addressFamily.none"] [data-hide~="addressFamily.none"],
+[data-state~="addressFamily.ip4"] [data-hide~="addressFamily.ip4"],
+[data-state~="addressFamily.ip6"] [data-hide~="addressFamily.ip6"],
+[data-state~="protocol.icmp4"] [data-hide~="protocol.icmp4"],
+[data-state~="protocol.icmp6"] [data-hide~="protocol.icmp6"],
+[data-state~="protocol.other"] [data-hide~="protocol.other"],
+[data-state~="protocol.any"] [data-hide~="protocol.any"]
+{
+  display: none;
+}
+```
+
+The `.networkFields` is unique in that it should only hide when //both// addressFamily and protocol states are at specific values.

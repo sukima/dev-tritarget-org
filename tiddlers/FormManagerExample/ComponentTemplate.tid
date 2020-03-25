@@ -1,0 +1,35 @@
+created: 20200324223618327
+modified: 20200325121616309
+title: FormManagerExample/ComponentTemplate
+type: text/vnd.tiddlywiki
+
+Usually a component will have one main element to represent it. In our case this element needs to wrap the whole form so that it can be the catalyst to state changes.
+
+```htmlbars
+<div ...attributes data-state={{this.stateStrings}}>
+```
+Because our state machine actions reference DOM nodes we need to use [[ember-ref-modifier|https://github.com/lifeart/ember-ref-modifier]] to assign references to the component.
+
+<<.tip """A simple way to synchronize a form fields label with their id is to use a `let` helper. In this way the calculation of a unique ID can happen at the site of their use and not somewhere else needlessly complicating unrelated things. `this.guid` is just a getter to `guidFor(this)` in the JS.""">>
+
+```htmlbars
+{{#let (concat this.guid "-addressFamily") as |id|}}
+  <label for={{id}}>Address Family</label>
+  <select
+    name="addressFamily"
+    id={{id}}
+    {{on "change" (fn this.transition "PICK_FAMILY")}}
+    {{ref this "family"}}
+  >
+    <option value="none" disabled={{this.isNoneDisabled}}>None</option>
+    <option value="ip4">IP4</option>
+    <option value="ip6">IP6</option>
+  </select>
+{{/let}}
+```
+
+We will call `this.transition` with the `PICK_FAMILY` event name and the DOMEvent when the user changes the select value. We store a reference to the select DOMNode in `this.family` so that we can manipulate the select's value when the state machine triggers the appropriate actions. And we have added a toggle to the ''None'' option which reacts to the state to disable/enable it.
+
+<<.note """One of the advantages to having a state machine is that you can control the response to events. In the case of the disabled ''None'' option even if the UI allowed changing it the state machine and the logic involved would ignore that as an invalid transition making the business logic hardened against hacking, [[fuzzing|https://en.wikipedia.org/wiki/Fuzzing]], or plain old user goofiness.""">>
+
+''View the [[full template source|FormManagerExample/ComponentHBS]].''
