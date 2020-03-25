@@ -1,0 +1,38 @@
+caption: Glimmer Component
+created: 20200317234349517
+modified: 20200325144338305
+tags: snippets Ember
+title: XStateGlimmerComponent
+type: text/vnd.tiddlywiki
+
+''View official [[documentation|https://xstate.js.org/docs/recipes/ember.html]]''
+
+```javascript
+import Component from '@glimmer/component';
+import { Machine, interpret } from 'xstate';
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
+
+export default class MyComponent extends Component {
+
+  @tracked state;
+
+  constructor() {
+    super(...arguments);
+    this.machine = interpret(Machine({ … }).withConfig({ … }));
+    this.machine.onTransition(state => this.state = state);
+    this.machine.start();
+  }
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.machine.stop();
+  }
+
+  @action
+  transition(...args) {
+    this.machine.send(...args);
+  }
+
+}
+```
