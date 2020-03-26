@@ -1,0 +1,51 @@
+created: 20200319171301578
+modified: 20200326205145017
+creator: Sukima
+modifier: Sukima
+tags: Ember JavaScript snippets
+title: ember-concurrency with XState
+type: text/vnd.tiddlywiki
+
+```javascript
+import { didCancel } from 'ember-concurrency';
+
+export function taskService(taskProp) {
+  return (...args) => (callback) => {
+    let taskInstance = taskProp.perform(...args);
+    taskInstance
+      .then((data) => {
+        callback('DONE', { data });
+      })
+      .catch((error) => {
+        didCancel(error) ? callback('CANCEL') : callback('ERROR', { error });
+      });
+    return () => taskInstance.cancel();
+  };
+}
+```
+
+The above utility allow for easy integration into using [[XState services|https://xstate.js.org/docs/guides/communication.html]]. For example:
+
+```javascript
+Machine({
+  id: 'example',
+  initial: 'performing',
+  states: {
+    performing: {
+      invoke: 'runMyTask',
+      on: {
+        DONE: 'completed',
+        CANCEL: 'cancelled',
+        ERROR: 'errored'
+      }
+    },
+    cancelled: {},
+    completed: {},
+    errored: {}
+  }
+}).withConfig({
+  services: {
+    runMyTask: taskService(this.myTask)
+  }
+});
+```
