@@ -1,0 +1,4 @@
+User-Agent: *
+Disallow: /files
+Disallow: /wikis
+Disallow: /OmniFocus

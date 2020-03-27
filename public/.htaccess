@@ -1,8 +1,14 @@
+Options +SymLinksIfOwnerMatch
+
 RewriteEngine On
 RedirectMatch 302 ^/devin /#ContactInfo:ContactInfo%20SocialLinks
 
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /#$1 [R=303,NE,L]
+
 RewriteCond %{SERVER_PORT} 80
-RewriteRule ^(.*)$ https://tritarget.org/$1 [L,R=301]
+RewriteRule ^(.*)$ https://tritarget.org/$1 [R=301,NE,L]
 
 <Files .htaccess>
   order allow,deny
