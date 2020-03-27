@@ -1,0 +1,50 @@
+created: 20200327185958000
+modified: 20200327185958000
+creator: Sukima
+modifier: Sukima
+tags: Ember JavaScript snippets XState
+title: Ember XState Utility
+type: text/vnd.tiddlywiki
+
+```javascript
+import { typeOf } from '@ember/utils';
+
+/**
+ * Convert state values into an Ember template consumable POJO
+ *
+ *     @tracked state;
+ *
+ *     get stateComparators() {
+ *       return stateComparators(this.state.value);
+ *     }
+ *
+ * Will result in a POJO where each key is a state (nested) and the values are
+ * either nested or the value true. This allows easy use in templates as dot
+ * notation in templates is a truthy comparason and both an object and true are
+ * turthy while undefined is falsey.
+ *
+ *     {{#if this.stateComparators.foo.bar}}
+ *       …
+ *     {{else if this.stateComparators.foo}}
+ *       …
+ *     {{else if this.stateComparators.baz}}
+ *       …
+ *     {{else}}
+ *       …
+ *     {{/if}}
+ *
+ * @function
+ * @param {StateValue} states the result of an XState machine's state.value
+ * @return {StateConmarator} a nested POJO of current states
+ */
+export function stateComparators(states) {
+  if (typeOf(states) === 'string') {
+    return { [states]: true };
+  }
+  let comparator = {};
+  for (let [key, value] of Object.entries(states)) {
+    comparator[key] = stateComparators(value);
+  }
+  return comparator;
+}
+```

@@ -3,7 +3,7 @@ creator: Sukima
 modified: 20200325130642000
 modifier: Sukima
 title: Statechart based form manager
-tags: Article Ember Coding JavaScript
+tags: Article Ember Coding JavaScript XState
 type: text/vnd.tiddlywiki
 
 {{FormManagerExample}}

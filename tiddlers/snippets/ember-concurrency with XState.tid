@@ -1,51 +1,58 @@
 created: 20200319171301578
-modified: 20200326205145017
+modified: 20200327192032000
 creator: Sukima
 modifier: Sukima
-tags: Ember JavaScript snippets
+tags: Ember JavaScript snippets XState
 title: ember-concurrency with XState
 type: text/vnd.tiddlywiki
+
+The following utility allow for easy integration into using [[XState services|https://xstate.js.org/docs/guides/communication.html]].
 
 ```javascript
 import { didCancel } from 'ember-concurrency';
 
+/**
+ * Wraps an ember-concurrency task into an XState service.
+ *
+ *     Machine({
+ *       id: 'example',
+ *       initial: 'fetch',
+ *       states: {
+ *         'fetch': {
+ *           invoke: { src: 'fetch' },
+ *           on: {
+ *             DONE: 'done',
+ *             CANCEL: 'cancelled',
+ *             ERROR: 'errored',
+ *           },
+ *         },
+ *         'cancelled': { type: 'final' },
+ *         'errored': { type: 'final' },
+ *         'done': { type: 'final' },
+ *       },
+ *     }).withConfig({
+ *       services: {
+ *         fetch: taskService(this.fetchTask),
+ *       },
+ *     });
+ *
+ * @function
+ * @param {TaskProp} taskProp the task property (not instance) to call perform() on
+ * @return {CallbackService} an XState compatable callback based service
+ */
 export function taskService(taskProp) {
   return (...args) => (callback) => {
     let taskInstance = taskProp.perform(...args);
     taskInstance
       .then((data) => {
-        callback('DONE', { data });
+        callback({ type: 'DONE', data });
       })
       .catch((error) => {
-        didCancel(error) ? callback('CANCEL') : callback('ERROR', { error });
+        didCancel(error)
+          ? callback({ type: 'CANCEL' })
+          : callback({ type: 'ERROR', error });
       });
     return () => taskInstance.cancel();
   };
 }
-```
-
-The above utility allow for easy integration into using [[XState services|https://xstate.js.org/docs/guides/communication.html]]. For example:
-
-```javascript
-Machine({
-  id: 'example',
-  initial: 'performing',
-  states: {
-    performing: {
-      invoke: 'runMyTask',
-      on: {
-        DONE: 'completed',
-        CANCEL: 'cancelled',
-        ERROR: 'errored'
-      }
-    },
-    cancelled: {},
-    completed: {},
-    errored: {}
-  }
-}).withConfig({
-  services: {
-    runMyTask: taskService(this.myTask)
-  }
-});
 ```
