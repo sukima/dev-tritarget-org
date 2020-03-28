@@ -1,0 +1,45 @@
+@startuml
+
+  state unfiltered {
+    state "fetching" as unfilteredFetching
+    state "with items" as unfilteredWithItems
+    state "empty" as unfilteredEmpty
+    state "errored" as unfilteredErrored
+    unfilteredFetching : invoke / filter
+    unfilteredWithItems : entry / postProcessItems
+    unfilteredEmpty : entry / clearitems\nentry / postProcessItems
+    unfilteredErrored : exit / clearError
+    [*] -> unfilteredFetching
+    unfilteredFetching --> unfilteredFetching : FILTER
+    unfilteredFetching -u-> unfilteredWithItems : DONE [hasItems]\ndo / storeItems
+    unfilteredFetching -u-> unfilteredEmpty : DONE [hasNoItems]
+    unfilteredFetching -u-> unfilteredErrored : ERROR\ndo / storeError
+  }
+
+  state filtered {
+    state "fetching" as filteredFetching
+    state "with items" as filteredWithItems
+    state "empty" as filteredEmpty
+    state "errored" as filteredErrored
+    filteredFetching : invoke / filter
+    filteredWithItems : entry / postProcessItems
+    filteredEmpty : entry / clearitems\nentry / postProcessItems
+    filteredErrored : exit / clearError
+    [*] -> filteredFetching
+    filteredFetching --> filteredFetching : FILTER
+    filteredFetching -u-> filteredWithItems : DONE [hasItems]\ndo / storeItems
+    filteredFetching -u-> filteredEmpty : DONE [hasNoItems]
+    filteredFetching -u-> filteredErrored : ERROR\ndo / storeError
+  }
+
+  unfiltered -u-> filtered : FILTER [hasClauses]\ndo / storeClauses
+  filtered -d-> unfiltered : FILTER [hasNoClauses]\ndo / clearClauses
+
+  [*] --> prefetching
+  prefetching : invoke / filter
+  prefetching --> prefetching : FILTER
+  prefetching --> unfilteredWithItems : DONE [hasItems]\ndo / storeItems
+  prefetching --> unfilteredEmpty : DONE [hasNoItems]
+  prefetching --> unfilteredErrored : ERROR\ndo / storeError
+
+@enduml
