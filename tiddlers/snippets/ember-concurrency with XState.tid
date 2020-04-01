@@ -44,13 +44,14 @@ export function taskService(taskProp) {
   return (...args) => (callback) => {
     let taskInstance = taskProp.perform(...args);
     taskInstance
-      .then((data) => {
-        callback({ type: 'DONE', data });
-      })
+      // catch first to prevent swallowing syntax errors during transitioning
       .catch((error) => {
         didCancel(error)
           ? callback({ type: 'CANCEL' })
           : callback({ type: 'ERROR', error });
+      })
+      .then((data) => {
+        callback({ type: 'DONE', data });
       });
     return () => taskInstance.cancel();
   };
