@@ -144,17 +144,18 @@ function require(name) {
     <!--
       The current dragenter/dragleave events leave little to be desired. They
       trigger on all elements not just the one with a listener. Because of that
-      most solutions use the dragover as it is more consistent. Ultimatly, using
-      a dragenter results in the entering event triggering only some of the time
-      and is not cicistent to the user's movements. Adding a dragleave on an
-      element with dragover causes a flicker as the two events are repeatedly
-      fired sporatically. To avoid these user interaction issues it is better to
-      have two elements monitor the dragover and react according to which
-      element it is triggered on. To do that we need an overlay that covers the
-      dropzone and an event on the document to cover the leaving. This setup
-      produces a more organic user interaction and allows us to add-and-forget
-      event handlers to these elements and use the state machine logic to do the
-      right thing dispite the deluge of events being fired.
+      most solutions use the dragover as it is more consistent. Ultimately,
+      using a dragenter results in the entering event triggering only some of
+      the time and is not consistent to the user's movements. Adding
+      a dragleave on an element with dragover causes a flicker as the two
+      events are repeatedly fired sporadically. To avoid these user interaction
+      issues it is better to have two elements monitor the dragover and react
+      according to which element it is triggered on. To do that we need an
+      overlay that covers the dropzone and an event on the document to cover
+      the leaving. This setup produces a more organic user interaction and
+      allows us to add-and-forget event handlers to these elements and use the
+      state machine logic to do the right thing despite the deluge of events
+      being fired.
     -->
     <div id="dropzone-overlay" aria-dropeffect="copy" data-show="dragging"></div>
     <div id="idle-message" role="button" data-show="idle">
@@ -175,7 +176,7 @@ function require(name) {
     </div>
     <div id="completed-message" data-show="completed">
       <h2>Imported</h2>
-      <p>Image imported sucessfully.</p>
+      <p>Image imported successfully.</p>
     </div>
     <div id="error-message" role="button" data-show="error">
       <h2>Error</h2>
