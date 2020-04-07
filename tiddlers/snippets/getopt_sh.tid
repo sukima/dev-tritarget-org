@@ -1,8 +1,9 @@
-creator: Sukima
 created: 20160313142325000
-modified: 20160324192915108
+creator: Sukima
+modified: 20200407142321696
+modifier: Sukima
 source: https://gist.github.com/sukima/5409618
-tags: snippets
+tags: Bash snippets
 title: getopt.sh
 type: text/vnd.tiddlywiki
 

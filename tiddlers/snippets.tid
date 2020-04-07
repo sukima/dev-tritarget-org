@@ -1,8 +1,30 @@
 color: #9966cc
 created: 20160324192555233
+creator: Sukima
 icon: $:/core/images/file
-modified: 20200325031906007
+modified: 20200407142310578
+modifier: Sukima
 title: snippets
 type: text/vnd.tiddlywiki
 
-<<list-links "[tag[snippets]]">>
+<table>
+<thead>
+<tr><th>Snippet</th><th>Tags</th></tr>
+</thead>
+<tbody>
+<$list filter="[tag[snippets]]">
+<tr>
+<td>
+<$link to={{!!title}}>
+<$transclude field="caption">
+<$view field="title"/>
+</$transclude>
+</$link>
+</td>
+<td>
+<$list filter="[all[current]tags[]sort[title]] +[remove[Coding snippets]]" template="$:/core/ui/TagTemplate"/>
+</td>
+</tr>
+</$list>
+</tbody>
+</table>
