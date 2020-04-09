@@ -1,5 +1,5 @@
 created: 20160323003123862
-modified: 20160411164216552
+modified: 20200329033338060
 tags: $:/tags/Macro
 title: $:/plugins/sukima/tritarget/macros
 type: text/vnd.tiddlywiki
@@ -26,6 +26,22 @@ type: text/vnd.tiddlywiki
 </$set>
 </$list>
 </div>
+\end
+
+\define fold(tiddler, summary)
+<$set name="title" value="$summary$" emptyValue="$tiddler$">
+<details class="fold" open><summary><<title>></summary>
+<$transclude tiddler="$tiddler$" mode="block" />
+</details>
+</$set>
+\end
+
+\define folded(tiddler, summary)
+<$set name="title" value="$summary$" emptyValue="$tiddler$">
+<details class="fold"><summary><<title>></summary>
+<$transclude tiddler="$tiddler$" mode="block" />
+</details>
+</$set>
 \end
 
 \define tag-summary(tagname) There are <$count filter="[tag[Article]tag[$tagname$]]"/> articles about <<tag "$tagname$">>

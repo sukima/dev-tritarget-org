@@ -1,6 +1,6 @@
 created: 20160323140817474
 creator: Sukima
-modified: 20160423162257786
+modified: 20200329035405052
 modifier: Sukima
 tags: $:/tags/Stylesheet
 title: $:/plugins/sukima/tritarget/styles
@@ -24,14 +24,27 @@ type: text/vnd.tiddlywiki
   }
 }
 
-.print-only {
-  display: none;
+.fold[open] {
+  border-bottom: 2px solid #eee;
+  background-image: linear-gradient(#eee, transparent 100px);
 }
 
-/* TODO: Remove after https://github.com/Jermolene/TiddlyWiki5/pull/2341 */
-pre>code {
-  white-space: pre;
-  overflow-y: scroll;
+.fold > summary {
+  display: list-item;
+  background-color: #eee;
+  padding: 4px 6px;
+}
+
+.fold > summary:hover {
+  cursor: pointer;
+}
+
+.fold[open] > summary {
+  background-color: transparent;
+}
+
+.print-only {
+  display: none;
 }
 
 .tc-footnotes {
