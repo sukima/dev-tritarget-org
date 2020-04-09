@@ -1,0 +1,39 @@
+created: 20200329023236719
+modified: 20200329023237778
+tags:
+title: EmberTemplatesWithStatecharts/Template1
+type: text/vnd.tiddlywiki
+
+```htmlbars
+<FilterManager as |manager|>
+
+  {{#if manager.inState.prefetching}}
+
+    <FullPageLoadingIndicator />
+
+  {{else}}
+
+    <FilterBar onFilter={{manager.filter}} />
+
+  {{/if}}
+
+  {{#if manager.inState.unfiltered.empty}}
+
+    <EmptyMessage @message="No data has been created yet." />
+
+  {{else if manager.inState.filtered.empty}}
+
+    <EmptyMessage @message="The filter you used did not find any items." />
+
+  {{else}}
+
+    <DataTable @data={{manager.items}} />
+
+    {{#if manager.error}}
+      <FlashMessage @message={{manager.error}} />
+    {{/if}}
+
+  {{/if}}
+
+</FilterManager>
+```
