@@ -1,0 +1,32 @@
+created: 20200328174452000
+creator: Sukima
+modified: 20200329224353586
+tags: JavaScript Coding XState Ember Article
+title: Ember templates with Statecharts
+type: text/vnd.tiddlywiki
+
+Well I did it again. Was working on what I thought was a simple [[Ember]] template only to discover that it was not as simple as it looked. And by the time I figured out how to get things working I had written yet another [[Statechart|XState]]. Here is my why and how.
+
+I have a table and fetch data from an API to populate the table. But the simplicity stopped there. I need to handle a loading state the first time but after I need a different loading as the system filtered the results. Then I needed a separate state for when there were no results at all (unfiltered) and another state for when there were no results based on the current filter. And then there is the need for what to do when there is an error. I mean this already sounds complicated.
+
+Normally I would setup a few boolean properties and flip them on and off as the different stages happen. Yet for me when I did I ended up getting myself confused pretty quickly. I discovered that to properly manage the boolean flags I had to mix presentation code into the fetching logic code. This is when I felt a [[Statechart|XState]] would help:
+
+<<fold "EmberTemplatesWithStatecharts.svg" "Statechart">>
+
+The rest of this will be a walk through the steps I did to implement this with [[XState]] and Ember templates. At the time I used [[ember-concurrency]] using [[this utility|ember-concurrency with XState]] but for simplicity we will just use a promise from `fetch`. We will also use [[this pattern|XStateGlimmerComponent]] to integrate the state machine into Ember.
+
+First I will layout my template with a data manager contextual component and a set of if/else blocks.
+
+<<fold "EmberTemplatesWithStatecharts/Template1" "Template">>
+
+In this setup we can display a table in several of the states of the Statechart but not during key moments. We know that by the time we get to the bottom `{{else}}` block we will have items even if those items are stale due to an error.
+
+Also notice the use if an object (dot-notation) to describe which state the manager is in. [[XState's|XState]] state values can either be a string or a nested object to represent nested states. [[XState]] does offer a `state.toStrings()` (plural) method which converts the value into a space separated list. This string is very useful for templates that utilize the [[CSS based view states]] pattern but in our case we want to manage Glimmer logic and Glimmer lacks a good switch/case.
+
+Most designs at this point would rely on a [[Helper|https://guides.emberjs.com/release/components/helper-functions/]] to match the state using the `state.matches()` method. The drawbacks to this and why I did it my way was that this required a general helper and conflated the template code.
+
+```htmlbars
+{{#if (in-state manager.state "unfiltered.empty")}}
+```
+
+<<.note """I admit that this has some great flexibility and would be a good solution in most cases. In fact there is an addon [[ember-statecharts|https://ember-statecharts.com/]] for integrating [[XState]] into Ember in these kinds of ways. I however, wanted to do this with vanilla Ember patterns and felt that in this case using dot-notation offered a better template style then using a helper. I mention this for others who may want a packaged solution like [[ember-statecharts|https://ember-statecharts.com/]].""">>
