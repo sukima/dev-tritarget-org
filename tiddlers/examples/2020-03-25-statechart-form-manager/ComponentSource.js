@@ -6,25 +6,25 @@ import { createMachine } from '../utils/-state-machine';
 const { interpret, assign } = XState;
 
 export default class extends Component {
-  
+
   @tracked state;
-  
+
   get guid() {
     return guidFor(this);
   }
-  
+
   get stateStrings() {
     return this.state.toStrings().join(' ');
   }
-  
+
   get stateList() {
     return this.state.toStrings().join(', ');
   }
-  
+
   get isNoneDisabled() {
     return !this.state.context.canSelectNone;
   }
-  
+
   constructor() {
     super(...arguments);
     let actions = {
@@ -42,16 +42,16 @@ export default class extends Component {
       .onTransition(state => this.state = state)
       .start();
   }
-  
+
   willDestroy() {
     super.willDestroy(...arguments);
     this.machine.stop();
   }
-  
+
   @action
   transition(eventName, event) {
     let { target: { value } } = event;
     this.machine.send(eventName, { value });
   }
-  
+
 }
