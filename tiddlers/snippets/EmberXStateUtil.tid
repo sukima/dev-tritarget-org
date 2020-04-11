@@ -20,8 +20,8 @@ import { typeOf } from '@ember/utils';
  *
  * Will result in a POJO where each key is a state (nested) and the values are
  * either nested or the value true. This allows easy use in templates as dot
- * notation in templates is a truthy comparason and both an object and true are
- * turthy while undefined is falsey.
+ * notation in templates is a truthy comparison and both an object and true are
+ * truthy while undefined is falsey.
  *
  *     {{#if this.stateComparators.foo.bar}}
  *       …
@@ -37,14 +37,24 @@ import { typeOf } from '@ember/utils';
  * @param {StateValue} states the result of an XState machine's state.value
  * @return {StateConmarator} a nested POJO of current states
  */
-export function stateComparators(states) {
-  if (typeOf(states) === 'string') {
-    return { [states]: true };
+export function stateComparators(stateValue) {
+  let foundKeys = [];
+  function recurse(states) {
+    if (typeOf(states) === 'string') {
+      foundKeys.push(states);
+      return { [states]: true };
+    }
+    let comparator = {};
+    for (let [key, value] of Object.entries(states)) {
+      foundKeys.push(key);
+      comparator[key] = recurse(value);
+    }
+    return comparator;
   }
-  let comparator = {};
-  for (let [key, value] of Object.entries(states)) {
-    comparator[key] = stateComparators(value);
+  let top = recurse(stateValue);
+  for (let key of foundKeys) {
+    top[key] = top[key] ?? true;
   }
-  return comparator;
+  return top;
 }
 ```
