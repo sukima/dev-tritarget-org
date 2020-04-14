@@ -4,7 +4,6 @@ tags: $:/tags/TopLeftBar
 title: NavBar
 type: text/vnd.tiddlywiki
 
-<<hack-142>>
-<nav class="tc-adjust-top-of-scroll">
+<nav class="top-nav-bar tc-adjust-top-of-scroll">
 <<list-links filter:"[tag[NavBar]!has[draft.of]sort[position]]">>
 </nav>

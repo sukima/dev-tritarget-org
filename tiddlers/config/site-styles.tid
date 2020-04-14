@@ -4,6 +4,10 @@ tags: $:/tags/Stylesheet
 title: $:/styles/site
 type: application/x-tiddler
 
+.top-nav-bar {
+  height: 40px;
+}
+
 .testimonials-flow {
   display: flex;
   flex-wrap: wrap;
