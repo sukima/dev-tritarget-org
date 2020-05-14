@@ -1,0 +1,54 @@
+created: 20200514183022000
+creator: Sukima
+modified: 20200514183022000
+modifier: Sukima
+title: examples/state-machines-work-for-logic-too/parser
+caption: Parser
+type: application/javascript
+
+function *parseTemplate(input) {
+  let opCode = { code: 'TEXT', modifier: null, value: '' };
+  let state = LEXER.initial;
+  let pos = 0;
+  for (let char of [...input, EOL]) {
+    let error;
+    let eventName = TOKENS[char] || 'TEXT';
+    let event = LEXER.states[state].on[eventName] || {};
+    state = event.target || state;
+    pos++;
+    for (let action of [event.action, LEXER.states[state].entry]) {
+      switch (action) {
+        case 'append':
+          opCode.value = `${opCode.value}${char}`;
+          break;
+        case 'flush':
+          yield opCode;
+          opCode = { ...opCode, value: '' };
+          break;
+        case 'assignModifier':
+          opCode.modifier = char;
+          break;
+        case 'setTextOpCode':
+          opCode.code = 'TEXT';
+          opCode.modifier = null;
+          break;
+        case 'setReplaceOpCode':
+          opCode.code = 'REPLACE';
+          break;
+        case 'setModifiedReplaceOpCode':
+          opCode.code = opCode.modifier === '+' ? 'RAWREPLACE' : 'PREFIXREPLACE';
+          opCode.code = ['?', '&'].includes(opCode.modifier) ? 'QPREPLACE' : opCode.code;
+          break;
+        case 'setParseError':
+          error = new SyntaxError(`Unexpected character at position ${pos}: ${char}`);
+          break;
+        case 'setEOLError':
+          error = new SyntaxError('Incomplete template (EOL)');
+          break;
+        case 'throwError':
+          throw error;
+        default: break;
+      }
+    }
+  }
+}

@@ -1,0 +1,109 @@
+created: 20200513020814617
+creator: Sukima
+modified: 20200514035614391
+modifier: Sukima
+tags: Article
+title: State Machines work for logic too
+type: text/vnd.tiddlywiki
+
+The other day I found myself in a very peculiar situation. I was writing a very specific [[bookmarklet|https://en.wikipedia.org/wiki/Bookmarklet]] where the code I was writing was intentionally terse. It also meant I had to do everything in browser only JavaScript. No CDNs or NPM modules or babel compilation. Luckily the target was the most up-to-date modern browsers (Chrome, ~FireFox).
+
+In this template I found that I needed to construct a bunch of URLs based on changing data provided to the program. In any normal situation I would use some kind of URL builder library. Something very much like [[URI Template|https://medialize.github.io/URI.js/uri-template.html]]. This would allow me to define several templates and then run them with the changing data to get expanded URLs for the program.
+
+I looked and found most all implementations of [[RFC 6570|https://tools.ietf.org/html/rfc6570]] I found were huge. And they all implemented many features of the RFC I knew I didn't need to use. Since I was constrained to a small source file and no libs I felt copy pasting was not a good option.
+
+My adventure began with me attempting to write my own mini implementation of [[RFC 6570|https://tools.ietf.org/html/rfc6570]] cherry-picking the features I knew I wanted and ignoring the rest of the spec. Specifically I wanted to support simple replacement, path and dot prefixes, query params, and optionally fragments and multiple variables (comma separated).
+
+```javascript
+makeUrl('https://tritarget.org{/path}');
+makeUrl('https://foo{.domain}.org{/path}');
+makeUrl('https://tritarget.org{/path}{?foo,bar,baz}');
+```
+
+I thought about RegExp and knew that would be [[too many problems|https://xkcd.com/1171/]]. Then I thought JavaScript comes with its own [[URL building API|https://developer.mozilla.org/en-US/docs/Web/API/URL]] Unfortunately that API was more focused on parsing then it was building and my initial attepts to make a bunch of mutations to the object really made the code ugly and had difficulty capturing all the edge cases. I finally settled on making a mini template parser and URL compiler. I know, definitely a //bad idea// but it's my little world ''YOLO''!
+
+When I've experimented with making my own micro parsers in the past I had a lot of boolean switches to track the states while I scanned a string. I also had to mange building up the resulting AST manually. With my simple syntax I wanted I knew that instead of parsing things into an AST like normal I could cut out the middle man and simply make a list of OP Codes. The compiler would be liner and non-contextual.
+
+It also meant that since the parser would tokenize to a flat list of OP Codes I could get away with using a [[generator function|https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*]] and a [[finite state machine|https://en.wikipedia.org/wiki/Finite-state_machine]].
+
+! The Parser
+
+<<fold "uri-template-mini-parser.svg" "UML State Diagram">>
+
+The idea behind this is that each character can produce an event that the state machine can react to. For example say we define the following character map:
+
+```javascript
+const EOL = Symbol('EOL');
+const TOKENS = {
+  [EOL]: 'END_INPUT',
+  '{': 'OPEN_BRACE',
+  '}': 'CLOSE_BRACE',
+  '/': 'OPERATION',
+  '+': 'OPERATION',
+  '?': 'OPERATION',
+  '&': 'OPERATION',
+  '#': 'OPERATION',
+  '.': 'OPERATION',
+  ',': 'SPLIT'
+};
+
+for (let char of [...input, EOL]) {
+  let eventName = TOKENS[char] || 'TEXT';
+  …
+}
+```
+
+Walking through the example `foo.com{/bar,baz}` would mean we would kick off a series of events: `TEXT`, `TEXT`, `TEXT`, `OPERATION`, `TEXT`, `TEXT`, `TEXT`, `OPEN_BRACE`, `OPERATION`, `TEXT`, `TEXT`, `TEXT`, `SPLIT`, `TEXT`, `TEXT`, `TEXT`, `CLOSE_BRACE`, `END_INPUT`.
+
+Looking at the [[UML State Diagram|uri-template-mini-parser.svg]] above we can follow those events and see how they would affect a running state machine:
+
+<<fold "uri-template-mini-parser-sequence.svg" "Example Sequence">>
+
+And finally if we take into account the actions defined in the [[UML State Diagram|uri-template-mini-parser.svg]] we can see the OP Codes being built.
+
+* `append` — adds the character into the OP Code's `value` property
+* `flush` — yield (or push onto an array) the current OP Code and prepare a new one
+* `assignModifier` — set the OP Code's `modifier` property
+* `setTextOpCode` — set the OP Code's `code` property to `TEXT`
+* `setReplaceOpCode` — set the OP Code's `code` property to `REPLACE`
+* `setModifiedReplaceOpCode` — set the OP Code's `code` property to `RAWREPLACE`, `PREFIXREPLACE`, or `QPREPLACE` depending on the OP Code's `modifier` value
+* `setParseError` — set the current error message to something specific about the syntax error
+* `setEOLError` — set the current error message to something specific about a premature end to the input
+* `throwError` — throw an error with the stored error message
+
+```javascript
+[
+  { code: 'TEXT', value: 'foo.com' },
+  { code: 'PREFIXREPLACE', modifier: '/', value: 'bar' },
+  { code: 'PREFIXREPLACE', modifier: '/', value: 'baz' },
+  { code: 'TEXT', value: '' }
+]
+```
+
+!! Modeling the machine
+
+Using the [[UML State Diagram|uri-template-mini-parser.svg]] we can model this in object notation like the following:
+
+<<fold "examples/state-machines-work-for-logic-too/lexer" "Lexer machine in object notation">>
+
+This format looks similar to [[XState]] notation but because I wrote this for a bookmarklet I wanted something much smaller. I really only needed events and actions and so was able to implement this with minimal vanilla code.
+
+```javascript
+let opCode = { code: 'TEXT', modifier: null, value: '' };
+let state = lexer.initial;
+let pos = 0;
+for (let char of [...input, EOL]) {
+  let error;
+  let eventName = TOKENS[char] || 'TEXT';
+  let event = lexer.states[state].on[eventName] || {};
+  state = event.target || state;
+  pos++;
+  for (let action of [event.action, lexer.states[state].entry]) {
+    … perform the named action as described above …
+  }
+}
+```
+
+We set up some scoped state, our work in progress OP Code object and track the character position (for error messages). The beauty is that the act of transitioning between states in the state machine is just a matter of sending a mapped event for each character as it scans the string. How those events are reacted to depends on the current state the machine is in. The logic involved practically writes itself.
+
+Feel free to [[view the full source for this utility|examples/state-machines-work-for-logic-too]].

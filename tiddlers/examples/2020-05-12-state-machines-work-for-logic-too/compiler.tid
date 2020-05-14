@@ -1,0 +1,42 @@
+created: 20200514183022000
+creator: Sukima
+modified: 20200514183022000
+modifier: Sukima
+title: examples/state-machines-work-for-logic-too/compiler
+caption: Compiler
+type: application/javascript
+
+function compileTemplate(opCodes) {
+  return function(data) {
+    let result = '';
+    for (let opCode of opCodes) {
+      switch (opCode.code) {
+        case 'TEXT':
+          result = `${result}${opCode.value}`;
+          break;
+        case 'RAWREPLACE':
+          if (data[opCode.value] === undefined) { break; }
+          result = `${result}${data[opCode.value]}`;
+          break;
+        case 'REPLACE':
+          if (data[opCode.value] === undefined) { break; }
+          result = `${result}${encodeURIComponent(data[opCode.value])}`;
+          break;
+        case 'PREFIXREPLACE':
+          if (data[opCode.value] === undefined) { break; }
+          result = result.endsWith(opCode.modifier)
+            ? `${result}${encodeURIComponent(data[opCode.value])}`
+            : `${result}${opCode.modifier}${encodeURIComponent(data[opCode.value])}`;
+          break;
+        case 'QPREPLACE':
+          if (data[opCode.value] === undefined) { break; }
+          result = result.includes('?')
+            ? `${result}&${opCode.value}=${encodeURIComponent(data[opCode.value])}`
+            : `${result}?${opCode.value}=${encodeURIComponent(data[opCode.value])}`;
+          break;
+        default: break;
+      }
+    }
+    return result;
+  };
+}

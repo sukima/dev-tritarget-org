@@ -1,0 +1,76 @@
+created: 20200514183022000
+creator: Sukima
+modified: 20200514183022000
+modifier: Sukima
+title: examples/state-machines-work-for-logic-too/consts
+caption: Constants/Machine Definition
+type: application/javascript
+
+const EOL = Symbol('EOL');
+
+const TOKENS = {
+  [EOL]: 'END_INPUT',
+  '{': 'OPEN_BRACE',
+  '}': 'CLOSE_BRACE',
+  '/': 'OPERATION',
+  '+': 'OPERATION',
+  '?': 'OPERATION',
+  '&': 'OPERATION',
+  '#': 'OPERATION',
+  '.': 'OPERATION',
+  ',': 'SPLIT'
+};
+
+const LEXER = {
+  initial: 'text',
+  states: {
+    text: {
+      entry: 'setTextOpCode',
+      on: {
+        TEXT: { action: 'append' },
+        OPERATION: { action: 'append' },
+        SPLIT: { action: 'append' },
+        OPEN_BRACE: { target: 'replacement', action: 'flush' },
+        CLOSE_BRACE: { target: 'error', action: 'setParseError' },
+        END_INPUT: { target: 'done', action: 'flush' }
+      }
+    },
+    replacement: {
+      entry: 'setReplaceOpCode',
+      on: {
+        TEXT: { target: 'variable', action: 'append' },
+        OPERATION: { target: 'operation', action: 'assignModifier' },
+        SPLIT: { target: 'error', action: 'setParseError' },
+        OPEN_BRACE: { target: 'error', action: 'setParseError' },
+        CLOSE_BRACE: { target: 'error', action: 'setParseError' },
+        END_INPUT: { target: 'error', action: 'setEOLError' }
+      }
+    },
+    operation: {
+      entry: 'setModifiedReplaceOpCode',
+      on: {
+        TEXT: { target: 'variable', action: 'append' },
+        OPERATION: { target: 'error', action: 'setParseError' },
+        SPLIT: { target: 'error', action: 'setParseError' },
+        OPEN_BRACE: { target: 'error', action: 'setParseError' },
+        CLOSE_BRACE: { target: 'error', action: 'setParseError' },
+        END_INPUT: { target: 'error', action: 'setEOLError' }
+      }
+    },
+    variable: {
+      on: {
+        TEXT: { action: 'append' },
+        OPERATION: { target: 'error', action: 'setParseError' },
+        SPLIT: { action: 'flush' },
+        OPEN_BRACE: { target: 'error', action: 'setParseError' },
+        CLOSE_BRACE: { target: 'text', action: 'flush' },
+        END_INPUT: { target: 'error', action: 'setEOLError' }
+      }
+    },
+    done: { type: 'final' },
+    error: {
+      type: 'final',
+      entry: 'throwError'
+    }
+  }
+};

@@ -1,0 +1,17 @@
+created: 20200514183022000
+creator: Sukima
+modified: 20200514183022000
+modifier: Sukima
+title: examples/state-machines-work-for-logic-too/usage
+caption: Usage
+type: text/vnd.tiddlywiki
+
+```javascript
+function uriTemplate(template) {
+  return compileTemplate(parseTemplate(template));
+}
+
+let template = uriTemplate('foo.com{/bar,baz}');
+let result = template({ bar: 'BAR', baz: 'BAZ' });
+console.log(result);
+```

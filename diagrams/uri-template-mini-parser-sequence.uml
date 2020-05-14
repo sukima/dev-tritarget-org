@@ -1,0 +1,22 @@
+@startuml
+
+text -> text : TEXT "f"
+text -> text : TEXT "o"
+text -> text : TEXT "o"
+text -> text : OPERATION "."
+text -> text : TEXT "c"
+text -> text : TEXT "o"
+text -> text : TEXT "m"
+text -> replacement : OPEN_BRACE "{"
+replacement -> operation : OPERATION "/"
+operation -> variable : TEXT "b"
+variable -> variable : TEXT "a"
+variable -> variable : TEXT "r"
+variable -> variable : SPLIT ","
+variable -> variable : TEXT "b"
+variable -> variable : TEXT "a"
+variable -> variable : TEXT "z"
+variable -> text : CLOSE_BRACE "}"
+text -> done : END_INPUT
+
+@enduml

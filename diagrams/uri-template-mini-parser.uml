@@ -1,0 +1,30 @@
+@startuml
+
+title URI Template //mini// parser
+
+error : entry / throwError
+text : entry / setTextOpCode
+replacement : entry / setReplaceOpCode
+operation : entry / setModifiedReplaceOpCode
+
+[*] -> text
+text --> text : TEXT\nOPERATION\nSPLIT\ndo / append
+text --> replacement : OPEN_BRACE\ndo / flush
+text --> error : CLOSE_BRACE\ndo / setParseError
+text --> done : END_INPUT\ndo / flush
+error -> [*]
+done -> [*]
+replacement --> variable : TEXT\ndo / append
+replacement --> operation : OPERATION\ndo / assignModifier
+replacement --> error : SPLIT\nOPEN_BRACE\nCLOSE_BRACE\ndo / setParseError
+replacement --> error : END_INPUT\ndo / setEOLError
+operation --> variable : TEXT\ndo / append
+operation --> error : OPERATION\nSPLIT\nOPEN_BRACE\nCLOSE_BRACE\ndo / setParseError
+operation --> error : END_INPUT\ndo / setEOLError
+variable --> variable : TEXT\ndo / append
+variable --> error : OPERATION\nOPEN_BRACE\ndo / setParseError
+variable --> error : END_INPUT\ndo / setEOLError
+variable --> variable : SPLIT\ndo / flush
+variable --> text : CLOSE_BRACE\ndo / flush
+
+@enduml

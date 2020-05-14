@@ -1,0 +1,17 @@
+created: 20200514183022000
+creator: Sukima
+modified: 20200514183022000
+modifier: Sukima
+title: examples/state-machines-work-for-logic-too
+type: text/vnd.tiddlywiki
+
+Example of using generator functions, finite state machine, and op code parsing for a simplistic URI Template like utility.
+
+Read the [[full article about this|State Machines work for logic too]].
+
+<<tabs "
+  examples/state-machines-work-for-logic-too/usage
+  examples/state-machines-work-for-logic-too/consts
+  examples/state-machines-work-for-logic-too/parser
+  examples/state-machines-work-for-logic-too/compiler
+" "examples/state-machines-work-for-logic-too/usage">>
