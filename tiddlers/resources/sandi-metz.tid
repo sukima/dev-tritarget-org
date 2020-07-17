@@ -1,0 +1,45 @@
+created: 20200717135907000
+creator: Sukima
+modified: 20200717144009295
+modifier: Sukima
+tags: Coding Resource Tips
+title: Sandi Metz
+type: text/vnd.tiddlywiki
+
+\define web() {{$:/core/images/globe}}
+\define doc() ''[Document]''
+\define book() ''[Book]''
+\define video() {{$:/core/images/video}}
+
+<style>
+.resource-links svg {
+width: 16px;
+height: 16px;
+margin: 0;
+padding: 0;
+}
+</style>
+
+
+<div class="resource-links">
+
+Sandi Metz is a programmer, and the author of [[99 Bottles of OOP|http://www.sandimetz.com/99bottles]] and [[Practical Object-Oriented Design in Ruby (POODR)|http://poodr.com/]].
+
+<<<
+I believe in simple code and straightforward explanations.
+
+I want to help you transform your code and bring back the joy.
+<<< ~ [[Sandi Metz|https://sandimetz.com/]] <<web>>
+
+She has done many talks about OOP and design and I found her insight ''invaluable'' to my career and skill levels.
+
+* [[The Magic Tricks of Testing|https://www.youtube.com/watch?v=URSWYvyc42M]] <<video>> &mdash; A clean description of the many abstraction layers to testing and how best to focus on the subject under test. She covers how and when to mock and how to organize your thoughts around TDD.
+* [[Nothing is Something|https://www.youtube.com/watch?v=OMPfEXIlTVE]] <<video>> &mdash; Our code is full of hidden assumptions, things that seem like nothing, secrets that we did not name and thus cannot see. These secrets represent missing concepts and this talk shows you how to expose those concepts with code that is easy to understand, change and extend. Being explicit about hidden ideas makes your code simpler, your apps clearer and your life better. Even very small ideas matter. Everything, even nothing, is something.
+* [[All the Little Things|https://www.youtube.com/watch?v=8bZh5LMaSmE]] <<video>> &mdash; Theory tells us to build applications out of small, interchangeable objects but reality often supplies the exact opposite. Many apps contain huge classes of long methods and hair-raising conditionals; they're hard to understand, difficult to reuse and costly to change. This talk takes an ugly section of conditional code and converts it into a few simple objects. It bridges the gap between OO theory and practice and teaches straightforward strategies that all can use to improve their code. //Uses the [[Guilded Rose|https://github.com/emilybache/GildedRose-Refactoring-Kata]] example.//
+* [[Get a Whiff of This |https://www.youtube.com/watch?v=PJjHfa5yxlU]] <<video>> &mdash; This talk shows how to take a pile of perplexing code, identify the "smells", and surgically apply the curative refactorings. It breaks a messy problem into clear-cut pieces, and proves that you can fix anything without being forced to understand everything.
+* [[Go Ahead, Make a Mess|https://www.youtube.com/watch?v=f5I1iyso29U]] <<video>> &mdash; Software is always a mess. You can't avoid this mess, and if hubris goads you into attempting to achieve perfection, you'll just make things worse. Perfection is a distant, dim land on the unreachable horizon. You'll not be going there today.
+* [[Polly Want a Message|https://www.youtube.com/watch?v=YtROlyWWhV0]] <<video>> &mdash; Object-oriented languages have opinions about how best to arrange code. These opinions lead OO to naturally offer certain affordances. Just as round doorknobs expect to be grasped and rotated, OO expects messages, polymorphism, loose-coupling, and factories. The key to creating intuitive and maintainable OO applications is to understand and embrace these built-in affordances.
+* [[Practical Object-Oriented Design in Ruby (POODR)|http://poodr.com/]] <<book>>
+* [[99 Bottles of OOP|http://www.sandimetz.com/99bottles]] <<book>>
+
+</div>

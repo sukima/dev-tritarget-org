@@ -1,0 +1,13 @@
+created: 20200717144228000
+creator: Sukima
+modified: 20200717144601609
+modifier: Sukima
+tags: Coding Resource Tips
+title: OOP Resources
+type: text/vnd.tiddlywiki
+
+* [[The Decision Between Inheritance And Composition|https://sergeyzhuk.me/2017/01/08/composition-over-inheritance/]]
+
+! Sandi Metz
+
+{{Sandi Metz}}
