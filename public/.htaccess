@@ -23,5 +23,6 @@ RewriteRule ^(.*)$ https://tritarget.org/$1 [R=301,NE,L]
 </IfModule>
 
 <IfModule headers_module>
+  header always set X-Frame-Options SAMEORIGIN
   header set X-Clacks-Overhead "GNU Terry Pratchett"
 </IfModule>
