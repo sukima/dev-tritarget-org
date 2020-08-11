@@ -37,11 +37,18 @@ depend: $(DEPEND)
 clean:
 	rm -f $(patsubst $(SRC)/%.uml,$(OUTPUT)/%.svg,$(SRC_FILES))
 	rm -f $(patsubst $(SRC)/%.uml,$(OUTPUT)/%.svg.meta,$(SRC_FILES))
+	rm -f $(SRC)/*.png
 	rm -f $(DEPEND)
 
 svg: $(DEPEND)
 	@$(MAKE) $(patsubst $(SRC)/%.uml,$(OUTPUT)/%.svg.meta,$(shell ls -1t $(SRC_FILES)))
 	@$(MAKE) $(patsubst $(SRC)/%.uml,$(OUTPUT)/%.svg,$(shell ls -1t $(SRC_FILES)))
+
+png: $(DEPEND)
+	@$(MAKE) $(patsubst $(SRC)/%.uml,$(SRC)/%.png,$(shell ls -1t $(SRC_FILES)))
+
+%.png: $(SRC)/%.uml
+	$(PLANTUML) -tpng $< -o $(SRC)
 
 $(OUTPUT)/%.svg: $(SRC)/%.uml
 	$(PLANTUML) -tsvg $< -o $(OUTPUT)
@@ -69,6 +76,7 @@ $(DEPEND): $(SRC_FILES)
 		name="$$(basename -s .uml "$$file")"; \
 		includes="$$(find_includes "$(SRC)" "$$file")"; \
 		printf "$(OUTPUT)/%s.svg: %s\n" "$$name" "$$includes"; \
+		printf "$(OUTPUT)/%s.png: %s\n" "$$name" "$$includes"; \
 	done >> $@
 
 -include $(DEPEND)

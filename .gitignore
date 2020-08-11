@@ -1,6 +1,7 @@
 yarn-error.log
 node_modules/
 diagrams/.depend
+diagrams/*.png
 tiddlers/\$__StoryList.tid
 tiddlers/\$__ShowEditPreview.tid
 tiddlers/\$__comments*
