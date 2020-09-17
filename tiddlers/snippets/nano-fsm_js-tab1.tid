@@ -1,0 +1,12 @@
+modified: 20191206115412000
+created: 20191206042911000
+creator: Sukima
+modifier: Sukima
+title: nano-fsm_js-tab1
+tags: [[Nano State Machine]]
+type: application/javascript
+caption: Implementation
+
+function transitionMachine(machine, state = machine.initial, event) {
+  return machine.states[state].on?.[event] ?? machine.on?.[event] ?? state;
+}

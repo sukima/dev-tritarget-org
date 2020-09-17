@@ -1,0 +1,13 @@
+created: 20200917192735000
+creator: Sukima
+modified: 20200917192735000
+modifier: Sukima
+tags: Concepts
+title: StateMachine
+type: text/vnd.tiddlywiki
+
+State Machine implementations I've played with:
+
+* [[Simple State Machine]] -- Most flexible creatino of mine -- with tests
+* [[Micro State Machine]] -- Flat format with actions
+* [[Nano State Machine]] -- Flat format state tracking only

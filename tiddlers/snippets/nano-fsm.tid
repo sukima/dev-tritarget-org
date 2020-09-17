@@ -1,0 +1,13 @@
+created: 20200917192718000
+creator: Sukima
+modified: 20200917204106323
+modifier: Sukima
+tags: snippets JavaScript StateMachine
+title: Nano State Machine
+type: text/vnd.tiddlywiki
+
+This is a ''nano'' implementation of the [[Simple State Machine]] idea for cases when all you need is ''just'' very simple state tracking.
+
+See also, [[CSS based view states]].
+
+<<tabs "nano-fsm_js-tab1 nano-fsm_js-tab2" "nano-fsm_js-tab1">>

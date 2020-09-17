@@ -2,8 +2,8 @@ yarn-error.log
 node_modules/
 diagrams/.depend
 diagrams/*.png
-tiddlers/\$__StoryList.tid
-tiddlers/\$__ShowEditPreview.tid
-tiddlers/\$__comments*
+tiddlers/config/StoryList.tid
+tiddlers/config/ShowEditPreview.tid
+tiddlers/config/comments*
 public/scripts/
 wiki/

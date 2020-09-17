@@ -1,0 +1,48 @@
+modified: 20191206115412000
+created: 20191206042911000
+creator: Sukima
+modifier: Sukima
+title: micro-fsm_js-tab2
+tags: [[Micro State Machine]]
+type: application/javascript
+caption: Usage
+
+const MACHINE = {
+  initial: 'off',
+  on: { TURN_OFF: 'off', actions: 'turnOffDevice' },
+  states: {
+    off: {
+      exit: 'turnOnDevice',
+      on: { TURN_ON: 'red' }
+    },
+    red: {
+      entry: ['setColorRed', 'soundWarningAlarm'],
+      on: { NEXT: 'green' }
+    },
+    yellow: {
+      entry: 'setColorYellow',
+      on: { NEXT: 'red' }
+    },
+    green: {
+      entry: 'setColorGreen',
+      on: { NEXT: 'yellow' }
+    }
+  }
+};
+
+let trafficService = interpret(MACHINE, {
+  turnOffDevice: () => …,
+  turnOnDevice: () => …,
+  setColorRed: () => …,
+  setColorYellow: () => …,
+  setColorGreen: () => …,
+  soundWarningAlarm: () => …
+})
+  .onTransition(({ value }) => console.log(value))
+  .start();
+
+trafficService.send('TURN_ON');  // => 'red'
+trafficService.send('NEXT');     // => 'green'
+trafficService.send('NEXT');     // => 'yellow'
+trafficService.send('NEXT');     // => 'red'
+trafficService.send('TURN_OFF'); // => 'off'

@@ -3,7 +3,7 @@ creator: Sukima
 modified: 20191206020029000
 modifier: Sukima
 title: Simple State Machine
-tags: snippets JavaScript
+tags: snippets JavaScript StateMachine
 type: text/vnd.tiddlywiki
 
 Super simple Finite State Machine. This attempts to follow the conventions of [[XState|https://github.com/davidkpiano/xstate/tree/master/packages/xstate-fsm]] with the exceptions of multiple actions, interpreter, and the added concept of meta content.
