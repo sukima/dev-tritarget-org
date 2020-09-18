@@ -8,6 +8,8 @@ type: text/vnd.tiddlywiki
 
 State Machine implementations I've played with:
 
-* [[Simple State Machine]] -- Most flexible creatino of mine -- with tests
-* [[Micro State Machine]] -- Flat format with actions
-* [[Nano State Machine]] -- Flat format state tracking only
+* [[XState]] -- [[Statechart]] format -- all bells and whistles -- library -- battle tested
+* [[@xstate/fsm|https://github.com/davidkpiano/xstate/tree/master/packages/xstate-fsm]] -- 1KB full FSM -- Flat format -- library -- battle tested
+* [[Simple State Machine]] -- Flat format -- with named/inline actions, context, meta -- home grown
+* [[Micro State Machine]] -- Flat format -- with named actions -- home grown
+* [[Nano State Machine]] -- Flat format -- state tracking only -- home grown
