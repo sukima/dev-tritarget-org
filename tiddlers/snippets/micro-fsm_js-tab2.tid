@@ -5,44 +5,33 @@ modifier: Sukima
 title: micro-fsm_js-tab2
 tags: [[Micro State Machine]]
 type: application/javascript
-caption: Usage
+caption: Interpreter
 
-const MACHINE = {
-  initial: 'off',
-  on: { TURN_OFF: 'off', actions: 'turnOffDevice' },
-  states: {
-    off: {
-      exit: 'turnOnDevice',
-      on: { TURN_ON: 'red' }
+function interpret(machine, actions = {}) {
+  const STOPPED = Symbol('stopped');
+  let listners = new Set();
+  let service = {
+    state: STOPPED,
+    send(evt, extra = {}) {
+      if (service.state === STOPPED) { return service; }
+      let event = { ...extra, ...(evt.type ? evt : { type: evt }) };
+      service.state = transitionMachine(machine, service.state, event);
+      service.state.actions.forEach(action => actions[action]?.(event));
+      listners.forEach(listener => listener(service.state, event));
+      return service;
     },
-    red: {
-      entry: ['setColorRed', 'soundWarningAlarm'],
-      on: { NEXT: 'green' }
+    onTransition(cb) {
+      listeners.add(cb);
+      return service;
     },
-    yellow: {
-      entry: 'setColorYellow',
-      on: { NEXT: 'red' }
+    start() {
+      service.state = undefined;
+      return service.send('#init');
     },
-    green: {
-      entry: 'setColorGreen',
-      on: { NEXT: 'yellow' }
+    stop() {
+      service.state = STOPPED;
+      listners.clear();
     }
-  }
-};
-
-let trafficService = interpret(MACHINE, {
-  turnOffDevice: () => …,
-  turnOnDevice: () => …,
-  setColorRed: () => …,
-  setColorYellow: () => …,
-  setColorGreen: () => …,
-  soundWarningAlarm: () => …
-})
-  .onTransition(({ value }) => console.log(value))
-  .start();
-
-trafficService.send('TURN_ON');  // => 'red'
-trafficService.send('NEXT');     // => 'green'
-trafficService.send('NEXT');     // => 'yellow'
-trafficService.send('NEXT');     // => 'red'
-trafficService.send('TURN_OFF'); // => 'off'
+  };
+  return service;
+}

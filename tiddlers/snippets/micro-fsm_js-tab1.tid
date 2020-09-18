@@ -19,32 +19,3 @@ function transitionMachine(machine, { value: state = machine.initial } = {}, { t
   ];
   return { value, changed, actions };
 }
-
-function interpret(machine, actions = {}) {
-  const STOPPED = Symbol('stopped');
-  let listners = new Set();
-  let service = {
-    state: STOPPED,
-    send(evt, extra = {}) {
-      if (service.state === STOPPED) { return service; }
-      let event = { ...extra, ...(evt.type ? evt : { type: evt }) };
-      service.state = transitionMachine(machine, service.state, event);
-      service.state.actions.forEach(action => actions[action]?.(event));
-      listners.forEach(listener => listener(service.state, event));
-      return service;
-    },
-    onTransition(cb) {
-      listeners.add(cb);
-      return service;
-    },
-    start() {
-      service.state = undefined;
-      return service.send('#init');
-    },
-    stop() {
-      service.state = STOPPED;
-      listners.clear();
-    }
-  };
-  return service;
-}
