@@ -1,4 +1,4 @@
-title: $:/config/HighlightPlugin/TypeMappings/
+title: $:/config/PrismPlugin/TypeMappings/
 
 application/javascript: javascript
 application/json: json

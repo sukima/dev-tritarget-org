@@ -1,0 +1,22 @@
+{
+	"tiddlers": [
+		{
+			"file": "prism.pack.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/sukima/prism/prism.js",
+				"module-type": "library"
+			},
+			"prefix": "var require = undefined;\nif ($tw.browser) { window.Prism = { manual: true }; }\n",
+			"suffix": "\nexports.prism = Prism;\n"
+		},
+		{
+			"file": "prism.pack.css",
+			"fields": {
+				"type": "text/css",
+				"title": "$:/plugins/sukima/prism/prism.css",
+				"tags": "[[$:/tags/Stylesheet]]"
+			}
+		}
+	]
+}

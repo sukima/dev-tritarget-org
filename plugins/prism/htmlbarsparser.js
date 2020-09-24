@@ -1,5 +1,5 @@
 /*\
-title: $:/plugins/tiddlywiki/highlight/htmlbarsparser.js
+title: $:/plugins/sukima/prism/htmlbarsparser.js
 type: application/javascript
 module-type: parser
 
