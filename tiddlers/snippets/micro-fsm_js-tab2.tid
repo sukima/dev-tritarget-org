@@ -9,7 +9,7 @@ caption: Interpreter
 
 function interpret(machine, actions = {}) {
   const STOPPED = Symbol('stopped');
-  let listners = new Set();
+  let listeners = new Set();
   let service = {
     state: STOPPED,
     send(evt, extra = {}) {
@@ -17,7 +17,7 @@ function interpret(machine, actions = {}) {
       let event = { ...extra, ...(evt.type ? evt : { type: evt }) };
       service.state = transitionMachine(machine, service.state, event);
       service.state.actions.forEach(action => actions[action]?.(event));
-      listners.forEach(listener => listener(service.state, event));
+      listeners.forEach(listener => listener(service.state, event));
       return service;
     },
     onTransition(cb) {
@@ -25,12 +25,16 @@ function interpret(machine, actions = {}) {
       return service;
     },
     start() {
-      service.state = undefined;
-      return service.send('#init');
+      if (service.state === STOPPED) {
+        service.state = undefined;
+        service.send('#init');
+      }
+      return service;
     },
     stop() {
       service.state = STOPPED;
-      listners.clear();
+      listeners.clear();
+      return service;
     }
   };
   return service;
