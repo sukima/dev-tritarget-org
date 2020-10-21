@@ -1,0 +1,39 @@
+title: $:/themes/tiddlywiki/centralised/styles.tid
+tags: [[$:/tags/Stylesheet]]
+
+\rules only filteredtranscludeinline transcludeinline macrodef macrocallinline
+\define blog-bg-color() #f4f4f4e4
+
+html .tc-page-container {
+	background-color: <<blog-bg-color>>;
+}
+
+@media (min-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+
+	html .tc-page-container {
+		background-color: transparent;
+		text-align: center;
+	}
+
+	html .tc-story-river,
+	html .tc-sidebar-scrollable {
+		background-color: <<blog-bg-color>>;
+	}
+
+	html .tc-story-river {
+		position: relative;
+		width: 770px;
+		padding: 42px;
+		margin: 0 auto;
+		text-align: left;
+	}
+
+	html .tc-sidebar-scrollable {
+		text-align: left;
+		left: 50%;
+		right: 0;
+		padding-left: 0;
+		margin-left: 385px;
+	}
+
+}

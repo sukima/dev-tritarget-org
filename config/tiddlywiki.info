@@ -3,7 +3,8 @@
   "plugins": [],
   "themes": [
     "tiddlywiki/vanilla",
-    "tiddlywiki/snowwhite"
+    "tiddlywiki/snowwhite",
+    "tiddlywiki/centralised"
   ],
   "build": {
     "index": [

@@ -1,0 +1,9 @@
+{
+	"title": "$:/themes/tritarget/blog",
+	"name": "Blog",
+	"author": "Sukima",
+	"core-version": ">=5.0.0",
+	"plugin-type": "theme",
+	"description": "Centralises the story river with tweeks",
+	"dependents": ["$:/themes/tiddlywiki/snowwhite"]
+}

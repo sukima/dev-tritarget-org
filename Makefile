@@ -37,7 +37,7 @@ deploy: build
 
 assets: $(asset_files)
 
-build-files: wiki/tiddlywiki.info wiki/tiddlers generated diagrams $(polyfill) $(plugins_out)
+build-files: wiki/tiddlywiki.info wiki/tiddlers wiki/themes generated diagrams $(polyfill) $(plugins_out)
 
 tiddlywiki: build-files
 	$(tiddlywiki) wiki --build index favicon static feed
@@ -48,6 +48,9 @@ $(polyfill): node_modules/babel-polyfill/dist/polyfill.min.js
 
 wiki/tiddlers:
 	ln -s ../tiddlers $@
+
+wiki/themes:
+	ln -s ../themes $@
 
 wiki/tiddlywiki.info: config/tiddlywiki.info config/includes.json
 	@mkdir -p $(dir $@)
