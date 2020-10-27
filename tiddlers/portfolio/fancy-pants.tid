@@ -1,0 +1,16 @@
+created: 20201027012500000
+description: A performant JavaScript Micro-lib for Custom Elements with reactive updates via dirty tracking
+modified: 20201027014020257
+tags: Projects Portfolio
+terms: [[Custom Elements]], JavaScript
+title: Fancy Pants
+type: text/vnd.tiddlywiki
+url: http://sukima.github.io/fancy-pants/
+
+<a href={{!!url}}><<preview-right "fancy-pants-logo.png">></a>
+
+{{!!description}}.
+
+{{!!url}}
+
+<div style="clear: both"></div>
