@@ -1,0 +1,56 @@
+created: 20201109214612000
+creator: Sukima
+modified: 20201109214612000
+modifier: Sukima
+title: CSS Flash Messages
+tags: CSS snippits
+type: text/vnd.tiddlywiki
+
+```css
+.flash-message {
+  border-radius: 0.6rem;
+  background-color: gainsboro;
+  display: flex;
+  font-size: 1.2rem;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+button[data-action=dismiss] {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+.flash-message[data-type=default] {
+  background-color: gainsboro;
+}
+.flash-message[data-type=info] {
+  background-color: lightblue;
+}
+.flash-message[data-type=success] {
+  background-color: lightgreen;
+}
+.flash-message[data-type=warning] {
+  background-color: orange;
+}
+.flash-message[data-type=danger] {
+  background-color: salmon;
+}
+```
+
+```xml
+<div class="flash-message" data-type="info">
+  <div class="message">Sample Message</div>
+  <button
+    type="button"
+    data-action="dismiss"
+    title="Dimiss message"
+    aria-label="Dismiss message"
+  >&cross;</button>
+</div>
+```
