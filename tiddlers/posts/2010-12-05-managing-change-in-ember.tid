@@ -1,0 +1,153 @@
+created: 20201205162340000
+creator: Sukima
+modified: 20201205162340000
+modifier: Sukima
+title: Managing change in Ember
+tags: Article Coding Ember JavaSript
+type: text/vnd.tiddlywiki
+
+I came across an interesting situation the other day when working on a new Octane app. How to manage ''Data Down Actions Up'' (DDAU) patterns. In the app we had a mix of two-way bound custom components and DDAU which really emphasised the difference in working with such components. Older code handled the situation by placing tracked properties on the parent component and matching setter action.
+
+```javascript
+export default class MyComponent extends Component {
+  @tracked foo;
+  @tracked bar;
+
+  @action
+  setFoo(value) {
+    this.foo = value;
+  }
+
+  @action
+  setBar(value) {
+    this.bar = value;
+  }
+}
+```
+
+This works but is quite the ceremony. And it brought up the question why DDAU when we could just use the two-way binding and avoid the ceremony?
+
+Chris Garrett wrote an [[in depth article|https://www.pzuraq.com/on-mut-and-2-way-binding/]] about this very subject and came to some very enlightening conclusions that I'd like to cover here.
+
+First we can replace the setter actions with the `mut` helper. And this is the prescribed method in the ember community for now. But it has two down sides.
+
+# It is confusing what it is doing because it has different behavior depending on how it is used in ta template. It doesn't provide a clear distinction between 2-way binding and DDAU.
+# The Ember core team doesn't care for it. In fact it has a planned obsolescence. Though it is the current solution it won't be in the future.
+
+Thus the conclusion is to continue to use the `mut` helper for setting properties or use setter actions. 
+
+Let's talk about setter actions then; an alternative to making one for every property one might be compelled to make a general setter.
+
+```javascript
+@action
+setProperty(prop, value) {
+  this[prop] = value;
+}
+```
+
+```htmlbars
+<MyComponent
+  @value={{this.foo}}
+  @update={{fn this.setProperty "foo"}}
+/>
+```
+
+Another alternative it to use a helper. In this situation we have to pass in the context as well as the property name which is almost the same as the above only with the helper it is generalized and no longer need the boilerplate code in each component.
+
+```htmlbars
+<MyComponent
+  @value={{this.foo}}
+  @update={{update this "foo"}}
+/>
+```
+
+You can make this helper yourself:
+
+```javascript
+import Helper from '@ember/component/helper';
+export default Helper.helper(([ctx, prop]) => value => ctx[prop] = value);
+```
+
+Another alternative which Chris [[got into detail about|https://www.pzuraq.com/on-mut-and-2-way-binding/#introducingemberbox]] is something he calls a ''box'' pattern. With this pattern the responsibility for updating stays with the owner of the data. In the same way as setter actions keep the update with the owner of the property.
+
+An advantage to this pattern is the ability to separate the data from the component. I use a similar pattern with my route models where I provide behavior with the model data. ember-data is a good example of this kind of idea.
+
+[[ember-box|https://github.com/pzuraq/ember-box]], Chris's solution to DDAU, manages to provide good DX by means of helpers that understand how to create and consume box objects. These box objects are wrappers around a classes' property getter and an associated setter. One of the advantages of this addon is that it simplifies the call site. Where in our helper pattern above we had to pass two items (context and property name) which is not as ideal as the property itself. With an addon it can include template transmutations such that it becomes something different under the hood.
+
+```htmlbars
+<MyComponent
+  @value={{unwrap this.foo}}
+  @updtae={{update this.foo}}
+/>
+```
+
+Would be converted under the hood to…
+
+```htmlbars
+<MyComponent
+  @value={{unwrap this "foo"}}
+  @updtae={{update this "foo"}}
+/>
+```
+
+This is a nice transparent pattern and useful for those willing to use it. However, its true advantage comes if it become built into the framework itself. Then this pattern would be completely transparent and yet still clear and easy to reason about unlike the current `mut` helper.
+
+There is one other alternative pattern which I have grown to really like. I like it because it allows the update to be owned by the same class as the property getters. It fits seamlessly into VanillaJS™ patterns. And is a one liner to support. And that is the use of a `Proxy`.
+
+To best illustrate this presume we have a data class object with `@tracked` properties in them. And presume that at some point an instance of that class will be passed down and eventually used by a component with a DDAU binding.
+
+```javascript
+export default class MyData {
+  @tracked foo;
+  @tracked bar;
+}
+```
+
+Instead of wrapping this in a box pattern or relying on helpers or verbose setters I propose a simpler alternative and that is to expose a single setter on the data class itself thus affording the following.
+
+```htmlbars
+<MyComponent
+  @value={{@data.foo}}
+  @update={{@data.update.foo}}
+/>
+```
+
+This is the setter action pattern coupled with a quasi box pattern. And best part IMHO is that it can be accomplished with VanillaJS™.
+
+```javascript
+export default class MyData {
+  @tracked foo;
+  @tracked bar;
+  update = new Proxy(this, { get: (t, p) => v => t[p] = v });
+}
+```
+
+With this setup our data class is ready for both two-binding and DDAU support out of the gate.
+
+This also makes it easy to extend functionality. For example if the data class has to manage exclusivity between two properties it still works.
+
+```javascript
+export default class MyData {
+  update = new Proxy(this, { get: (t, p) => v => t[p] = v });
+  @tracked _foo;
+  @tracked _bar;
+  get foo() { return this._foo; }
+  set foo(value) {
+    this._foo = value;
+    if (value === 'exclude') {
+      this._bar = null;
+    }
+  }
+  get bar() { return this._bar; }
+  set bar(value) {
+    this._bar = value;
+    this._foo = 'non-exclude';
+  }
+}
+```
+
+I hope that this idea might make it out to other Ember-istas as this simple idea could really help deal with very complex Ember apps.
+
+```javascript
+update = new Proxy(this, { get: (t, p) => v => t[p] = v });
+```
