@@ -1,6 +1,6 @@
 created: 20201109214612000
 creator: Sukima
-modified: 20201109214612000
+modified: 20201205004331000
 modifier: Sukima
 title: CSS Flash Messages
 tags: CSS snippits
@@ -8,8 +8,14 @@ type: text/vnd.tiddlywiki
 
 ```css
 .flash-message {
+  --default-color: gainsboro;
+  --info-color: lightblue;
+  --success-color: lightgreen;
+  --warning-color: orange;
+  --danger-color: salmon;
+
   border-radius: 0.6rem;
-  background-color: gainsboro;
+  background-color: var(--default-color);
   display: flex;
   font-size: 1.2rem;
   justify-content: space-between;
@@ -27,19 +33,19 @@ button[data-action=dismiss] {
 }
 
 .flash-message[data-type=default] {
-  background-color: gainsboro;
+  background-color: var(--default-color);
 }
 .flash-message[data-type=info] {
-  background-color: lightblue;
+  background-color: var(--info-color);
 }
 .flash-message[data-type=success] {
-  background-color: lightgreen;
+  background-color: var(--success-color);
 }
 .flash-message[data-type=warning] {
-  background-color: orange;
+  background-color: var(--warning-color);
 }
 .flash-message[data-type=danger] {
-  background-color: salmon;
+  background-color: var(--danger-color);
 }
 ```
 
