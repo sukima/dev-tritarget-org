@@ -65,7 +65,9 @@ You can make this helper yourself:
 
 ```javascript
 import Helper from '@ember/component/helper';
-export default Helper.helper(([ctx, prop]) => value => ctx[prop] = value);
+export default Helper.helper(([ctx, prop]) => {
+  return value => ctx[prop] = value;
+});
 ```
 
 Another alternative which Chris [[got into detail about|https://www.pzuraq.com/on-mut-and-2-way-binding/#introducingemberbox]] is something he calls a ''box'' pattern. With this pattern the responsibility for updating stays with the owner of the data. In the same way as setter actions keep the update with the owner of the property.
@@ -77,7 +79,7 @@ An advantage to this pattern is the ability to separate the data from the compon
 ```htmlbars
 <MyComponent
   @value={{unwrap this.foo}}
-  @updtae={{update this.foo}}
+  @update={{update this.foo}}
 />
 ```
 
@@ -86,7 +88,7 @@ Would be converted under the hood to…
 ```htmlbars
 <MyComponent
   @value={{unwrap this "foo"}}
-  @updtae={{update this "foo"}}
+  @update={{update this "foo"}}
 />
 ```
 
