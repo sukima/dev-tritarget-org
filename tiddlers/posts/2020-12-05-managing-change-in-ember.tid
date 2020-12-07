@@ -150,6 +150,4 @@ export default class MyData {
 
 I hope that this idea might make it out to other Ember-istas as this simple idea could really help deal with very complex Ember apps.
 
-```javascript
-update = new Proxy(this, { get: (t, p) => v => t[p] = v });
-```
+{{-ember-ddau-simple-box-2}}

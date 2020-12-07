@@ -1,0 +1,16 @@
+created: 20201207152508000
+creator: Sukima
+modified: 20201207152508000
+modifier: Sukima
+title: -ember-ddau-simple-box-1
+tags: 
+type: text/vnd.tiddlywiki
+
+```htmlbars
+<MyComponent
+  @value={{@thing.property}}
+  @update={{@thing.update.property}}
+/>
+```
+
+If `@thing` were a class (like Octane likes) then the above pattern is nothing more then a one-liner:

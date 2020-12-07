@@ -1,0 +1,17 @@
+created: 20201207152508000
+creator: Sukima
+modified: 20201207152508000
+modifier: Sukima
+title: -ember-ddau-simple-box-2
+tags: 
+type: text/vnd.tiddlywiki
+
+```javascript
+class Thing {
+  @tracked property;
+  update = new Proxy(this, { get: (t, p) => v => t[p] = v });
+}
+```
+
+> [Anonymous]: didn't you just describe a poorer implementation of a box?
+> [Me]: yes, yes I did 😉

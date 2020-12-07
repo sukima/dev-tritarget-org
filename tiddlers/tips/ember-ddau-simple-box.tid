@@ -6,32 +6,8 @@ title: Simple box pattern for data down actions up in Ember
 tags: Ember Tips Coding JavaScript
 type: text/vnd.tiddlywiki
 
-I've re-read https://www.pzuraq.com/on-mut-and-2-way-binding/ a few times and although I love the idea behind ember-box I see its utility in having it be part of the framework itself. Until that time the use case in current app code seems to be in the use of DDAU which is the same problem ember-set-helper is designed to address. This got me thinking that really the box idea is two things. Offering a value via a class and setting that value. Normally this is done with an `@action`. Also Octane seems to lean towards the idea of making classes instead of POJOs especially for @tracked properties. Thus I found myself in situations where I would do the following:
+Read [[Managing change in Ember]] article for more information.
 
-```htmlbars
-<MyComponent
-  @value={{@thing.property}}
-  @update={{this.setThingProperty}}
-/>
-```
+{{-ember-ddau-simple-box-1}}
 
-Which as the article describes is kinda ugly. There are several alternatives but they all do the same thing. Which had me wonder why not embrace the DDAU and have the //thing// offer a self updating action. This is the same philosophy as ember-box but without so much ceremony:
-
-```htmlbars
-<MyComponent
-  @value={{@thing.property}}
-  @update={{@thing.update.property}}
-/>
-```
-
-If `@thing` were a class (like Octane likes) then the above pattern is nothing more then a one-liner:
-
-```javascript
-class Thing {
-  @tracked property;
-  update = new Proxy(this, { get: (t, p) => v => t[p] = v });
-}
-```
-
-> [Anonymous]: didn't you just describe a poorer implementation of a box?
-> [Me]: yes, yes I did 😉
+{{-ember-ddau-simple-box-2}}
