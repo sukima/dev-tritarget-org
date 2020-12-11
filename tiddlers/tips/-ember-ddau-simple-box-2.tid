@@ -9,7 +9,9 @@ type: text/vnd.tiddlywiki
 ```javascript
 class Thing {
   @tracked property;
-  update = new Proxy(this, { get: (t, p) => v => t[p] = v });
+  update = new Proxy(this, {
+    get: (t, p) => Reflect.has(t, p) ? v => t[p] = v : undefined
+  });
 }
 ```
 

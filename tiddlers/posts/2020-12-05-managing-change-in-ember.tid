@@ -120,19 +120,25 @@ This is the setter action pattern coupled with a quasi box pattern. And best par
 export default class MyData {
   @tracked foo;
   @tracked bar;
-  update = new Proxy(this, { get: (t, p) => v => t[p] = v });
+  update = new Proxy(this, {
+    get: (t, p) => Reflect.has(t, p) ? v => t[p] = v : undefined
+  });
 }
 ```
 
 With this setup our data class is ready for both two-binding and DDAU support out of the gate.
 
+<<.warning """The `Reflect.has` and `undefined` are required for Ember internals to skip over Ember reflection on special objects (which this is not). Without that guard Ember will throw a cryptic error.""">>
+
 This also makes it easy to extend functionality. For example if the data class has to manage exclusivity between two properties it still works.
 
 ```javascript
 export default class MyData {
-  update = new Proxy(this, { get: (t, p) => v => t[p] = v });
   @tracked _foo;
   @tracked _bar;
+  update = new Proxy(this, {
+    get: (t, p) => Reflect.has(t, p) ? v => t[p] = v : undefined
+  });
   get foo() { return this._foo; }
   set foo(value) {
     this._foo = value;
