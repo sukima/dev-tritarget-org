@@ -3,7 +3,7 @@ created: 20180704182020000
 modifier: Sukima
 creator: Sukima
 title: Poor man's Map object
-tags: Snippets JavaScript
+tags: snippets JavaScript
 
 Not really sure when I would use this but it does offer some insight to how [[Maps|https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map]] //might// work.
 
