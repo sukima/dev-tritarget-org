@@ -1,0 +1,87 @@
+created: 20201215205653000
+creator: Sukima
+modified: 20201217030021877
+modifier: Sukima
+tags: Article Coding JavaScript
+title: Tracking changes with new Proxy()
+type: text/vnd.tiddlywiki
+
+I was working in a project where the data layer (the models) are considered immutable. Well to be pedantic—read only or one way from the API response to their use in a view only context. This left a gap when it came to updating data via a form (A.K.A. editing).
+
+There are many different solutions to this problem. Off the top of my head I can think of deep cloning or translation to a POJO. In our case we found it easiest to make a ''~FormData'' class which knew how to read a model's data as initial to provide the form its initial state and then store the updated state of the values. This worked very well as it cleanly abstracted the difference between the read only model, the mutable form data representation (with data entry logic), and the view's form itself.
+
+This ~FormData class also implemented the update Proxy pattern described in my last post [[Managing change in Ember]]. But there was one thing missing. We needed a way to display what changed a before and after. In the abstractions we had so far we had the original model and an updated/mutated ~FormData class. How to diff the two?
+
+As first I thought it wise to run through the list of known properties and compare the two. But then I realized that was a //lot// of boilerplate/repeated code. And we had already started down the copy/pasta road with the ~FormData class.
+
+And then it hit me while in the shower. 🛀 Updates happen from a form in an action to be performed. Thus tapping into that event/action means there is a hook to announce when something has changed. I could just watch for that and record the original values and then update to the new value. Later I can ask the thing for its list of recorded original values and their new values. I can also note which properties changed or didn't.
+
+But how can I do this generically without a lot of boilerplate? The answer is to wrap the thing in a ''Proxy''. By wrapping the ~FormData in a Proxy the can track the changes separate from the class itself thus separating concerns on yet another level. And providing a generic and flexible abstraction around the behavior of change tracking.
+
+We start with a ~WeakMap.
+
+```javascript
+const trackedChanges = new WeakMap();
+```
+
+This will let us attach a Map (because they are iterable; you'll see) to any object which will track the property name that updated and the original value before it updated. If the property is not in this Map it means it was never updated or was updated back to the original value.
+
+<<.note """This idea works best with scalar values but it also works with non scalar values like objects—though the utility of determining equality in that case would be beyond the scope of this Proxy implementation.""">>
+
+Next is to track changes. Using a Proxy to capture when a property is set we can record the value before it is set and keep that value. Thus tracking that that property was changed.
+
+```javascript
+function trackChanges(subject) {
+  return new Proxy(subject, {
+    set(target, prop, value) {
+      let originalValues = trackedChanges.get(target) ?? new Map();
+      if (originalValues.get(prop)) === value {
+        originalValues.delete(prop);
+      } else if (!originalValues.has(prop)) {
+        originalValues.set(prop, Reflect.get(target, prop));
+      }
+      trackedChanges.set(target, originalValues);
+      return Reflect.set(target, prop, value);
+    }
+  });
+}
+```
+
+<<.tip """
+Some systems could run into trouble without also having this:
+<$codeblock language="javascript" code="get(target, prop) { return Reflect.get(target, prop); }" />
+This is because otherwise the default is to have the ''receiver'' be the Proxy object itself instead of the target which can mess up some getters that might rely on the `this` value being themselves (i.e. when some implementations rely on Map/Set/~WeakMap/~WeakSet). This is the case with [[Ember]] and [[FancyPants]].
+""">>
+
+With this when the proxy intercepts an assignment it captures the //current// value then assigns the new value. The next time through if the new value matches the original recorded value it as if the change was undone then we remove the original value record.
+
+To create a report of a change we simple pull up the recorded original values and the current value.
+
+```javascript
+function changeSummary(subject) {
+  let changes = trackedChanges(subject) ?? new Map();
+  return [...changes].map(([prop, from]) => {
+    return { prop, from, to: subject[prop] };
+  });
+}
+```
+
+This will produce an array of change sets like the following:
+
+```json
+[{ "prop": "foobar", "from": "foo", "to": "bar" }]
+```
+
+Putting this all together could look like this.
+
+```javascript
+let foo = { bar: 'BAR' };
+let fooChangable = trackChanges(foo);
+fooChangable.bar = 'BAZ';
+changeSummary(foo);
+// => [{ prop: 'bar', from: 'BAR', to: 'BAZ' }]
+```
+
+To make this a bit easier we can also dereference the original subject from the proxy so we could also `changeSummary(fooChangable)`. Here is the complete source.
+
+{{change-tracking.js}}
