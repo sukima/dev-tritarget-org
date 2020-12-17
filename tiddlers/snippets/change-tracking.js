@@ -2,7 +2,7 @@ const references = new WeakMap();
 const trackedChanges = new WeakMap();
 
 export function trackChanges(obj) {
-  return new Proxy(obj, {
+  let tracker = new Proxy(obj, {
     get(target, prop) { return Reflect.get(target, prop); },
     set(target, prop, value) {
       let changes = trackedChanges.get(target) ?? new Map();
@@ -15,6 +15,8 @@ export function trackChanges(obj) {
       return Reflect.set(target, prop, value);
     }
   });
+  references.set(tracker, obj);
+  return tracker;
 }
 
 export function changeSummary(obj) {
