@@ -1,0 +1,61 @@
+created: 20210206230022000
+creator: Sukima
+modified: 20210206230022000
+modifier: Sukima
+title: A better observer pattern in Ember
+tags: Article Coding Ember JavaScript
+type: text/vnd.tiddlywiki
+
+Recently I was working on an app which was going swimmingly till I realized that I had painted myself into a code design corner. Luckily after a little thought the Object Oriented Programming pattern //Observer// came to the rescue.
+
+First I'll tell you how I got myself stuck into an Ember conundrum and then how I bailed myself out.
+
+I had a page that showed a list in one section and then a second list in another section. It made sense to separate each of these sections into their own components. The data being presented were two separate things unrelated.
+
+```handlebars
+<section>
+  <EntityList />
+</section>
+<section>
+  <EventList />
+</section>
+```
+
+Imagine these components being deeply nested or complex. Then imagine getting the new requirement that a button deep in the `EntryList` has a side effect on the serve requiring the `EventList` to refresh.
+
+Thus the painted corner; how do we communicate to unrelated components that they need to refresh without the famed [[''prop-drilling'' problem|https://refactoring.guru/smells/message-chains]]. The answer was to create a delegate using an [[observer pattern|https://en.wikipedia.org/wiki/Observer_pattern]].
+
+<<.tip """This is different then the observers the Ember community is very against. In this article ''observer pattern'' is referring to the OOP design pattern not computed property observers.""">>
+
+In ember this can be implemented as a service. The service would allow components to subscribe to the service and other components could tell the service to publish an event. But it is implemented using pure functions instead of events. That allows a level of analysis that the typical `Evented` pattern lacks.
+
+What this looks like is the `EventList` in this example would subscribe to the service:
+
+```javascript
+export default class EventList extends Component {
+  @service myObserver;
+  @restartableTask *loadData () { … }
+  constructor() {
+    super(...arguments);
+    this.loadData.perform();
+    this.myObserver.subscribe(
+      this,
+      () => this.loadData.perform()
+    );
+  }
+  willDestroy() {
+    this.myObserver.unsubscribe(this);
+    super.willDestroy(...arguments);
+  }
+}
+```
+
+And another component can simply `this.myObserver.notify()` to have the callback(s) execute.
+
+!! Implementation
+
+{{ember-observer-service.js}}
+
+!! Demo
+
+https://ember-twiddle.com/68f55cdd4ff15524a738de95a507d51d
