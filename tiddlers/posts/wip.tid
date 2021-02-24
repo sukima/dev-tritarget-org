@@ -105,9 +105,12 @@ function setValidity(
     let [error = ''] = validator(element);
     element.classList.add('dirty');
     element.setCustomValidity(error);
-    element.dispatchEvent(new CustomEvent('validated'), { bubbles: true });
+    element.dispatchEvent(
+      new CustomEvent('validated'),
+      { bubbles: true }
+    );
   };
-  eventNames.forEach(eventName) => {
+  eventNames.forEach(eventName => {
     element.addEventListener(eventName, handler);
   });
 }
