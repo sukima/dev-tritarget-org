@@ -19,7 +19,7 @@ exports.startup = function() {
       tags: ['$:/tags/Alert'],
       component: 'Insecure Warning',
       modified: $tw.utils.stringifyDate(new Date()),
-      text: 'You are connecting to this site with the HTTP protocal which is insecure. Though there is nothing on this site that is sesitive it is still able to be hacked. Please concider connectiong to this site using HTTPS: <a target="_self" href="' + newUrl + '">~' + newUrl + '</a>'
+      text: 'You are connecting to this site with the HTTP protocal which is insecure. Though there is nothing on this site that is sesitive it is still able to be hacked. Please concider connecting to this site using HTTPS: <a target="_self" href="' + newUrl + '">~' + newUrl + '</a>'
     }));
   }
 };
