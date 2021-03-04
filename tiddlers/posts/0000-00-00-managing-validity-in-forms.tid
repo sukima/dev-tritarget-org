@@ -1,0 +1,139 @@
+created: 20210110220358000
+creator: suki
+modified: 20210110220358000
+modifier: suki
+title: forms
+tags:
+type: text/vnd.tiddlywiki
+
+When it comes to forms I've gotten quite confused over the years. There is just to many variables. I think this is the big reason almost everyone has been inventing their own solutions to form validation. But I think I have a base foundation worked out to leverage the browsers' validity API to take advantage of easy to maintain code and still offer better UI designs. In this post I hope to break down some of the complexities and offer a pattern I found to be quite useful for readability. This pattern I've found works across frameworks also. I've developed it in [[Ember]], [[React]], and plain old [[VanillaJS]].
+
+First thing I've come to realize is that validation doesn't have a consistent place to be defined. Some systems validate in the data layer, Others rely on server side 400 responses, and others let the browsers' handle the validation. It is difficult to know where the best place an abstraction like validation should live. Over the years I've come to realize that the view layer is a good place to define validations. It follows the same pattern as the built in validations browsers' provide and makes it very clear what is happening. This is because validation is more then just checking validity. It includes providing feed back to the user and also logic to use that valid/invalid data.
+
+I think one of the reasons this gets so confusing is that in the backend the MVC model leads to validations being in the data layer or close to it. This being because the view layer is read only it doesn't accept input. But in the frontend the view is two way both output and input. With the frontend being both input and output validation takes on a dual role both to validate and to present the validity result to the user. There is another role in modern frontend programming and that is to describe to the developer what a particular input expects or is willing to accept.
+
+In the frontend there is only three ways data is assigned from the server, programmatically, and by the user. Only the later is unpredictable and needs validation. Yes, if you need to validate programmatic or server data something has gone very wrong!
+
+The browsers offer validation built in to the specs. `<input type="email">` for example. Trouble is these builtin validations only expose their validations via the `validationMessage` and not in the HTML itself leading many designs to compensate by validating on their own. How to reconcile this? I think this pattern is the best compensation between the browsers' built in ideas and the custom designs of validation.
+
+In this case I think it best to start with how we use a pattern before defining how to implement the pattern. First I'll make validations be simple functions that return an empty array for //valid// and a non-empty array of strings for //invalid//. In this way a single validation can (if needed) have more than one validation error. Though in practice we typically only use the first message but it is nice to have flexibility—for example a summary list of errors.
+
+```javascript
+function validateFoobar(element) {
+  return element.value === 'foobar'
+    ? []
+    : [`Expected 'foobar' as a value`];
+}
+```
+
+I found it was easiest in both VanillaJS and [[React]] to have a validation assigner function. This is because validation can happen in several ways depending on the DOM events they tap into.
+
+```javascript
+setValidator(foobarElement, validateFoobar);
+setValidator(barfooElement, validateBarfoo, { on: 'change' });
+setValidator(element, composeValidators(
+  validatePresent,
+  validateFoobar
+));
+```
+
+---
+
+For comparison in [[Ember]] these //validators// would likely be ''Helpers'':
+
+```javascript
+export default helper(function validateFoobar() {
+  return ({ value }) => element.value === 'foobar'
+    ? []
+    : [`Expected 'foobar' as a value`];
+});
+```
+
+```handlebars
+<Input
+  name="foobar"
+  @value={{@foobar}}
+  {{validity (validate-foobar)}}
+/>
+```
+
+---
+
+Then we should also have a way to programmatically trigger validations—perhaps on form submit.
+
+```javascript
+validate(foobarElement);
+validate(...form.elements);
+```
+
+Using what the DOM does best we can leverage events to suite our needs. This has the added advantage of allowing both built-in validations, custom validations, and access to `form.elements`, `form.checkValidity()`, and `form.reportValidity()`. We will trigger the `validate` event which knows how to execute the validators we set above then set the custom validity `setCustomvalidity()`. Finally for completeness and extensibility we fire the `validated` event.
+
+```
+@startuml
+
+DOM -> ChangeEventHandler : event change
+activate DOM
+activate ChangeEventHandler
+ChangeEventHandler -> ValidateEventHandler : event validate
+deactivate ChangeEventHandler
+activate ValidateEventHandler
+ValidateEventHandler -> Validator : validateFunction()
+activate Validator
+ValidateEventHandler <-- Validator : ['validation message']
+deactivate Validator
+DOM <- ValidateEventHandler : setCustomValidity()
+deactivate DOM
+ValidateEventHandler -> DOM : event validated
+deactivate ValidateEventHandler
+
+@enduml
+```
+
+!!! validate()
+
+```javascript
+function validate(...elements) {
+  let validateEvent = new CustomEvent('validate');
+  elements.forEach(element => {
+    element.dispatchEvent(validateEvent);
+  });
+}
+```
+
+!!! setValidity()
+
+```javascript
+function setValidity(
+  element,
+  validator = (() => []),
+  { on = 'change,input,blur' } = {}
+) {
+  let eventNames = ['validate', ...on.split(',')];
+  let handler = () => {
+    let [error = ''] = validator(element);
+    element.classList.add('dirty');
+    element.setCustomValidity(error);
+    element.dispatchEvent(
+      new CustomEvent('validated'),
+      { bubbles: true }
+    );
+  };
+  eventNames.forEach(eventName) => {
+    element.addEventListener(eventName, handler);
+  });
+}
+```
+
+This will add validation to fields as the user enters them. It can use the class `dirty` to manage `:valid`/`:invalid` CSS pseudo selectors so that valid/invalid properties are not applied till after the user visits the form elements.
+
+However, this adds a side effect that submitting the form could happen without any custom validations happening. To compensate we will have the form validate on submit.
+
+First we need to disable the built in browser validations otherwise it will have a strange race condition where an builtin validation will prevent the submit handler from fireing making builtins a higher order or precedence then custom validaions.
+
+form submit novalidate
+
+use valid/invalid events to place data-message or update span is as needed.
+
+!!! Enhancements
+
+async support, teardown code, CSS layout/styles
