@@ -4,4 +4,4 @@ tags:
 title: $:/config/bimlas/disqus/filter
 type: text/vnd.tiddlywiki
 
-[tag[Article]][tag[Journal]]
+[tag[Article]] [tag[Journal]] [tag[comments]]
