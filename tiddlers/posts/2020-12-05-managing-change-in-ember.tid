@@ -1,9 +1,9 @@
 created: 20201205162340000
 creator: Sukima
-modified: 20201205162340000
+modified: 20210304014245081
 modifier: Sukima
+tags: Article Coding Ember JavaScript
 title: Managing change in Ember
-tags: Article Coding Ember JavaSript
 type: text/vnd.tiddlywiki
 
 I came across an interesting situation the other day when working on a new Octane app. How to manage ''Data Down Actions Up'' (DDAU) patterns. In the app we had a mix of two-way bound custom components and DDAU which really emphasised the difference in working with such components. Older code handled the situation by placing tracked properties on the parent component and matching setter action.

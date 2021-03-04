@@ -1,9 +1,10 @@
-modified: 20180720164738000
 created: 20180720164738000
-modifier: Sukima
 creator: Sukima
+modified: 20210304014144956
+modifier: Sukima
+tags: Ember JavaScript snippets
 title: array-decorator.js
-tags: Ember JavaScript snippits
+type: text/vnd.tiddlywiki
 
 ```javascript
 // app/decorators/array.js
