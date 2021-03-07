@@ -21,7 +21,7 @@ export function trackChanges(obj) {
 
 export function changeSummary(obj) {
   let reference = references.get(obj) ?? obj;
-  let changes = trackedChanges.get(references) ?? new Map();
+  let changes = trackedChanges.get(reference) ?? new Map();
   return [...changes].map(([prop, from]) => {
     return { prop, from, to: reference[prop] };
   });

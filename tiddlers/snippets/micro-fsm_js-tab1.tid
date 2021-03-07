@@ -21,9 +21,9 @@ function transitionMachine(
   let value = transition?.target ?? transition;
   let changed = value !== currentState;
   let actions = [
-    ...(changed ? A(machine.states[state].exit ?? []) : []),
+    ...(changed ? A(machine.states[currentState]?.exit ?? []) : []),
     ...A(transition.actions ?? []),
-    ...(changed ? A(machine.states[value].entry ?? []) : [])
+    ...(changed ? A(machine.states[value]?.entry ?? []) : [])
   ];
   let states = value.split(':');
   let inState = states.reduce(
