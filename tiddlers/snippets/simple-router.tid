@@ -6,15 +6,15 @@ title: Simple Router
 tags: snippets HTML JavaScript
 type: text/vnd.tiddlywiki
 
-This is a very simple router system for single HTML files which uses the URL fragment to show/hide main content.
+This is a very simple router system for single HTML files which uses the URL fragment to show/hide content.
 
 ```javascript
 function transitionCurrentRoute() {
   let href = window.location.hash || '#index';
   let hash = href.substring(1);
   document.body.dataset.currentRoute = hash;
-  document.querySelectorAll('main')
-    .forEach(section => section.hidden = section.id !== hash);
+  document.querySelectorAll('article')
+    .forEach(article => article.hidden = article.id !== hash);
 }
 
 window.addEventListener('hashchange', transitionCurrentRoute);
@@ -24,15 +24,20 @@ transitionCurrentRoute();
 
 ```xml
 <body>
-  <nav>
-    <ul>
-      <li><a href="#index">Index Route</a></li>
-      <li><a href="#foo">Foo Route</a></li>
-      <li><a href="#bar">Bar Route</a></li>
-    </ul>
-  </nav>
-  <main id="index" hidden>…</main>
-  <main id="foo" hidden>…</main>
-  <main id="bar" hidden>…</main>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="#index">Index Route</a></li>
+        <li><a href="#foo">Foo Route</a></li>
+        <li><a href="#bar">Bar Route</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <article id="index" hidden>…</article>
+    <article id="foo" hidden>…</article>
+    <article id="bar" hidden>…</article>
+  </main>
+  <footer>…</footer>
 </body>
 ```
