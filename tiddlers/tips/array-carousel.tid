@@ -1,0 +1,29 @@
+created: 20210322215847000
+creator: Sukima
+modified: 20210322215847000
+modifier: Sukima
+title: Array carousel cursor using modulus
+tags: Tips Coding JavaScript
+type: text/vnd.tiddlywiki
+
+Everytime I try to do this I mess it up and it take hours to find just the right [[StackOverflow answer|https://stackoverflow.com/a/4467559/227176]].
+
+To turn an array pointer into a carousel use this formula:
+
+```javascript
+function fromPointer(array, pointer) {
+  let size = array.length;
+  let boundIndex = ((pointer % size) + size) % size;
+  return array[boundIndex];
+}
+
+const example = ['foo', 'bar', 'baz'];
+
+fromPointer(example, -3); // => 'foo'
+fromPointer(example, -2); // => 'bar'
+fromPointer(example, -1); // => 'baz'
+fromPointer(example,  0); // => 'foo'
+fromPointer(example,  1); // => 'bar'
+fromPointer(example,  2); // => 'baz'
+fromPointer(example,  3); // => 'foo'
+```
