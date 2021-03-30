@@ -7,8 +7,9 @@ plugins_src := $(shell find plugins -type f)
 plugins_out := $(patsubst plugins/%,wiki/plugins/%,$(plugins_src))
 asset_files := $(patsubst public/%,wiki/output/%,$(shell find public -type f))
 modified_date = $(shell date +%Y%m%d%H%M%S000)
+pgp_fingerprint = FA9F14008BA5A847B0977C06EBD99C92DE767C8A
 
-.PHONY: build-files build clean generated diagrams assets tiddlywiki server media-build deploy
+.PHONY: build-files build clean generated diagrams assets tiddlywiki server media-build deploy updatekey
 
 build:
 	@rm -f wiki/tiddlywiki.info
@@ -71,9 +72,12 @@ wiki/output/%: public/%
 	@mkdir -p $(dir $@)
 	cp $< $@
 
+updatekey:
+	gpg --armor --export-options export-minimal --export $(pgp_fingerprint) > public/key
+
 tiddlers/generated/PGPKeyFile.tid: public/key
 	@echo "Generating $@"
-	@echo "modified: $(modified_date)" >> $@
+	@echo "modified: $(modified_date)" > $@
 	@echo "title: PGPKeyFile" >> $@
 	@echo "type: text/plain" >> $@
 	@echo "caption: Public Key" >> $@
@@ -82,9 +86,9 @@ tiddlers/generated/PGPKeyFile.tid: public/key
 
 tiddlers/generated/PGPKeyInfo.tid: public/key
 	@echo "Generating $@"
-	@echo "modified: $(modified_date)" >> $@
+	@echo "modified: $(modified_date)" > $@
 	@echo "title: PGPKeyInfo" >> $@
 	@echo "type: text/plain" >> $@
 	@echo "caption: Public Key Info" >> $@
 	@echo >> $@
-	@gpg -v $< >> $@
+	@gpg --show-keys $< >> $@
