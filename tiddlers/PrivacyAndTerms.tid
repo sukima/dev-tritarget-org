@@ -1,0 +1,15 @@
+created: 20210506171814000
+creator: Sukima
+modified: 20210506171814000
+modifier: Sukima
+title: Privacy and Terms
+tags: TableOfContents
+type: text/vnd.tiddlywiki
+
+! Terms of Use
+
+{{TermsOfUse}}
+
+! Privacy Policy
+
+{{Privacy Policy}}
