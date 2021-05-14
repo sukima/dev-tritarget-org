@@ -10,4 +10,6 @@ This is a ''micro'' implementation of the [[Simple State Machine]] idea for case
 
 See also, [[CSS based view states]].
 
+This has [[tests|https://tritarget.org/cdn/tests]] and an [[ES6 import implementation|https://tritarget.org/cdn/micro-fsm.js]] if interested.
+
 <<tabs "micro-fsm_js-tab1 micro-fsm_js-tab2 micro-fsm_js-tab3" "micro-fsm_js-tab1">>
