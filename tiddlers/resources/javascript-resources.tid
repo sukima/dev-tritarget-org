@@ -41,6 +41,7 @@ These are some JavaScript resources I have found to be valuable:
 * [[Use "let" by default, not "const"|https://medium.com/@PepsRyuu/use-let-by-default-not-const-58773e53db52]] <<web>>
 * [[How Autotracking Works — Chris Garrett|https://www.pzuraq.com/how-autotracking-works/]] <<web>>
 * [[Temporal Dead Zone (TDZ) demystified|http://jsrocks.org/2015/01/temporal-dead-zone-tdz-demystified]] <<web>>
+* [[You don't need a library for state machines — David K.|https://dev.to/davidkpiano/you-don-t-need-a-library-for-state-machines-k7h]] <<web>>
 
 !! [[Ember]]
 
