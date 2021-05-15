@@ -42,6 +42,8 @@ These are some JavaScript resources I have found to be valuable:
 * [[How Autotracking Works — Chris Garrett|https://www.pzuraq.com/how-autotracking-works/]] <<web>>
 * [[Temporal Dead Zone (TDZ) demystified|http://jsrocks.org/2015/01/temporal-dead-zone-tdz-demystified]] <<web>>
 * [[You don't need a library for state machines — David K.|https://dev.to/davidkpiano/you-don-t-need-a-library-for-state-machines-k7h]] <<web>>
+* [[No, disabling a button is not app logic. — David K.|https://dev.to/davidkpiano/no-disabling-a-button-is-not-app-logic-598i]] <<web>>
+* [[Making Disabled Buttons More Inclusive — Sandrina Pereira|https://css-tricks.com/making-disabled-buttons-more-inclusive/]] <<web>>
 
 !! [[Ember]]
 
