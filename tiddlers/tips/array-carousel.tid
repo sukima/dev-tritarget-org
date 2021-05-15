@@ -27,3 +27,5 @@ fromPointer(example,  1); // => 'bar'
 fromPointer(example,  2); // => 'baz'
 fromPointer(example,  3); // => 'foo'
 ```
+
+[[Working example|tips/array-carousel-example.html]]

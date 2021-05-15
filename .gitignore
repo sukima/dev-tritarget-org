@@ -2,6 +2,7 @@ yarn-error.log
 node_modules/
 diagrams/.depend
 diagrams/*.png
+tiddlers/config/Import.tid
 tiddlers/config/StoryList.tid
 tiddlers/config/ShowEditPreview.tid
 tiddlers/config/comments*

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example use of modulo for an array carousel</title>
+  <script type="module">
+    const output = document.getElementById('output');
+
+    const data = {
+      array: ['apples', 'oranges', 'grapes', 'apricots', 'grapefruits'],
+      pointer: 0,
+      index: 0,
+      element: 'apples',
+    };
+
+    function render(step) {
+      let size = data.array.length;
+      data.pointer += step;
+      data.index = ((data.pointer % size) + size) % size;
+      data.element = data.array[data.index];
+      output.textContent = JSON.stringify(data, null, 2);
+    }
+
+    function update({ target }) {
+      let step = parseInt(target.dataset.step, 10) || 0;
+      render(step);
+    }
+
+    document.querySelectorAll('button[data-step]')
+      .forEach(el => el.addEventListener('click', update));
+
+    render(0);
+  </script>
+</head>
+<body>
+  <pre><code id="output"></code></pre>
+  <button type="button" data-step="-1">Decrement</button>
+  <button type="button" data-step="1">Increment</button>
+</body>
+</html>
