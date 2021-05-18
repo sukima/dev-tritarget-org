@@ -1,0 +1,39 @@
+@startuml
+
+start
+
+:User enters data;
+:User submits form;
+
+fork
+    :reportValidity();
+fork again
+    :checkValidity();
+end fork {or}
+
+partition "reportValidity()\ncheckValidity()" {
+    while (for each input element) is (element)
+    :checkValidity()
+    on element]
+    if (is valid?) then (valid)
+    else (invalid)
+        :set ""validity"" state(s)]
+        :set ""validationMessage""]
+        :show tooltip]
+        note
+            Only happens when
+            using ""reportValidity()""
+            not ""checkValidity()""
+        end note
+    endif
+    endwhile (done)
+}
+
+if (are all input elements valid?) then (yes)
+  :Submit form;
+else (no)
+endif
+
+stop
+
+@enduml

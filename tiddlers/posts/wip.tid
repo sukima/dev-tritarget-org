@@ -1,20 +1,32 @@
-created: 20210110220358000
-creator: suki
-modified: 20210110220358000
-modifier: suki
-title: forms
-tags: 
+created: 20210518014758000
+creator: Sukima
+modified: 20210518014758000
+modifier: Sukima
+title: Working with Custom Validity in Forms
+tags: JavaScript Coding Article
 type: text/vnd.tiddlywiki
 
-When it comes to forms I've gotten quite confused over the years. There is just to many variables. I think this is the big reason almost everyone has been inventing their own solutions to form validation. But I think I have a base foundation worked out to leverage the browsers' validity API to take advantage of easy to maintain code and still offer better UI designs. In this post I hope to break down some of the complexities and offer a pattern I found to be quite useful for readability. This pattern I've found works across frameworks also. I've developed it in [[Ember]], [[React]], and plain old [[VanillaJS]].
+When it comes to forms I've gotten quite confused over the years. There is just to many variables. I think this is the big reason almost everyone has been inventing their own solutions to form validation. But I hope I have a base foundation worked out to leverage the browsers' validity API to take advantage of easy to maintain code and still offer better UI designs. In this post I hope to break down some of the complexities and offer a pattern I found to be quite useful for readability. This pattern I've found works across frameworks also. I've developed it in [[Ember]], [[React]], and plain old [[VanillaJS]]. (See bottom of post for links.)
 
-First thing I've come to realize is that validation doesn't have a consistent place to be defined. Some systems validate in the data layer, Others rely on server side 400 responses, and others let the browsers' handle the validation. It is difficult to know where the best place an abstraction like validation should live. Over the years I've come to realize that the view layer is a good place to define validations. It follows the same pattern as the built in validations browsers' provide and makes it very clear what is happening. This is because validation is more then just checking validity. It includes providing feed back to the user and also logic to use that valid/invalid data.
+First thing I've come to realize is that validation doesn't have a consistent place to be defined. Some systems validate in the data layer, Others rely on server side 400 responses, and others let the browsers handle the validation. It is difficult to know where the best place an abstraction like validation should live. Over the years I've come to liking the view layer as a good place to define validations. It follows the same pattern as the built in validations browsers provide and makes it very clear what is happening. This is because validation is more then just checking validity. It includes providing feed back to the user and also logic to use that valid/invalid data.
 
-I think one of the reasons this gets so confusing is that in the backend the MVC model leads to validations being in the data layer or close to it. This being because the view layer is read only it doesn't accept input. But in the frontend the view is two way both output and input. With the frontend being both input and output validation takes on a dual role both to validate and to present the validity result to the user. There is another role in modern frontend programming and that is to describe to the developer what a particular input expects or is willing to accept.
+I think one of the reasons this gets so confusing is that in the backend the MVC model leads to validations being in the data layer (models) or close to it. This being because the view layer is read only it doesn't accept input from the user it just knows how to provide output. But in the frontend the view is two way both input and output. With the frontend validation takes on a dual role both to validate and to present the validity result to the user.
 
-In the frontend there is only three ways data is assigned from the server, programmatically, and by the user. Only the later is unpredictable and needs validation. Yes, if you need to validate programmatic or server data something has gone very wrong!
+----
 
-The browsers offer validation built in to the specs. `<input type="email">` for example. Trouble is these builtin validations only expose their validations via the `validateMessage` and not in the HTML itself leading many designs to compensate by validating on their own. How to reconcile this? I think this pattern is the best compensation between the browsers' built in ideas and the custom designs of validation.
+!!! Tangent thoughts
+
+There is also another role for validation which is to describe to the developer what a particular input expects or is willing to accept but that is a bonus to a well abstracted design pattern.
+
+In the frontend there is only three ways data is assigned: from the server, programmatically, and by the user. The later is unpredictable and needs validation. Yes, if you need to validate programmatic or server data something has gone very wrong!
+
+----
+
+The browsers offer validation built in to the specs. `<input type="email">` for example. Trouble is these builtin validations only expose their validations via the `validationMessage` and not in the HTML itself leading many designs to compensate by validating on their own. First lets look at the timeline for how browsers perform validations for you.
+
+{{form-validity-activity.svg}}
+
+reword: How to reconcile this? I think this pattern is the best compensation between the browsers' built in ideas and the custom designs of validation.
 
 In this case I think it best to start with how we use a pattern before defining how to implement the pattern. First I'll make validations be simple functions that return an empty array for //valid// and a non-empty array of strings for //invalid//. In this way a single validation can (if needed) have more than one validation error. Though in practice we typically only use the first message but it is nice to have flexibility—for example a summary list of errors.
 
@@ -137,3 +149,5 @@ use valid/invalid events to place data-message or update span is as needed.
 !!! Enhancements
 
 async support, teardown code, CSS layout/styles
+
+links to implementations
