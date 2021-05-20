@@ -1,0 +1,21 @@
+created: 20210520134119000
+creator: Sukima
+modified: 20210520134119000
+modifier: Sukima
+title: Tagged String Literals
+tags: Tips Coding JavaScript
+type: text/vnd.tiddlywiki
+
+Simple way to capture all the variables in custom tagged string literal:
+
+```javascript
+function myCustom(strings, ...args) {
+  let vars = args[Symbol.iterator]();
+  let next = (x) => (x = vars.next(), x.done ? '' : x.value);
+  let result = strings.map(s => s + next()).join('');
+  return `Hello ${result}, welcome!`;
+}
+
+console.log(myCustom`foo ${'bar'} baz`);
+// => "Hello foo bar baz, welcome!"
+```
