@@ -24,10 +24,10 @@ padding: 0;
 
 !!! Social Links
 
-* {{$:/site/images/rss}} [ext[RSS Feed|/atom.xml]]
+* {{$:/site/images/rss}} [[RSS Feed|/atom.xml]]
 * {{$:/core/images/github}} [[GitHub|https://github.com/sukima]]
 * {{$:/core/images/twitter}} [[Twitter|https://twitter.com/sukima]]
 * {{$:/core/images/locked-padlock}} [[Keybase|https://keybase.io/sukima]]
-* {{$:/core/images/plugin-generic-language}} [ext[Pair with me|https://twitter.com/intent/tweet?text=DM%20sukima%20Are%20you%20interested%20in%20pairing%20on%20%3CDESCRIPTION%3E%3F]]
+* {{$:/core/images/plugin-generic-language}} [[LinkedIn|https://www.linkedin.com/in/tritargetorg/]]
 
 </div>
