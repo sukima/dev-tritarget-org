@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Validity Synchronous Example</title>
+</head>
+<body>
+
+  <form id="example" novalidate>
+
+    <fieldset>
+      <legend>Built-in validation</legend>
+      <label for="example-email">Email:</label>
+      <input id="example-email" name="email" type="email">
+    </fieldset>
+
+    <fieldset>
+      <legend>Awkward pattern based validation</legend>
+      <label for="example-ticket">Ticket (XXX-123):</label>
+      <input id=example-ticket" name="ticket" type="text" pattern="[a-zA-Z]+-[0-9]+">
+    </fieldset>
+
+    <fieldset>
+      <legend>Custom validation</legend>
+      <label for="example-fruit">Fruit:</label>
+      <input id="example-fruit" name="fruit" type="text">
+    </fieldset>
+
+    <button type="submit">Fake Submit</button>
+
+  </form>
+
+  <script type="module">
+    document.getElementById('example').addEventListener('submit', e => {
+      e.preventDefault();
+
+      console.log('Submitted', e.target.reportValidity());
+    });
+  </script>
+
+</body>
+</html>

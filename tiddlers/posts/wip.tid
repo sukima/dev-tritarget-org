@@ -26,6 +26,14 @@ The browsers offer validation built in to the specs. `<input type="email">` for 
 
 {{form-validity-activity.svg}}
 
+The steps basically are wait for user to submit the form, run over each element and check its validation (email, number/min/max, patter, etc.), if invalid popup tooltips telling the user (mark fields as `:invalid`), if valid actually submit the form.
+
+This is great for simple forms. But it lacks customization. The words in the tooltips are controlled by the browser as well as the style and presentation to the user. The browser also has a limited set of browser supported validations. Many give in and design their own validations but this also has limitations as it lacks the in browser translated messages and validating complex ideas like ''email'' is also not for the faint of heart.
+
+What if you could have both worlds? Built in browser support for some things and custom validations for others as well as custom styling of all the messages? Well ''you can''! And here is my pattern for doing so—
+
+Our first step is to drop the built in validation (we re-enable under our control) using the `novalidate` attribute and some JavaScript to check each form element. We ask each element to validate themselves by means of a `validate` DOM event. Each element that expects to be validated can respond to that event and set its own `setCustomValidity()` message (or `checkValidity()` for built in validations). They can expose the elements' `validityMessage` 
+
 reword: How to reconcile this? I think this pattern is the best compensation between the browsers' built in ideas and the custom designs of validation.
 
 In this case I think it best to start with how we use a pattern before defining how to implement the pattern. First I'll make validations be simple functions that return an empty array for //valid// and a non-empty array of strings for //invalid//. In this way a single validation can (if needed) have more than one validation error. Though in practice we typically only use the first message but it is nice to have flexibility—for example a summary list of errors.
