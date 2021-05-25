@@ -3,6 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <title>Validity Synchronous Example</title>
+
+  <style>
+    fieldset {
+      display: grid;
+      grid-template-columns: 0.75fr 1fr 1.25fr;
+      grid-gap: 0.5rem;
+    }
+
+    label {
+      text-align: right;
+    }
+
+    input:valid {
+      border-color: green;
+    }
+
+    input:invalid {
+      border-color: red;
+    }
+
+    .validation-message {
+      color: red;
+    }
+  </style>
 </head>
 <body>
 
@@ -11,19 +35,29 @@
     <fieldset>
       <legend>Built-in validation</legend>
       <label for="example-email">Email:</label>
-      <input id="example-email" name="email" type="email">
+      <input id="example-email" name="email" type="email" value="bad-email">
+      <span class="validation-message" aria-live="true"></span>
+    </fieldset>
+
+    <fieldset>
+      <legend>Built-in validation with required</legend>
+      <label for="example-email2">Email:</label>
+      <input id="example-email2" name="email2" type="email" required value="bad-email">
+      <span class="validation-message" aria-live="true"></span>
     </fieldset>
 
     <fieldset>
       <legend>Awkward pattern based validation</legend>
       <label for="example-ticket">Ticket (XXX-123):</label>
-      <input id=example-ticket" name="ticket" type="text" pattern="[a-zA-Z]+-[0-9]+">
+      <input id="example-ticket" name="ticket" type="text" pattern="[a-zA-Z]+-[0-9]+" value="bad ticket">
+      <span class="validation-message" aria-live="true"></span>
     </fieldset>
 
     <fieldset>
       <legend>Custom validation</legend>
-      <label for="example-fruit">Fruit:</label>
-      <input id="example-fruit" name="fruit" type="text">
+      <label for="example-ticket2">Ticket (XXX-123):</label>
+      <input id="example-ticket2" name="ticket2" type="text" value="bad ticket">
+      <span class="validation-message" aria-live="true"></span>
     </fieldset>
 
     <button type="submit">Fake Submit</button>
@@ -31,11 +65,46 @@
   </form>
 
   <script type="module">
+    function validate(...elements) {
+      elements.forEach(e => e.dispatchEvent(new CustomEvent('validate')));
+    }
+
+    function setValidity(element, validator = (() => [])) {
+      ['validate', 'input', 'change', 'blur'].forEach(eventName => {
+        element.addEventListener(eventName, () => {
+          let [message = ''] = validator(element);
+          element.checkValidity();
+          element.setCustomValidity(message);
+          element.dispatchEvent(new CustomEvent('validated', { bubbles: true }));
+        });
+      });
+      return element;
+    }
+
+    function addValidityFeedback(element) {
+      element.addEventListener('validated', () => {
+        element.nextSibling.textContent = element.validationMessage;
+      });
+      return element;
+    }
+
+    addValidityFeedback(setValidity(document.getElementById('example-email')));
+    addValidityFeedback(setValidity(document.getElementById('example-email2')));
+    addValidityFeedback(setValidity(document.getElementById('example-ticket')));
+    addValidityFeedback(setValidity(
+      document.getElementById('example-ticket2'),
+      e => /[a-z]+-\d+/i.test(e.value) ? [] : ['Please use XXX-123 format']
+    ));
+
     document.getElementById('example').addEventListener('submit', e => {
       e.preventDefault();
-
-      console.log('Submitted', e.target.reportValidity());
+      validate(...e.target.elements);
+      if (e.target.checkValidity()) {
+        alert('Fake submit ' + JSON.stringify(Object.fromEntries(new FormData(e.target))));
+      }
     });
+
+    validate(...document.getElementById('example').elements);
   </script>
 
 </body>

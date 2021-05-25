@@ -28,11 +28,46 @@ The browsers offer validation built in to the specs. `<input type="email">` for 
 
 The steps basically are wait for user to submit the form, run over each element and check its validation (email, number/min/max, patter, etc.), if invalid popup tooltips telling the user (mark fields as `:invalid`), if valid actually submit the form.
 
-This is great for simple forms. But it lacks customization. The words in the tooltips are controlled by the browser as well as the style and presentation to the user. The browser also has a limited set of browser supported validations. Many give in and design their own validations but this also has limitations as it lacks the in browser translated messages and validating complex ideas like ''email'' is also not for the faint of heart.
+This is great for simple forms. But it lacks customization. The words in the tooltips are controlled by the browser as well as the style and presentation to the user. The browser also has a limited set of browser supported validations. Many give in and design their own validations but this also has limitations as it lacks the in browser translated messages and validating complex ideas like ''email'' is also not for the faint of heart. Also the default popup logic is first come first serve meaning it is not possible to show the validation message on all invalid fields at the same time.
 
 What if you could have both worlds? Built in browser support for some things and custom validations for others as well as custom styling of all the messages? Well ''you can''! And here is my pattern for doing so—
 
-Our first step is to drop the built in validation (we re-enable under our control) using the `novalidate` attribute and some JavaScript to check each form element. We ask each element to validate themselves by means of a `validate` DOM event. Each element that expects to be validated can respond to that event and set its own `setCustomValidity()` message (or `checkValidity()` for built in validations). They can expose the elements' `validityMessage` 
+Our first step is to drop the built in validation (we re-enable under our control) using the `novalidate` attribute and some JavaScript to check each form element. We ask each element to validate themselves by means of a `validate` DOM event. Each element that expects to be validated can respond to that event and set its own `setCustomValidity()` message (or `checkValidity()` for built in validations). They could even expose the elements' `validationMessage` to other elements/content to show the user.
+
+I'll build out [[this example (demo)|Working with Custom Validity in Forms/ValiditySyncExample.html]].
+
+```html
+<form id="example" novalidate>
+  …
+</form>
+```
+
+Then in JavaScript we can trap the submit event.
+
+```javascript
+document.getElementById('example')
+  .addEventListener('submit', event => {
+    let { target: form } = event;
+    event.preventDefault();
+    if (form.checkValidity()) {
+      form.submit();
+    }
+  });
+```
+
+This now give us all the control. We told the browser we will perform validations when we need them. And when we submit we ask the browser to do its internal validations for us to cover the native ideas like `required` and `type="email"` etc.. Now to add our custom validation on top of that we make a utility function:
+
+```javascript
+function validate(...elements) {
+  elements.forEach(element => {
+    element.dispatchEvent(
+      new CustomEvent('validate');
+    );
+  });
+}
+```
+
+!! Draft Section
 
 reword: How to reconcile this? I think this pattern is the best compensation between the browsers' built in ideas and the custom designs of validation.
 
