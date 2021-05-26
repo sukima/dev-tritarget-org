@@ -42,3 +42,11 @@ type: application/x-tiddler
     margin: 10px 0 0;
   }
 }
+
+@media (min-width: 960px) {
+  .tc-sidebar-scrollable {
+    width: inherit;
+    max-width: 430px;
+    padding-right: 20px;
+  }
+}
