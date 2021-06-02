@@ -55,15 +55,75 @@ document.getElementById('example')
   });
 ```
 
-This now give us all the control. We told the browser we will perform validations when we need them. And when we submit we ask the browser to do its internal validations for us to cover the native ideas like `required` and `type="email"` etc.. Now to add our custom validation on top of that we make a utility function:
+This gives us all the control. We told the browser we will perform validations when we need them. And when we submit we ask the browser to do its internal validations for us to cover the native ideas like `required` and `type="email"` etc..
+
+!! Custom validations
+
+We will need a method to attach a custom validator to an element. A ''validator'' is a function which checks the value and returns either an empty array when valid and an array of errors when invalid. I use arrays because they can be easily composed together if I wanted to make a list. HTML custom validations however only work with a single string so either I concatenate the errors if multiple or capture the first element. In these examples we typically deal with a single error so I will show using the first element and if a validator has multiple validations the message will continue to update one at a time till the input becomes valid. This is the same algorithm the native validations use.
+
+In these examples I will use a ''ticket number'' validator which makes sure the input matches a valid Ticket ID format: `XXX-123`. The reason for a custom validation in this case is to customize the validation message to be more specific about tickets then the //Does not match pattern// message you get with the browser's `pattern="…"` built-in. It looks like this:
+
+```javascript
+function validateTicketID(element) {
+  return /[a-z]+-\d+/i.test(element.value)
+    ? []
+    : ['Please use a XXX-123 ticket format'];
+}
+
+setValidity(ticketIdElement, validateTicketID);
+```
+
+!! setValidity()
+
+To make this useful we have to use the `setCustomValidity` method in JavaScript and thus the best way to accomplish that is to have some events that do this for you. We can make this an eager process using `input`, `blur`, or `change` events. And we also want to perform this custom validation when we submit the form so a custom event of `validate` is also useful.
+
+```javascript
+function setValidity(
+  element,
+  validator = (() => []),
+  { on = 'input,change,blur' } = {}
+) {
+  let eventNames = ['validate', ...on.split(',')];
+  let handler = event => {
+    let [message = ''] = validator(element);
+    element.checkValidity();
+    element.setCustomValidity(message);
+    element.dispatchEvent(
+      new CustomEvent('validated', { bubbles: true })
+    );
+  };
+  eventNames.forEach(eventName => {
+    element.addEventListener(eventName, handler);
+  });
+  return () => eventNames.forEach(eventName => {
+    element.removeEventListener(eventName, handler);
+  });
+}
+```
+
+!! validate()
+
+And to easily validate on form submission we have a helper function:
 
 ```javascript
 function validate(...elements) {
+  let validateEvent = new CustomEvent('validate');
   elements.forEach(element => {
-    element.dispatchEvent(
-      new CustomEvent('validate');
-    );
+    element.dispatchEvent(validateEvent);
   });
+}
+```
+
+And the form submit handler can call this right before `checkValidity`:
+
+```javascript
+function submitHandler(event) {
+  event.preventDefault();
+  let { target: form } = event;
+  validate(...form.elements);
+  if (form.checkValidity()) {
+    form.submit();
+  }
 }
 ```
 
@@ -134,41 +194,6 @@ deactivate DOM
 Dispatch -> Dispatch : validated
 
 @enduml
-```
-
-!!! validate()
-
-```javascript
-function validate(...elements) {
-  let validateEvent = new CustomEvent('validate');
-  elements.forEach(element => {
-    element.dispatchEvent(validateEvent);
-  });
-}
-```
-
-!!! setValidity()
-
-```javascript
-function setValidity(
-  element,
-  validator = (() => []),
-  { on = 'change,input,blur' } = {}
-) {
-  let eventNames = ['validate', ...on.split(',')];
-  let handler = () => {
-    let [error = ''] = validator(element);
-    element.classList.add('dirty');
-    element.setCustomValidity(error);
-    element.dispatchEvent(
-      new CustomEvent('validated'),
-      { bubbles: true }
-    );
-  };
-  eventNames.forEach(eventName => {
-    element.addEventListener(eventName, handler);
-  });
-}
 ```
 
 This will add validation to fields as the user enters them. It can use the
