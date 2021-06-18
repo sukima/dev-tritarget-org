@@ -1,0 +1,22 @@
+created: 20210618143804000
+crontab: * * * 6 *
+modified: 20210618152426258
+tags: scheduled
+title: Pride
+type: text/vnd.tiddlywiki
+
+<style scoped>
+.pride-gallery {
+display: flex;
+}
+.pride-gallery > * {
+width: 100%;
+height: 100%;
+margin: 1em;
+}
+</style>
+<div class="pride-gallery">
+<$list filter="[tag[PrideFlag]tag[public]]">
+<a title={{!!caption}} href={{!!href}}><$transclude mode="inline" /></a>
+</$list>
+</div>
