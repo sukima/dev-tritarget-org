@@ -1,0 +1,73 @@
+function attachEvents(el, eventNames, fn, options) {
+  eventNames.forEach((e) => el.addEventListener(e, fn, options));
+  return () =>
+    eventNames.forEach((e) => el.removeEventListener(e, fn, options));
+}
+
+function eventable(...elements) {
+  return new Proxy({}, {
+    get(_, prop) {
+      let eventNames = prop.split(',');
+      return (fn, options) => {
+        let detachables = elements.map(
+          e => attachEvents(e, eventNames, fn, options)
+        );
+        return () => detachables.forEach(i => i());
+      };
+    },
+  });
+}
+
+function domAll(element) {
+  function queryWrap(prop) {
+    return new Proxy([...element.querySelectorAll(prop)].map(dom), {
+      get(target, prop) {
+        switch (prop) {
+          case 'elements': return target.map(i => i.element);
+          case 'on': return eventable(...target.map(i => i.element));
+        }
+        return Reflect.get(target, prop);
+      },
+      set(target, prop, value) {
+        return Reflect.set(target, prop, value);
+      },
+    });
+  }
+
+  return new Proxy(queryWrap, {
+    get(_, prop) {
+      return queryWrap(prop);
+    },
+  });
+}
+
+function dom(element) {
+  function queryWrap(prop) {
+    return prop instanceof Node
+      ? dom(prop)
+      : dom(element.querySelector(prop) ?? document.getElementById(prop));
+  }
+
+  return new Proxy(queryWrap, {
+    get(_, prop) {
+      switch (prop) {
+        case 'element': return element;
+        case 'all': return domAll(element);
+        case 'on':
+          return eventable(element === document ? document.body : element);
+      }
+      if (Reflect.has(element, prop)) {
+        let thing = Reflect.get(element, prop);
+        return typeof thing === 'function'
+          ? (...args) => thing.call(element, ...args)
+          : thing;
+      }
+      return queryWrap(prop);
+    },
+    set(_, prop, value) {
+      return Reflect.set(element, prop, value);
+    },
+  });
+}
+
+export default dom(document);
