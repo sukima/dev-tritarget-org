@@ -1,0 +1,244 @@
+created: 20210625181321000
+creator: Sukima
+modified: 20210625181321000
+modifier: Sukima
+tags: Article JavaScript Coding
+title: Using bitmasks for truth tables
+type: text/vnd.tiddlywiki
+
+\define true() <span style="color:green">✓</span>
+\define false() <span style="color:red">✗</span>
+
+There are times where I want to test multiple combinations of several flags in my code. The ability to do this is called a [[truth table|https://en.wikipedia.org/wiki/Truth_table]]. And how it is represented in code can very wildly.
+
+<figure>
+
+| conditionC | conditionB | conditionA |h
+| <<false>>  | <<false>>  | <<false>>  |
+| <<false>>  | <<false>>  | <<true>>   |
+| <<false>>  | <<true>>   | <<false>>  |
+| <<false>>  | <<true>>   | <<true>>   |
+| <<true>>   | <<false>>  | <<false>>  |
+| <<true>>   | <<false>>  | <<true>>   |
+| <<true>>   | <<true>>   | <<false>>  |
+| <<true>>   | <<true>>   | <<true>>   |
+| Truth table with three conditions    |c
+
+</figure>
+
+Which if we express as boolean flags our code could balloon out to something like:
+
+<figure>
+
+<figcaption>Naive boolean conditional logic</figcaption>
+
+```javascript
+if (!conditionA && !conditionB && !conditionC) {
+} else if (!conditionA && !conditionB && conditionC) {
+} else if (!conditionA && conditionB && !conditionC) {
+} else if (!conditionA && conditionB && conditionC) {
+} else if (conditionA && !conditionB && !conditionC) {
+} else if (conditionA && !conditionB && conditionC) {
+} else if (conditionA && conditionB && !conditionC) {
+} else if (conditionA && conditionB && conditionC) {
+}
+```
+
+</figure>
+
+There are some problems with this approach. The ability to read each if statement means having a keen eye out for the `!` character. Also the meaning of the if block gets lost in all that noise. Imagine adding another conditional? That would be changing every line and adding more. Very confusing if you asked me.
+
+<figure>
+
+<figcaption>Literal interpretation of truth tables in testing</figcaption>
+
+```javascript
+const testCases = [
+  [false, false, false],
+  [false, false, true],
+  [false, true, false],
+  [false, true, true],
+  [true, false, false],
+  [true, false, true],
+  [true, true, false],
+  [true, true, true],
+];
+
+for (let testCase of testCases) {
+  let [conditionC, conditionB, conditionA] = testCase;
+  …
+}
+```
+
+</figure>
+
+This too suffers from difficult to reason about and scaling issues. Luckily we have an abstraction for this in the form of binary math — ''Bitmasks''.
+
+Bitmasks have—in my opinion—been met with some negative press<<fnote "[[Juggling bits in JavaScript: bitmasks — Rinat Ussenov|https://blog.rinatussenov.com/juggling-bits-in-javascript-bitmasks-128ad5f31bed]]">> <<fnote "[[Using Bitmasks and Binary operations in JavaScript — divyanshu|https://dsinecos.github.io/blog/Using-Bitmasks]]">> <<fnote "[[Bitmasks: A very esoteric (and impractical) way of managing booleans — Basti Ortiz|https://dev.to/somedood/bitmasks-a-very-esoteric-and-impractical-way-of-managing-booleans-1hlf]]">>. It is however a very clean way to articulate meaning without so much disjointed and scaling issues.
+
+If we were to associate the ''truth table'' with actual numbers we gain two benefits. First we a one to one relationship to the bits of that number to each condition's true/false value. Second we can represent each ''combination'' numarically as an incrementing counter as each number will hold in it the bits that map to the conditions. It is a lot to pack in but hopefully this table can weed out what I just stated.
+
+<figure>
+
+|           Number|Binary  | conditionC | conditionB | conditionA |h
+|              `0`|`0b000` | <<false>>  | <<false>>  | <<false>>  |
+|            ∗ `1`|`0b001` | <<false>>  | <<false>>  | <<true>>   |
+|            ∗ `2`|`0b010` | <<false>>  | <<true>>   | <<false>>  |
+|              `3`|`0b011` | <<false>>  | <<true>>   | <<true>>   |
+|            ∗ `4`|`0b100` | <<true>>   | <<false>>  | <<false>>  |
+|              `5`|`0b101` | <<true>>   | <<false>>  | <<true>>   |
+|              `6`|`0b110` | <<true>>   | <<true>>   | <<false>>  |
+|              `7`|`0b111` | <<true>>   | <<true>>   | <<true>>   |
+| For-loop index ⬆️|⬆️ Each bit corresponds to a condition    |<|<|<|
+|∗ These are powers of two and are the numbers used to destructure which flags are involved with a specific for-loop index |c
+
+</figure>
+
+Breaking that down we can see each bit relationships to the conditions:
+
+<figure>
+
+<figcaption>Mapping of bits to conditions</figcaption>
+
+```
+0b 1 0 1
+   | | |
+   | | +-- conditionA == true
+   | +---- conditionB == false
+   +------ conditionC == true
+```
+
+</figure>
+
+Each conditional is a power of two thus 1, 2, 4, 8, 16, 32, etc. Memorizing this is too hard for me; what I really want it more like 1, 2, 3, 4, 5, 6, etc. Thus if you write the numbers as left shifted you can achieve the same thing with a sequential number set.
+
+<figure>
+
+<figcaption>Mapping numbers to conditions using an incremental styled syntax</figcaption>
+
+```javascript
+let numberForConditionA = 1 << 0; // => 1
+let numberForConditionB = 1 << 1; // => 2
+let numberForConditionC = 1 << 2; // => 4
+let numberForConditionD = 1 << 3; // => 8
+let numberForConditionE = 1 << 4; // => 16
+⋮
+```
+
+</figure>
+
+To summarize, we assign each condition to a number that is a power of two (`1 << 0`, `1 << 1`, etc.), we can loop over every combination with a for loop (`for (let i = 0; i < allConditions; i++)`).
+
+But how do we destructure these? Since each condition is numbered we can compare them to the current combination (the index counter of the for loop) using the ''AND'' operator (`i & conditionA`).
+
+<figure>
+
+<figcaption>Example test code showing concepts with intention revealing names/functions</figcaption>
+
+```javascript
+let conditionA = 1 << 0;
+let conditionB = 1 << 1;
+let conditionC = 1 << 2;
+let allConditions =
+  conditionA | conditionB | conditionC;
+const matchCond = (i, condition) => i & condition;
+
+for (let i = 0; i < allConditions; i++) {
+  let expectations = {
+    foo: matchCond(i, conditionA) ? 'bar' : 'baz',
+    bar: matchCond(i, conditionB) ? 'bar' : 'baz',
+    baz: matchCond(i, conditionC) ? 'bar' : 'baz',
+  };
+  setupOptions({
+    foo: matchCond(i, conditionA) ? 'bar' : 'baz',
+    bar: matchCond(i, conditionB) ? 'bar' : 'baz',
+    baz: matchCond(i, conditionC) ? 'bar' : 'baz',
+  });
+  assert.strictEqual(
+    subject.actual.foo,
+    expectations.foo
+  );
+  assert.strictEqual(
+    subject.actual.bar,
+    expectations.bar
+  );
+  assert.strictEqual(
+    subject.actual.baz,
+    expectations.baz
+  );
+}
+```
+
+</figure>
+
+In code itself repetitive conditions could be extracted into a clean switch statement.
+
+<figure>
+
+<figcaption>Multi conditional switch case statement</figcaption>
+
+```javascript
+function getConditionalValue({
+ conditionA,
+ conditionB,
+ conditionC
+}) {
+  let conditionalState = 0;
+  conditionalState |= conditionA ? 1 << 0 : 0;
+  conditionalState |= conditionB ? 1 << 1 : 0;
+  conditionalState |= conditionC ? 1 << 2 : 0;
+  switch (conditionalState) {
+    case 0: return …; // false false false
+    case 1: return …; // false false true
+    case 2: return …; // false true  false
+    case 3: return …; // false true  true
+    case 4: return …; // true  false false
+    case 5: return …; // true  false true
+    case 6: return …; // true  true  false
+    case 7: return …; // true  true  true
+    default: throw new Error('WAT!');
+  }
+}
+```
+
+</figure>
+
+<details>
+<summary>Example code generator</summary>
+
+<div>
+
+```javascript
+function* codeGenerater(conditionsMap) {
+  function l(p) {
+    return /^[a-z][a-z0-9]*$/i.test(p)
+      ? `data.${p}`
+      : `data['${p.replace(`'`, `\\'`)}']`;
+  };
+
+  let conditions = [...conditionsMap].entries();
+
+  yield 'function generatedCode(data) {\n';
+  yield '  let conditionalState = 0;\n';
+  for (let [i, [cond]] of conditions) {
+    yield `  conditionalState |= ${l(cond)} ? 1 << ${i} : 0;\n`;
+  }
+  yield '  switch (conditionalState) {\n';
+  for (let [i, [,result]] of conditions) {
+    yield `    case ${i}:\n`;
+    yield `      return ${result}\n`;
+  }
+  yield '    default:\n';
+  yield '      throw new ReferenceError(\n';
+  yield '        `Unknown conditional state ${conditionalState}`\n';
+  yield '      );\n';
+  yield '  }\n';
+  yield '}\n';
+}
+```
+
+</div>
+
+</details>
+
+<<showfnotes title:"References">>
