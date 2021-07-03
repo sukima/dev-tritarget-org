@@ -15,6 +15,10 @@ module('simple-dom.js', function(hooks) {
     this.subject = $(this.fixture);
   });
 
+  test('can dereference simple-dom proxies', function(assert) {
+    assert.strictEqual($(this.subject), this.subject);
+  });
+
   test('can query by ID', function(assert) {
     assert.strictEqual(
       this.subject.foo.element,

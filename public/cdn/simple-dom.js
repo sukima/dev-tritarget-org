@@ -1,3 +1,5 @@
+const proxies = new WeakSet();
+
 function attachEvents(el, eventNames, fn, options) {
   eventNames.forEach((e) => el.addEventListener(e, fn, options));
   return () =>
@@ -18,8 +20,17 @@ function eventable(...elements) {
   });
 }
 
+function wrapper(fn) {
+  return subject => {
+    if (proxies.has(subject)) { return subject; }
+    let result = fn(subject);
+    proxies.add(result);
+    return result;
+  };
+}
+
 function domAll(element) {
-  function queryWrap(prop) {
+  const queryWrap = wrapper(prop => {
     return new Proxy([...element.querySelectorAll(prop)].map(dom), {
       get(target, prop) {
         switch (prop) {
@@ -32,23 +43,23 @@ function domAll(element) {
         return Reflect.set(target, prop, value);
       },
     });
-  }
+  });
 
-  return new Proxy(queryWrap, {
+  return wrapper(() => new Proxy(queryWrap, {
     get(_, prop) {
       return queryWrap(prop);
     },
-  });
+  }))();
 }
 
 function dom(element) {
-  function queryWrap(prop) {
+  const queryWrap = wrapper(prop => {
     return prop instanceof Node
       ? dom(prop)
       : dom(element.querySelector(prop) ?? document.getElementById(prop));
-  }
+  });
 
-  return new Proxy(queryWrap, {
+  return wrapper(() => new Proxy(queryWrap, {
     get(_, prop) {
       switch (prop) {
         case 'element': return element;
@@ -67,7 +78,7 @@ function dom(element) {
     set(_, prop, value) {
       return Reflect.set(element, prop, value);
     },
-  });
+  }))();
 }
 
 export default dom(document);
