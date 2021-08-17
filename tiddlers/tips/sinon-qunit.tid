@@ -1,0 +1,19 @@
+created: 20210817145155000
+creator: Sukima
+modified: 20210817145155000
+modifier: Sukima
+title: sinon-qunit
+tags: Coding JavaScript Tips Snippets
+type: text/vnd.tiddlywiki
+
+When you want to use sinon in QUnit here is the setup:
+
+```javascript
+import QUnit from 'qunit';
+import sinon from 'sinon';
+
+sinon.assert.pass = (assertion) => QUnit.assert.ok(true, assertion);
+sinon.assert.fail = (assertion) => QUnit.assert.ok(false, assertion);
+
+QUnit.testDone(() => sinon.restore());
+```
