@@ -5,7 +5,7 @@ tags: Projects Portfolio
 terms: EmberJS
 title: Confirmed NPM Module
 type: text/vnd.tiddlywiki
-url: http://sukima.github.io/ember-confirmed/
+url: https://github.com/sukima/confirmed
 
 <a href={{!!url}}>confirmed</a>
 

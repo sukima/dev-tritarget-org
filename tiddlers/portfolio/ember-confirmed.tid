@@ -5,7 +5,7 @@ tags: Projects Portfolio
 terms: EmberJS
 title: Confirmed Ember Addon
 type: text/vnd.tiddlywiki
-url: http://sukima.github.io/ember-confirmed/
+url: https://github.com/sukima/ember-confirmed
 
 <a href={{!!url}}>ember-confirmed</a>
 
