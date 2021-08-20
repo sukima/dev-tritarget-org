@@ -1,9 +1,13 @@
 created: 20191127144550000
 creator: Sukima
-modified: 20191127151549083
+modified: 20210820210449000
 modifier: Sukima
 tags: snippets CSS
 title: CSS Modal Dialogs
 type: text/vnd.tiddlywiki
 
-<<tabs "css-modal-dialogs-tab1 css-modal-dialogs-tab2" "css-modal-dialogs-tab1">>
+This is a way to show modals with easy CSS and //optional// JavaScript.
+
+We can't use the official [[showModal()|https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal#browser_compatibility]] as it is not supported by FireFox yet. Till then we can mange with this CSS variant.
+
+<<tabs "css-modal-dialogs-tab1 css-modal-dialogs-tab2 css-modal-dialogs-tab3" "css-modal-dialogs-tab1">>

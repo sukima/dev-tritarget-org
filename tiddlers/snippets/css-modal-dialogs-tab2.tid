@@ -1,7 +1,7 @@
 caption: Usage
 created: 20191127150008000
 creator: Sukima
-modified: 20191127151442137
+modified: 20210820210437000
 modifier: Sukima
 tags: [[CSS Modal Dialogs]]
 title: css-modal-dialogs-tab2
@@ -12,7 +12,7 @@ Modals are hidden by default. They open with the class `open` or by referencing 
 ```xml
 <a role="button" href="#open-modal">Open Modal Dialog</a>
 
-<div id="open-modal" class="modal">
+<dialog id="open-modal" class="modal">
   <div
     class="modal-content"
     role="dialog"
@@ -30,5 +30,5 @@ Modals are hidden by default. They open with the class `open` or by referencing 
       <a role="button" href="#">Close</a>
     </div>
   </div>
-</div>
+</dialog>
 ```
