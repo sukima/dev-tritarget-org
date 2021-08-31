@@ -107,12 +107,18 @@ module('micro-fsm.js', function() {
       let subject = {
         initial: 'test1',
         states: {
-          test1: { on: { go: 'test1' } },
+          test1: {
+            entry: 'entryAction',
+            on: {
+              go: { target: 'test1', actions: 'transitionAction' },
+            },
+            exit: 'exitAction',
+          },
         },
       };
       let state = transitionMachine(subject, { value: 'test1' }, 'go');
       assert.deepEqual(state, {
-        actions: [],
+        actions: ['transitionAction'],
         value: 'test1',
         states: ['test1'],
         inState: { test1: true },
