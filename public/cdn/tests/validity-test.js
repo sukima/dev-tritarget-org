@@ -16,6 +16,23 @@ module('validity.js', function(hooks) {
   });
 
   module('#setValidity', function() {
+    test('errors if element already had validity set', async function(assert) {
+      let [subject] = this.subjects;
+      setValidity(subject);
+      assert.throws(
+        () => setValidity(subject),
+        /An element can only have one validator registered on it/
+      );
+    });
+
+    test('returns a teardown function', async function(assert) {
+      assert.expect(0);
+      let [subject] = this.subjects;
+      let teardown = setValidity(subject);
+      teardown();
+      setValidity(subject);
+    });
+
     test('sets custom validity', async function(assert) {
       await Promise.all(this.subjects.map(subject => {
         return new Promise(resolve => {

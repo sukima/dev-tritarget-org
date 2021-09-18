@@ -21,6 +21,9 @@ export function setValidity(
   validator = (() => []),
   { on = 'change,input,blur' } = {}
 ) {
+  if (validatables.has(element)) {
+    throw new Error('An element can only have one validator registered on it');
+  }
   let isCalculating = false;
   let eventNames = ['validate', ...on.split(',')];
   let handler = async (event) => {
@@ -36,5 +39,6 @@ export function setValidity(
   eventNames.forEach(evt => element.addEventListener(evt, handler));
   return () => {
     eventNames.forEach(evt => element.removeEventListener(evt, handler));
+    validatables.delete(element);
   };
 }

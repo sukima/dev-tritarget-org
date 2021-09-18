@@ -48,6 +48,20 @@ module('array-updater.js', function() {
       subject([{ value: 1 }, { value: 3 }]);
       assert.deepEqual(testData, [{ data: 1 }, { data: 3 }]);
     });
+
+    test('returns the data', function(assert) {
+      let testData = [];
+      let subject = dataUpdater({
+        query: () => testData,
+        append: () => (testData.push({}), testData[testData.length - 1]),
+        render: (i, d) => { i.data = d.value },
+        remove: i => testData.splice(i, 1),
+        matcher: propMatcher('value'),
+      });
+      let expected = [{ value: 1 }, { value: 2 }, { value: 3 }];
+      let actual = subject(expected);
+      assert.deepEqual(actual, expected);
+    });
   });
 
   module('#tableUpdator', function(hooks) {

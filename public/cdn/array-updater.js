@@ -49,6 +49,7 @@ export function dataUpdater({
     toBeUpdated.forEach(([i, d]) => update(elements[i], d, i));
     toBeDeleted.forEach((i, j) => remove(i - j));
     toBeAppended.forEach((d) => update(append(), d, -1));
+    return data;
   };
 }
 
