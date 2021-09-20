@@ -4,6 +4,26 @@ tags: $:/tags/Stylesheet
 title: $:/styles/site
 type: application/x-tiddler
 
+hr {
+  border: 0;
+  height: 0.15rem;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+}
+
+figure {
+  border-left: 0.4rem double #666;
+  margin: 0;
+  padding: 0 0 0 1rem;
+}
+
+figure > * {
+  margin: 0;
+}
+
+figure > * + * {
+  margin-top: 15px;
+}
+
 .top-nav-bar {
   height: 40px;
 }
