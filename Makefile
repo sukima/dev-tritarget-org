@@ -9,7 +9,7 @@ asset_files := $(patsubst public/%,wiki/output/%,$(shell find public -type f))
 modified_date = $(shell date +%Y%m%d%H%M%S000)
 pgp_fingerprint = FA9F14008BA5A847B0977C06EBD99C92DE767C8A
 
-.PHONY: build-files build clean generated diagrams assets tiddlywiki server media-build deploy updatekey
+.PHONY: build-files build clean generated diagrams assets tiddlywiki server media-build deploy updatekey certs
 
 build:
 	@rm -f wiki/tiddlywiki.info
@@ -26,10 +26,19 @@ media-build:
 	$(MAKE) -e NODE_ENV=development build-files
 
 clean:
-	rm -rf wiki
+	rm -rf wiki devcerts
 
 diagrams:
 	cd diagrams && $(MAKE)
+
+certs: devcerts
+
+devcerts:
+	mkdir -p $@
+	openssl genrsa -out $@/key.pem
+	openssl req -new -key $@/key.pem -out $@/csr.pem
+	openssl x509 -req -days 9999 -in $@/csr.pem -signkey $@/key.pem -out $@/cert.pem
+	rm $@/csr.pem
 
 generated: tiddlers/generated/PGPKeyFile.tid tiddlers/generated/PGPKeyInfo.tid
 

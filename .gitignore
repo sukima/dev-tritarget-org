@@ -1,3 +1,5 @@
+.livereload
+devcerts/
 yarn-error.log
 node_modules/
 diagrams/.depend
