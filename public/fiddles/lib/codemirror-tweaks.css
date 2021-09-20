@@ -1,0 +1,34 @@
+.editor, .preview, .CodeMirror {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+.editor {
+    padding-bottom: 4em;
+}
+.preview #preview {
+    height: 100%;
+    width: 100%;
+    border: none;
+    background-color: #fff;
+}
+@media screen and (min-width: 720px) {
+    .editor {
+        width: 50%;
+        float: left;
+        padding-bottom: 0;
+    }
+    .menu {
+        width: 300px;
+        border-right: 1px dotted #999;
+        border-bottom: 1px dotted #999;
+    }
+    .preview {
+        width: 50%;
+        float: left;
+    }
+    .full-width {
+        width: 100%;
+        float: initial;
+    }
+}
