@@ -132,6 +132,20 @@ module('validity.js', function(hooks) {
         assert.strictEqual(input.validity.customError, true);
       }
     });
+
+    test('can be attached to wrapped DOM elements', async function(assert) {
+      this.fixture.innerHTML = `<div id="test-subject"><input></div>`;
+      let eventCalls = 0;
+      let subject = document.querySelector('#test-subject');
+      let input = document.querySelector('#test-subject > input');
+      setValidity(subject, () => ['test-message']);
+      subject.addEventListener('validated', () => eventCalls++);
+      await validate(input);
+      assert.equal(eventCalls, 1)
+      assert.equal(input.validationMessage, 'test-message');
+      assert.strictEqual(input.validity.valid, false);
+      assert.strictEqual(input.validity.customError, true);
+    });
   });
 
   module('#validate', function() {
@@ -161,15 +175,6 @@ module('validity.js', function(hooks) {
       this.subjects.forEach(s => setValidity(s, testValidate, { on: '' }));
       await validate(...this.subjects);
       assert.equal(validationCalls, 3);
-    });
-
-    test('skips validating elements not setup with setValidity', async function(assert) {
-      let validationCalls = 0;
-      let testValidate = () => (validationCalls++, []);
-      setValidity(this.subjects[0], testValidate, { on: '' });
-      setValidity(this.subjects[2], testValidate, { on: '' });
-      await validate(...this.subjects);
-      assert.equal(validationCalls, 2);
     });
   });
 });

@@ -1,14 +1,16 @@
 const validatables = new WeakSet();
+const doNothing = () => {};
+const rethrow = (error) => { throw error; };
 
 function validateElement(element) {
-  if (!validatables.has(element)) { return; }
-  return new Promise(resolve => {
-    let handler = () => {
-      element.removeEventListener('validated', handler);
-      resolve();
-    };
-    element.addEventListener('validated', handler);
-    element.dispatchEvent(new CustomEvent('validate'));
+  return new Promise((resolve, reject) => {
+    let event = new CustomEvent('validate', {
+      bubbles: true,
+      cancelable: true,
+      detail: { resolve, reject }
+    });
+    let wasNotPrevented = element.dispatchEvent(event);
+    if (wasNotPrevented) { resolve(); }
   });
 }
 
@@ -24,21 +26,32 @@ export function setValidity(
   if (validatables.has(element)) {
     throw new Error('An element can only have one validator registered on it');
   }
-  let isCalculating = false;
-  let eventNames = ['validate', ...on.split(',')];
-  let handler = async (event) => {
-    if (isCalculating) { return; }
-    isCalculating = true;
-    let [error = ''] = await validator(element, event);
-    element.checkValidity();
-    element.setCustomValidity(error);
-    element.dispatchEvent(new CustomEvent('validated', { bubbles: true }));
-    isCalculating = false;
+  let eventNames = on.split(',');
+  let inProgressTrap = false;
+  let updateValidity = async ({ target }) => {
+    if (inProgressTrap) { return; }
+    inProgressTrap = true;
+    try {
+      let [error = ''] = await validator(target);
+      target.checkValidity();
+      target.setCustomValidity(error);
+      target.dispatchEvent(new CustomEvent('validated', { bubbles: true }));
+    } finally {
+      inProgressTrap = false;
+    }
+  };
+  let validateHandler = (event) => {
+    let { resolve = doNothing, reject = rethrow } = event.detail ?? {};
+    event.preventDefault();
+    event.stopPropagation();
+    updateValidity(event).then(resolve, reject);
   };
   validatables.add(element);
-  eventNames.forEach(evt => element.addEventListener(evt, handler));
+  element.addEventListener('validate', validateHandler);
+  eventNames.forEach(evt => element.addEventListener(evt, updateValidity));
   return () => {
-    eventNames.forEach(evt => element.removeEventListener(evt, handler));
     validatables.delete(element);
+    element.removeEventListener('validate', validateHandler);
+    eventNames.forEach(evt => element.removeEventListener(evt, updateValidity));
   };
 }
