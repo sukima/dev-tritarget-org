@@ -26,19 +26,20 @@ export function setValidity(
   if (validatables.has(element)) {
     throw new Error('An element can only have one validator registered on it');
   }
+  let taskCount = 0;
+  let lastTask = Promise.resolve();
   let eventNames = on.split(',');
-  let inProgressTrap = false;
-  let updateValidity = async ({ target }) => {
-    if (inProgressTrap) { return; }
-    inProgressTrap = true;
-    try {
+  let updateValidity = ({ target }) => {
+    taskCount++;
+    lastTask = lastTask.then(async () => {
+      taskCount--;
+      if (taskCount !== 0) { return; }
       let [error = ''] = await validator(target);
       target.checkValidity();
       target.setCustomValidity(error);
       target.dispatchEvent(new CustomEvent('validated', { bubbles: true }));
-    } finally {
-      inProgressTrap = false;
-    }
+    });
+    return lastTask;
   };
   let validateHandler = (event) => {
     let { resolve = doNothing, reject = rethrow } = event.detail ?? {};

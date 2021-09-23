@@ -110,6 +110,8 @@ module('validity.js', function(hooks) {
         subject.dispatchEvent(new CustomEvent('validate'));
         subject.dispatchEvent(new CustomEvent('validate'));
         subject.dispatchEvent(new CustomEvent('validate'));
+        subject.dispatchEvent(new CustomEvent('validate'));
+        subject.dispatchEvent(new CustomEvent('validate'));
       });
       assert.equal(eventCalls, 1);
     });
