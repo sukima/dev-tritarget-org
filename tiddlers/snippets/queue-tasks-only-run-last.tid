@@ -1,0 +1,26 @@
+created: 20210923025336000
+creator: Sukima
+modified: 20210923025336000
+modifier: Sukima
+title: Queue async tasks but only run the last one
+tags: snippets JavaScript coding
+type: text/vnd.tiddlywiki
+
+Use case: spamming a button with click events and the handler spawns an expensive async task. You only want the last on in the microtask queue.
+
+```js
+let taskCount = 0;
+let lastTask = Promise.resolve();
+
+function handler() {
+  taskCount++;
+  lastTask = lastTask.then(async () => {
+    taskCount--;
+    if (taskCount !== 0) { return; }
+    await doSomethingExpensive();
+  });
+}
+
+document.querySelector('button')
+  .addEventListener('click', handler);
+```

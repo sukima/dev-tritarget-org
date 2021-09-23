@@ -1,0 +1,15 @@
+created: 20210923025747000
+creator: Sukima
+modified: 20210923025747000
+modifier: Sukima
+title: uniqueID
+tags: snippets JavaScript coding
+type: text/vnd.tiddlywiki
+
+```js
+const uniqueID = (i => () => ++i)(0);
+
+uniqueID(); // => 1
+uniqueID(); // => 2
+uniqueID(); // => 3
+```
