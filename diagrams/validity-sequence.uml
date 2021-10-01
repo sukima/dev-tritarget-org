@@ -1,0 +1,18 @@
+@startuml
+
+DOM -> ChangeEventHandler : event change
+activate DOM
+activate ChangeEventHandler
+ChangeEventHandler -> ValidateEventHandler : event validate
+deactivate ChangeEventHandler
+activate ValidateEventHandler
+ValidateEventHandler -> Validator : validateFunction()
+activate Validator
+ValidateEventHandler <-- Validator : ['validation message']
+deactivate Validator
+DOM <- ValidateEventHandler : setCustomValidity()
+deactivate DOM
+ValidateEventHandler -> DOM : event validated
+deactivate ValidateEventHandler
+
+@enduml

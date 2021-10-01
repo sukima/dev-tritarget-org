@@ -1,0 +1,45 @@
+created: 20210304013841844
+creator: Sukima
+modified: 20210304014113510
+modifier: Sukima
+tags: JavaScript snippets Coding
+title: validity.js
+type: text/vnd.tiddlywiki
+
+!!! validate()
+
+```javascript
+function validate(...elements) {
+  let validateEvent = new CustomEvent('validate', { bubbles: true });
+  elements.forEach(element => {
+    element.dispatchEvent(validateEvent);
+  });
+}
+```
+
+!!! setValidity()
+
+```javascript
+function setValidity(
+  element,
+  validator = (() => []),
+  { on = 'change,input,blur' } = {}
+) {
+  let eventNames = ['validate', ...on.split(',')];
+  let handler = () => {
+    let [error = ''] = validator(element);
+    element.classList.add('dirty');
+    element.setCustomValidity(error);
+    element.dispatchEvent(
+      new CustomEvent('validated'),
+      { bubbles: true }
+    );
+  };
+  eventNames.forEach(eventName) => {
+    element.addEventListener(eventName, handler);
+  });
+  return () => eventNames.forEach(eventName) => {
+    element.removeEventListener(eventName, handler);
+  });
+}
+```
