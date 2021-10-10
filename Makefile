@@ -6,6 +6,7 @@ polyfill := wiki/plugins/babel-polyfill/files/polyfill.min.js
 plugins_src := $(shell find plugins -type f)
 plugins_out := $(patsubst plugins/%,wiki/plugins/%,$(plugins_src))
 asset_files := $(patsubst public/%,wiki/output/%,$(shell find public -type f))
+
 modified_date = $(shell date +%Y%m%d%H%M%S000)
 pgp_fingerprint = FA9F14008BA5A847B0977C06EBD99C92DE767C8A
 
@@ -19,7 +20,11 @@ build:
 server:
 	@rm -f wiki/tiddlywiki.info
 	$(MAKE) -e NODE_ENV=development build-files
+ifeq (,$(wildcard devcerts/cert.pem))
 	$(tiddlywiki) wiki --listen host=0.0.0.0
+else
+	$(tiddlywiki) wiki --listen host=0.0.0.0 tls-cert=../devcerts/cert.pem tls-key=../devcerts/key.pem
+endif
 
 media-build:
 	@rm -f wiki/tiddlywiki.info
