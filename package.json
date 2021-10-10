@@ -21,13 +21,13 @@
     "fs-extra": "^0.26.7",
     "gm": "^1.21.1",
     "mktemp": "^0.4.0",
-    "tiddlywiki": "5.1.23"
+    "tiddlywiki": "5.2.0"
   },
   "dependencies": {
     "babel-polyfill": "^6.3.14"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   },
   "volta": {
     "node": "12.16.2",
