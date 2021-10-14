@@ -1,7 +1,7 @@
 const tabIndexes = new WeakMap();
 
 function* tabableElements(
-  selectAll = s => document.querySelectorAll(s)
+  selectAll = (selector) => document.querySelectorAll(selector)
 ) {
   yield* selectAll('a[href]');
   yield* selectAll('button');
@@ -12,15 +12,16 @@ function* tabableElements(
 }
 
 export function confineTabbing(container, selectAll) {
-  [...tabableElements(selectAll)].forEach(i => {
-    tabIndexes.set(i, i.tabIndex);
-    if (!container.contains(i)) {
-      i.tabIndex = -1;
+  for (let element of tabableElements(selectAll)) {
+    tabIndexes.set(element, element.tabIndex);
+    if (!container.contains(element)) {
+      element.tabIndex = -1;
     }
-  });
+  }
 }
 
 export function releaseTabbing(selectAll) {
-  [...tabableElements(selectAll)]
-    .forEach(i => i.tabIndex = tabIndexes.get(i) || 0);
+  for (let element of tabableElements(selectAll)) {
+    element.tabIndex = tabIndexes.get(element) || 0;
+  }
 }
