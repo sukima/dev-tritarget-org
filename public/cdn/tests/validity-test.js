@@ -107,12 +107,12 @@ module('validity.js', function(hooks) {
       let [subject] = this.subjects;
       await new Promise(resolve => {
         setValidity(subject, () => (eventCalls++, resolve(), []), { on: '' });
+        subject.dispatchEvent(new CustomEvent('validate'));
+        subject.dispatchEvent(new CustomEvent('validate'));
+        subject.dispatchEvent(new CustomEvent('validate'));
+        subject.dispatchEvent(new CustomEvent('validate'));
+        subject.dispatchEvent(new CustomEvent('validate'));
       });
-      subject.dispatchEvent(new CustomEvent('validate'));
-      subject.dispatchEvent(new CustomEvent('validate'));
-      subject.dispatchEvent(new CustomEvent('validate'));
-      subject.dispatchEvent(new CustomEvent('validate'));
-      subject.dispatchEvent(new CustomEvent('validate'));
       assert.equal(eventCalls, 1);
     });
 
