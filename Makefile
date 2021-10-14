@@ -1,4 +1,5 @@
 babel := node_modules/.bin/babel
+serve := node_modules/.bin/serve
 tiddlywiki := node_modules/.bin/tiddlywiki
 merge_json := ./bin/merge-json
 deploy_path := ktohg@tritarget.org:tritarget.org
@@ -10,12 +11,19 @@ asset_files := $(patsubst public/%,wiki/output/%,$(shell find public -type f))
 modified_date = $(shell date +%Y%m%d%H%M%S000)
 pgp_fingerprint = FA9F14008BA5A847B0977C06EBD99C92DE767C8A
 
-.PHONY: build-files build clean generated diagrams assets tiddlywiki server media-build deploy updatekey certs
+.PHONY: build-files build clean generated diagrams assets tiddlywiki server devpublic media-build deploy updatekey certs
 
 build:
 	@rm -f wiki/tiddlywiki.info
 	$(MAKE) -e NODE_ENV=production tiddlywiki
 	$(MAKE) assets
+
+devpublic:
+ifeq (,$(wildcard devcerts/cert.pem))
+	$(serve) --cors public/
+else
+	$(serve) --cors --ssl-cert ./devcerts/cert.pem --ssl-key ./devcerts/key.pem public/
+endif
 
 server:
 	@rm -f wiki/tiddlywiki.info
