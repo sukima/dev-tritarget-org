@@ -24,7 +24,8 @@ These are some JavaScript resources I have found to be valuable:
 
 <div class="resource-links">
 
-* [[Practical Object-Oriented Design in Ruby|http://www.poodr.com/]] <<book>>
+* ''Anything'' [[Sandi Metz]] does.
+* [[99 Bottles of OOP|https://sandimetz.com/99bottles]] by [[Sandi Metz]] (~JavaScript edition) <<book>>
 * [[Code Complete|https://www.amazon.com/Code-Complete-Practical-Handbook-Construction/dp/0735619670?ie=UTF8&linkCode=ll1&linkId=6aabd46b91da513d86257af2c05b6585&ref_=as_li_ss_tl&tag=chrimaiospo06-20]] <<book>>
 * [[Refactoring, Improving the Design of Existing Code by Martin Fowler, with Kent Beck (2018)|https://martinfowler.com/books/refactoring.html]] <<book>>
 * [[Refactoring Guides|https://sourcemaking.com/refactoring]] <<web>>
