@@ -39,6 +39,7 @@ She has done many talks about OOP and design and I found her insight ''invaluabl
 * [[Get a Whiff of This |https://www.youtube.com/watch?v=PJjHfa5yxlU]] <<video>> &mdash; This talk shows how to take a pile of perplexing code, identify the "smells", and surgically apply the curative refactorings. It breaks a messy problem into clear-cut pieces, and proves that you can fix anything without being forced to understand everything.
 * [[Go Ahead, Make a Mess|https://www.youtube.com/watch?v=f5I1iyso29U]] <<video>> &mdash; Software is always a mess. You can't avoid this mess, and if hubris goads you into attempting to achieve perfection, you'll just make things worse. Perfection is a distant, dim land on the unreachable horizon. You'll not be going there today.
 * [[Polly Want a Message|https://www.youtube.com/watch?v=YtROlyWWhV0]] <<video>> &mdash; Object-oriented languages have opinions about how best to arrange code. These opinions lead OO to naturally offer certain affordances. Just as round doorknobs expect to be grasped and rotated, OO expects messages, polymorphism, loose-coupling, and factories. The key to creating intuitive and maintainable OO applications is to understand and embrace these built-in affordances.
+* [[SOLID Object-Oriented Design|https://www.youtube.com/watch?v=v-2yFMzxqwU]] <<video>>
 * [[Practical Object-Oriented Design in Ruby (POODR)|http://poodr.com/]] <<book>>
 * [[99 Bottles of OOP|http://www.sandimetz.com/99bottles]] <<book>>
 
