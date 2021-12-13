@@ -9,7 +9,9 @@ caption: Usage
 
 const MACHINE = {
   initial: 'off',
-  on: { TURN_OFF: 'off', actions: 'turnOffDevice' },
+  on: {
+    TURN_OFF: { target: 'off', actions: 'turnOffDevice' }
+  },
   states: {
     off: {
       exit: 'turnOnDevice',
