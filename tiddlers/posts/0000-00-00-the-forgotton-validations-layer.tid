@@ -1,0 +1,11 @@
+created: 20211208132800000
+modified: 20211208132800000
+creator: Sukima
+modifier: Sukima
+title: The forgotton validations layer
+tags: Article Coding
+type: text/vnd.tiddlywiki
+
+In my previous post [[Managing validity in forms]] I described an alternative design to handling validations with front end JavaScript. I had hoped it would illustrate how viewing validations as an ''input layer'' concern allows for a better design by making validating follow the [[S.O.L.I.D. Principles|SOLID]] -- also that they can be [[open/closed|Open—Closed]], [[Polymorphic|Polymorphism]], [[Composable|Composition]], and [[Dependency Injected|Dependency Injection]].
+
+As it turns out I feel there is a ''lot'' more to this idea then originally hinted at. For me this idea that validations are their own concern and not to be grafted onto other concerns like the data layer is a huge eye opener. I'll try to explain in this post.
