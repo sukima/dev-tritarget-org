@@ -22,7 +22,7 @@
     "gm": "^1.21.1",
     "mktemp": "^0.4.0",
     "serve": "^12.0.1",
-    "tiddlywiki": "5.2.0"
+    "tiddlywiki": "5.2.1"
   },
   "dependencies": {
     "babel-polyfill": "^6.3.14"
