@@ -1,3 +1,10 @@
+/****************************************************/
+/* Version 1.0.0                                    */
+/* License MIT                                      */
+/* Copyright (C) 2022 Devin Weaver                  */
+/* https://tritarget.org/cdn/tests/validity-test.js */
+/****************************************************/
+
 import { setValidity, validate, verifyFormValidity } from '../validity.js';
 
 const { module, test } = QUnit;
@@ -90,24 +97,21 @@ module('validity.js', function(hooks) {
     test(
       'dispatches the "validated" event with all errors in detail property',
       async function(assert) {
+        let [subject] = this.subjects;
         let eventCalls = [];
         const validatedEventHandler = event => eventCalls.push(event);
-        this.subjects.forEach(
-          s => s.addEventListener('validated', validatedEventHandler)
-        );
-        await Promise.all(this.subjects.map(subject => {
-          return new Promise(resolve => {
-            const validator = () => (resolve(), ['test1', 'test2', 'test3']);
-            setValidity(subject, validator, { on: '' });
-            subject.dispatchEvent(new CustomEvent('validate'));
-          });
-        }));
+        subject.addEventListener('validated', validatedEventHandler)
+        subject.required = true;
+        await new Promise(resolve => {
+          const validator = () => (resolve(), ['test1', 'test2', 'test3']);
+          setValidity(subject, validator, { on: '' });
+          subject.dispatchEvent(new CustomEvent('validate'));
+        });
         await flushPromises();
-        assert.equal(eventCalls.length, 3);
-        for (let eventCall of eventCalls) {
-          let { errors } = eventCall.detail;
-          assert.deepEqual(errors, ['test1', 'test2', 'test3']);
-        }
+        assert.equal(eventCalls.length, 1);
+        let { errors } = eventCalls[0].detail;
+        assert.equal(errors.length, 4);
+        assert.deepEqual(errors.slice(0, 3), ['test1', 'test2', 'test3']);
       }
     );
 
@@ -220,7 +224,6 @@ module('validity.js', function(hooks) {
     });
 
     test('calls native submit() by default', function(assert) {
-      let submitCalled = false;
       let done = assert.async();
 
       assert.expect(1);
@@ -239,7 +242,7 @@ module('validity.js', function(hooks) {
 
     test('handles bubbling to non-form element', function(assert) {
       let done = assert.async();
-      let submit = event => {
+      let submit = () => {
         assert.ok(true, 'submit callback called');
         done();
       };
@@ -250,7 +253,7 @@ module('validity.js', function(hooks) {
 
     test('called submit callback with all fields valid', function(assert) {
       let done = assert.async();
-      let submit = event => {
+      let submit = () => {
         assert.ok(true, 'submit callback called');
         done();
       };
@@ -261,7 +264,7 @@ module('validity.js', function(hooks) {
     });
 
     test('does not call submit callback with a field invalid', async function(assert) {
-      let submit = event => {
+      let submit = () => {
         assert.notOk(true, 'submit callback should not have been called');
       };
       assert.expect(0);

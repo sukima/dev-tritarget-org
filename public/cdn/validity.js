@@ -1,3 +1,10 @@
+/*****************************************/
+/* Version 1.0.0                         */
+/* License MIT                           */
+/* Copyright (C) 2022 Devin Weaver       */
+/* https://tritarget.org/cdn/validity.js */
+/*****************************************/
+
 class ListStore {
   #store = new WeakMap();
   get(key) {
@@ -72,6 +79,7 @@ const eventsStore = new ListStore();
 const validatorsStore = new ListStore();
 const noop = () => {};
 const rethrow = (error) => { throw error; };
+const commaSeperate = s => s.split(',').map(i => i.trim()).filter(Boolean);
 
 export function validate(...elements) {
   return Promise.all(elements.map(validateElement));
@@ -82,10 +90,10 @@ export function setValidity(
   validators = [],
   { on = 'change,input,blur' } = {}
 ) {
-  let taskCount = 0;
-  let lastTask = Promise.resolve();
-  let eventNames = on.split(',');
   let eventsManager = new EventsManager(element, eventsStore);
+  let eventNames = commaSeperate(on);
+  let lastTask = Promise.resolve();
+  let taskCount = 0;
 
   const updateValidity = ({ target }) => {
     taskCount++;
@@ -93,8 +101,11 @@ export function setValidity(
       taskCount--;
       if (taskCount !== 0) { return; }
       let errors = await reduceValidators(validatorsStore.get(element), target);
-      target.checkValidity();
+      let nativeErrors = [];
+      target.setCustomValidity('');
+      if (!target.checkValidity()) { nativeErrors = [target.validationMessage]; }
       target.setCustomValidity(errors[0] ?? '');
+      errors = [...errors, ...nativeErrors];
       target.dispatchEvent(
         new CustomEvent('validated', { bubbles: true, detail: { errors } })
       );
