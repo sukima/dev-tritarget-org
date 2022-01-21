@@ -1,12 +1,7 @@
 import { setValidity, validate } from '../validity.js';
 
 const { module, test } = QUnit;
-
-const defer = () => {
-  let resolve, reject;
-  let promise = new Promise((a, b) => (resolve = a, reject = b));
-  return { resolve, reject, promise };
-};
+const flushPromises = () => new Promise(r => setTimeout(r, 0));
 
 module('validity.js', function(hooks) {
   hooks.beforeEach(function() {
@@ -16,21 +11,16 @@ module('validity.js', function(hooks) {
   });
 
   module('#setValidity', function() {
-    test('errors if element already had validity set', async function(assert) {
-      let [subject] = this.subjects;
-      setValidity(subject);
-      assert.throws(
-        () => setValidity(subject),
-        /An element can only have one validator registered on it/
-      );
-    });
-
     test('returns a teardown function', async function(assert) {
-      assert.expect(0);
+      let validatorCalls = [];
+      let validator1 = () => (validatorCalls.push(1), []);
+      let validator2 = () => (validatorCalls.push(2), []);
       let [subject] = this.subjects;
-      let teardown = setValidity(subject);
+      let teardown = setValidity(subject, validator1);
       teardown();
-      setValidity(subject);
+      setValidity(subject, validator2);
+      await validate(subject);
+      assert.deepEqual(validatorCalls, [2]);
     });
 
     test('sets custom validity', async function(assert) {
@@ -40,11 +30,27 @@ module('validity.js', function(hooks) {
           subject.dispatchEvent(new FocusEvent('blur'));
         });
       }));
+      await flushPromises();
       for (let input of this.subjects) {
         assert.equal(input.validationMessage, 'test-message');
         assert.strictEqual(input.validity.valid, false);
         assert.strictEqual(input.validity.customError, true);
       }
+    });
+
+    test('validity can be set multiple times', async function(assert) {
+      let [subject] = this.subjects;
+      let validatorCalls = [];
+      const validator = (id) => () => (validatorCalls.push(id), []);
+      await new Promise(resolve => {
+        setValidity(subject, undefined, { on: '' });
+        setValidity(subject, validator(1), { on: '' });
+        setValidity(subject, [validator(2), validator(3)], { on: '' });
+        subject.addEventListener('validated', resolve);
+        subject.dispatchEvent(new CustomEvent('validate'));
+      });
+      await flushPromises();
+      assert.deepEqual(validatorCalls, [1, 2, 3]);
     });
 
     test('validates on custom events', async function(assert) {
@@ -54,6 +60,7 @@ module('validity.js', function(hooks) {
           subject.dispatchEvent(new CustomEvent('foobar'));
         });
       }));
+      await flushPromises();
       for (let input of this.subjects) {
         assert.equal(input.validationMessage, 'test-message');
         assert.strictEqual(input.validity.valid, false);
@@ -65,30 +72,44 @@ module('validity.js', function(hooks) {
       let calledArgs = [];
       await Promise.all(this.subjects.map(subject => {
         return new Promise(resolve => {
-          setValidity(subject, (...args) => {
+          const validator = (...args) => {
             calledArgs.push(args);
             resolve();
             return ['test-message'];
-          });
+          };
+          setValidity(subject, validator, { on: '' });
           subject.dispatchEvent(new FocusEvent('validate'));
         });
       }));
+      await flushPromises();
       assert.strictEqual(calledArgs[0][0], this.subjects[0]);
       assert.strictEqual(calledArgs[1][0], this.subjects[1]);
       assert.strictEqual(calledArgs[2][0], this.subjects[2]);
     });
 
-    test('dispatches the "validated" event', async function(assert) {
-      let eventCalls = 0;
-      this.subjects.forEach(s => s.addEventListener('validated', () => eventCalls++));
-      await Promise.all(this.subjects.map(subject => {
-        return new Promise(resolve => {
-          setValidity(subject, () => (resolve(), []), { on: '' });
-          subject.dispatchEvent(new CustomEvent('validate'));
-        });
-      }));
-      assert.equal(eventCalls, 3);
-    });
+    test(
+      'dispatches the "validated" event with all errors in detail property',
+      async function(assert) {
+        let eventCalls = [];
+        const validatedEventHandler = event => eventCalls.push(event);
+        this.subjects.forEach(
+          s => s.addEventListener('validated', validatedEventHandler)
+        );
+        await Promise.all(this.subjects.map(subject => {
+          return new Promise(resolve => {
+            const validator = () => (resolve(), ['test1', 'test2', 'test3']);
+            setValidity(subject, validator, { on: '' });
+            subject.dispatchEvent(new CustomEvent('validate'));
+          });
+        }));
+        await flushPromises();
+        assert.equal(eventCalls.length, 3);
+        for (let eventCall of eventCalls) {
+          let { errors } = eventCall.detail;
+          assert.deepEqual(errors, ['test1', 'test2', 'test3']);
+        }
+      }
+    );
 
     test('bubbles the "validated" event', async function(assert) {
       let eventCalls = 0;
@@ -99,6 +120,7 @@ module('validity.js', function(hooks) {
           subject.dispatchEvent(new CustomEvent('validate'));
         });
       }));
+      await flushPromises();
       assert.equal(eventCalls, 3);
     });
 
@@ -113,6 +135,7 @@ module('validity.js', function(hooks) {
         subject.dispatchEvent(new CustomEvent('validate'));
         subject.dispatchEvent(new CustomEvent('validate'));
       });
+      await flushPromises();
       assert.equal(eventCalls, 1);
     });
 
@@ -128,6 +151,7 @@ module('validity.js', function(hooks) {
           subject.dispatchEvent(new CustomEvent('validate'));
         });
       }));
+      await flushPromises();
       for (let input of this.subjects) {
         assert.equal(input.validationMessage, 'test-message');
         assert.strictEqual(input.validity.valid, false);
