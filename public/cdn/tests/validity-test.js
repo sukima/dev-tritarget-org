@@ -1,4 +1,4 @@
-import { setValidity, validate } from '../validity.js';
+import { setValidity, validate, verifyFormValidity } from '../validity.js';
 
 const { module, test } = QUnit;
 const flushPromises = () => new Promise(r => setTimeout(r, 0));
@@ -201,6 +201,74 @@ module('validity.js', function(hooks) {
       this.subjects.forEach(s => setValidity(s, testValidate, { on: '' }));
       await validate(...this.subjects);
       assert.equal(validationCalls, 3);
+    });
+  });
+
+  module('#verifyFormValidity', function(hooks) {
+    hooks.beforeEach(function() {
+      this.fixture.innerHTML = `
+        <div id="test-form-wrapper">
+          <form id="test-form">
+            <input type="text" name="foo" id="test-input">
+          </form>
+        </div>
+      `;
+      this.input = document.getElementById('test-input');
+      this.wrapper = document.getElementById('test-form-wrapper');
+      this.subject = document.getElementById('test-form');
+      this.subject.addEventListener('submit', event => event.preventDefault());
+    });
+
+    test('calls native submit() by default', function(assert) {
+      let submitCalled = false;
+      let done = assert.async();
+
+      assert.expect(1);
+      this.subject.submit = () => {
+        assert.ok(true, 'native submit action called');
+        done();
+      };
+      verifyFormValidity(this.subject);
+      this.subject.requestSubmit();
+    });
+
+    test('adds novalidate attribute', function(assert) {
+      verifyFormValidity(this.subject);
+      assert.ok(this.subject.noValidate, 'expected novalidate to be true');
+    });
+
+    test('handles bubbling to non-form element', function(assert) {
+      let done = assert.async();
+      let submit = event => {
+        assert.ok(true, 'submit callback called');
+        done();
+      };
+      assert.expect(1);
+      verifyFormValidity(this.wrapper, { submit });
+      this.subject.requestSubmit();
+    });
+
+    test('called submit callback with all fields valid', function(assert) {
+      let done = assert.async();
+      let submit = event => {
+        assert.ok(true, 'submit callback called');
+        done();
+      };
+      assert.expect(1);
+      verifyFormValidity(this.subject, { submit });
+      setValidity(this.input, () => [], { on: '' });
+      this.subject.requestSubmit();
+    });
+
+    test('does not call submit callback with a field invalid', async function(assert) {
+      let submit = event => {
+        assert.notOk(true, 'submit callback should not have been called');
+      };
+      assert.expect(0);
+      verifyFormValidity(this.subject, { submit });
+      setValidity(this.input, () => ['test-message'], { on: '' });
+      this.subject.requestSubmit();
+      await new Promise(r => setTimeout(r, 10));
     });
   });
 });

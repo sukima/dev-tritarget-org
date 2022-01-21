@@ -120,3 +120,28 @@ export function setValidity(
     validatorsStore.remove(element, validators);
   };
 }
+
+export function verifyFormValidity(
+  formElement,
+  { submit, reportValidity = false } = {}
+) {
+  let originalNoValidate = formElement.noValidate;
+  let checkMethod = reportValidity ? 'reportValidity' : 'checkValidity';
+
+  const submitHandler = async event => {
+    let submitAction = submit ?? (() => event.target.submit());
+    event.preventDefault();
+    await validate(...event.target.elements);
+    if (event.target[checkMethod]()) {
+      submitAction(event);
+    }
+  };
+
+  formElement.noValidate = true;
+  formElement.addEventListener('submit', submitHandler)
+
+  return () => {
+    formElement.noValidate = originalNoValidate;
+    formElement.removeEventListener('submit', submitHandler)
+  };
+}
