@@ -57,6 +57,17 @@ class EventsManager {
   }
 }
 
+class Latch {
+  count = 0;
+  bump() {
+    this.count++;
+  }
+  check() {
+    this.count--;
+    return this.count <= 0;
+  }
+}
+
 async function reduceValidators(validators, ...args) {
   let promises = Array.from(validators, validator => validator(...args));
   let errors = await Promise.all(promises);
@@ -93,21 +104,20 @@ export function setValidity(
   let eventsManager = new EventsManager(element, eventsStore);
   let eventNames = commaSeperate(on);
   let lastTask = Promise.resolve();
-  let taskCount = 0;
+  let latch = new Latch();
 
   const updateValidity = ({ target }) => {
-    taskCount++;
+    latch.bump();
     lastTask = lastTask.then(async () => {
-      taskCount--;
-      if (taskCount !== 0) { return; }
-      let errors = await reduceValidators(validatorsStore.get(element), target);
-      let nativeErrors = [];
+      if (!latch.check()) { return; }
       target.setCustomValidity('');
-      if (!target.checkValidity()) { nativeErrors = [target.validationMessage]; }
-      target.setCustomValidity(errors[0] ?? '');
-      errors = [...errors, ...nativeErrors];
+      let nativeErrors = target.checkValidity() ? [] : [target.validationMessage];
+      let customErrors = await reduceValidators(validatorsStore.get(element), target);
+      let errors = [...customErrors, ...nativeErrors];
+      let detail = { errors, customErrors, nativeErrors };
+      target.setCustomValidity(customErrors[0] ?? '');
       target.dispatchEvent(
-        new CustomEvent('validated', { bubbles: true, detail: { errors } })
+        new CustomEvent('validated', { bubbles: true, detail })
       );
     });
     return lastTask;

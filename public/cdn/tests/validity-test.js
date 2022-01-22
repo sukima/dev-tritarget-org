@@ -109,9 +109,13 @@ module('validity.js', function(hooks) {
         });
         await flushPromises();
         assert.equal(eventCalls.length, 1);
-        let { errors } = eventCalls[0].detail;
+        let { errors, customErrors, nativeErrors } = eventCalls[0].detail;
         assert.equal(errors.length, 4);
+        assert.equal(customErrors.length, 3);
+        assert.equal(nativeErrors.length, 1);
         assert.deepEqual(errors.slice(0, 3), ['test1', 'test2', 'test3']);
+        assert.deepEqual(customErrors, ['test1', 'test2', 'test3']);
+        assert.equal(typeof nativeErrors[0], 'string');
       }
     );
 
