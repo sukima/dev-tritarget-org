@@ -5,7 +5,7 @@
 <title>Form Validity Example</title>
 
 <script type="module">
-  import { setValidity, validate } from 'https://tritarget.org/cdn/validity.js';
+  import { setValidity, verifyFormValidity } from 'https://tritarget.org/cdn/validity.js';
 
   const $ = (selector, element = document) => element.querySelector(selector);
 
@@ -22,22 +22,17 @@
     form.reset();
   }
 
-  async function submitHandler(event) {
-    event.preventDefault();
-    let form = event.target;
-    await validate(...form.elements);
-    if (form.checkValidity()) {
-      createNewUser(Object.fromEntries(new FormData(form)));
-      resetForm(form);
-    }
+  function submitHandler({ target: form }) {
+    createNewUser(Object.fromEntries(new FormData(form)));
+    resetForm(form);
   }
 
-  function validatedHandler({ target }) {
+  function validatedHandler({ detail: { errors }, target }) {
     let ref = target.name;
     let message = $(`.validation-message[data-ref=${ref}]`, target.form);
     target.dataset.state = 'dirty';
     if (message) {
-      message.textContent = target.validationMessage;
+      message.textContent = errors.join('\n');
     }
   }
 
@@ -69,12 +64,8 @@
   setValidity($('#userForm-email'));
   setValidity($('#userForm-password'), passwordValidator());
   setValidity($('#userForm-confirm'), confirmValidator($('#userForm-password')));
-
-  [...$('#userForm').elements].forEach(element => {
-    element.addEventListener('validated', validatedHandler);
-  });
-
-  $('#userForm').addEventListener('submit', submitHandler);
+  verifyFormValidity($('#userForm'), { submit: submitHandler });
+  $('#userForm').addEventListener('validated', validatedHandler);
 </script>
 
 </head>
@@ -82,7 +73,7 @@
   <main>
     <section>
       <h1>Create a new user</h1>
-      <form id="userForm" novalidate>
+      <form id="userForm">
         <div class="full-width text-right"><sup class="required">*</sup> Required</div>
 
         <label for="userForm-name">Name<sup class="required">*</sup></label>
@@ -186,6 +177,7 @@
       text-align: right;
       margin-bottom: 0.1rem;
       color: salmon;
+      white-space: pre-wrap;
     }
 
     .validation-message:empty {
