@@ -140,8 +140,8 @@ class Application { // {{{1
     },
   }));
 
-  constructor({ menu, editor, columns, buttons }) {
-    Object.assign(this, { menu, editor, columns, buttons });
+  constructor({ fileBrowser, menu, editor, columns, buttons }) {
+    Object.assign(this, { fileBrowser, menu, editor, columns, buttons });
     this.machine.start();
   }
 
@@ -406,7 +406,7 @@ const cm = CodeMirror.fromTextArea($['#editor'].element, { // {{{1
 });
 
 const app = new Application({ // {{{1
-  filebrowser: new FileBrowser($['#file-open-input'].element),
+  fileBrowser: new FileBrowser($['#file-open-input'].element),
   menu: new Menu($['#menu'].element),
   editor: new Editor(cm, updatePreview),
   columns: {
