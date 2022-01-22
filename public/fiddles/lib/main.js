@@ -1,6 +1,8 @@
 import $ from 'https://tritarget.org/cdn/simple-dom.js';
 import { createMachine, interpret } from 'https://unpkg.com/xstate@4/dist/xstate.web.js';
 
+const BASE_TITLE = $.element.title;
+
 const applicationMachine = createMachine({ // {{{1
   id: 'applicationMachine',
   type: 'parallel',
@@ -385,10 +387,15 @@ class UrlLoader { // {{{1
 }
 
 function updatePreview(content) { // {{{1
+  const fiddleParam = () => new URL(window.location).searchParams.get('fiddle');
   let preview = $['#preview'].contentWindow.document;
+
   preview.open();
   preview.write(content);
   preview.close();
+
+  let subtitle = preview.title || fiddleParam() || 'New Fiddle';
+  $.element.title = `${BASE_TITLE} — ${subtitle}`;
 }
 
 const cm = CodeMirror.fromTextArea($['#editor'].element, { // {{{1
