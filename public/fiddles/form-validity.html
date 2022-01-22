@@ -29,7 +29,7 @@
 
   function validatedHandler({ detail: { errors }, target }) {
     let ref = target.name;
-    let message = $(`.validation-message[data-ref=${ref}]`, target.form);
+    let message = $(`#userForm-validations-${ref}`, target.form);
     target.dataset.state = 'dirty';
     if (message) {
       message.textContent = errors.join('\n');
@@ -38,11 +38,11 @@
 
   function passwordValidator() {
     let requirements = [
-      [/.{6,}/, 'Password must be at least six characters long.'],
-      [/[0-9]/, 'Password must contain at least one number.'],
-      [/[a-z]/, 'Password must contain at least one lowercase letter.'],
-      [/[A-Z]/, 'Password must contain at least one uppercase letter.'],
-      [/[^a-zA-Z0-9\s]/, 'Password must contain at least one special character.'],
+      [/.{6,}/, 'Use at least six characters long.'],
+      [/[0-9]/, 'Use at least one number.'],
+      [/[a-z]/, 'Use at least one lowercase letter.'],
+      [/[A-Z]/, 'Use at least one uppercase letter.'],
+      [/[^a-zA-Z0-9\s]/, 'Use at least one special character.'],
     ];
     return ({ value }) => {
       return requirements
@@ -77,24 +77,52 @@
         <div class="full-width text-right"><sup class="required">*</sup> Required</div>
 
         <label for="userForm-name">Name<sup class="required">*</sup></label>
-        <input id="userForm-name" name="name" required>
-        <span class="validation-message" data-ref="name"></span>
+        <input
+          id="userForm-name"
+          aria-describedby="userForm-validations-name"
+          name="name"
+          required
+        >
+        <span class="validation-message" id="userForm-validations-name"></span>
 
         <label for="userForm-phone">Phone</label>
-        <input id="userForm-phone" name="phone" type="tel">
-        <span class="validation-message" data-ref="phone"></span>
+        <input
+          id="userForm-phone"
+          aria-describedby="userForm-validations-phone"
+          name="phone"
+          type="tel"
+        >
+        <span class="validation-message" id="userForm-validations-phone"></span>
 
         <label for="userForm-email">Email<sup class="required">*</sup></label>
-        <input id="userForm-email" name="email" type="email" required>
-        <span class="validation-message" data-ref="email"></span>
+        <input
+          id="userForm-email"
+          aria-describedby="userForm-validations-email"
+          name="email"
+          type="email"
+          required
+        >
+        <span class="validation-message" id="userForm-validations-email"></span>
 
         <label for="userForm-password">Password<sup class="required">*</sup></label>
-        <input id="userForm-password" name="password" type="password" required>
-        <span class="validation-message" data-ref="password"></span>
+        <input
+          id="userForm-password"
+          aria-describedby="userForm-validations-password"
+          name="password"
+          type="password"
+          required
+        >
+        <span class="validation-message" id="userForm-validations-password"></span>
 
         <label for="userForm-confirm">Confirm password<sup class="required">*</sup></label>
-        <input id="userForm-confirm" name="confirm" type="password" required>
-        <span class="validation-message" data-ref="confirm"></span>
+        <input
+          id="userForm-confirm"
+          aria-describedby="userForm-validations-confirm"
+          name="confirm"
+          type="password"
+          required
+        >
+        <span class="validation-message" id="userForm-validations-confirm"></span>
 
         <button type="submit">Create</button>
       </form>
