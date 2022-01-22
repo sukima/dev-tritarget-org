@@ -443,7 +443,7 @@ $['#menu-manual-preview'].on.click(() => app.trigger('TOGGLE_MANUAL_PREVIEW'));
 
 // Keyboard Events {{{1
 $.on.keyup(event => {
-  if (!(event.ctrlKey || event.shiftKey)) { return; }
+  if (!(event.ctrlKey && event.shiftKey)) { return; }
   const trigger = (...args) => {
     event.preventDefault();
     app.trigger(...args);
