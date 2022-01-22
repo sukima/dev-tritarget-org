@@ -20,8 +20,14 @@
     }
     .menu {
         width: 300px;
+        left: -300px;
         border-right: 1px dotted #999;
         border-bottom: 1px dotted #999;
+        transition: left 0.2s ease-in;
+        display: block;
+    }
+    .menu[data-state=open] {
+        left: 0;
     }
     .preview {
         width: 50%;

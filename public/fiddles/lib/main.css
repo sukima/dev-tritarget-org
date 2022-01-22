@@ -20,9 +20,8 @@ button, a, a:hover {
     text-decoration: none;
 }
 button {
-    font-size: 1em;
+    font-size: 1rem;
     border: none;
-    padding: 0.5em 1em;
     background-color: inherit;
     font-family: inherit;
     margin: 0;
@@ -72,6 +71,19 @@ h2.title {
     display: none;
     background-color: inherit;
 }
+.menu a,
+.menu button,
+.menu-icon button {
+    cursor: pointer;
+}
+.menu a:hover,
+.menu a:focus,
+.menu button:hover,
+.menu button:focus,
+.menu-icon button:hover,
+.menu-icon button:focus {
+    color: #CCC;
+}
 ul.menu-list {
     list-style: none;
     padding-left: 1.4em;
@@ -95,11 +107,17 @@ ul.menu-list li span {
     display: block;
 }
 .menu-close {
-    padding: 0.5em;
+    padding: 0;
     position: absolute;
     top: 0;
-    right: 1em;
-    background-color: black;
+    right: 0;
+}
+.menu-icon button {
+    padding: 0.5rem 1rem;
+}
+.menu-close button {
+    font-size: 2rem;
+    padding: 0 1rem;
 }
 .menu-footer {
     font-size: 0.7em;
