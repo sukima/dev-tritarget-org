@@ -81,7 +81,7 @@ function validateElement(element) {
       cancelable: true,
       detail: { resolve, reject }
     });
-    let wasNotPrevented = element.dispatchEvent(event);
+    let wasNotPrevented = element?.dispatchEvent(event) ?? true;
     if (wasNotPrevented) { resolve(); }
   });
 }

@@ -210,6 +210,14 @@ module('validity.js', function(hooks) {
       await validate(...this.subjects);
       assert.equal(validationCalls, 3);
     });
+
+    test('handles null/undefined elements', async function(assert) {
+      let validationCalls = 0;
+      let testValidate = () => (validationCalls++, []);
+      this.subjects.forEach(s => setValidity(s, testValidate, { on: '' }));
+      await validate(...this.subjects, null, undefined);
+      assert.equal(validationCalls, 3);
+    });
   });
 
   module('#verifyFormValidity', function(hooks) {
