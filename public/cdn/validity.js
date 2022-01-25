@@ -99,7 +99,7 @@ export function validate(...elements) {
 export function setValidity(
   element,
   validators = [],
-  { on = 'change,input,blur' } = {}
+  { on = 'change,input,blur', waiterCallback = noop } = {}
 ) {
   let eventsManager = new EventsManager(element, eventsStore);
   let eventNames = commaSeperate(on);
@@ -120,6 +120,7 @@ export function setValidity(
         new CustomEvent('validated', { bubbles: true, detail })
       );
     });
+    waiterCallback(lastTask);
     return lastTask;
   };
 
