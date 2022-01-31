@@ -10,7 +10,7 @@ Simple way to capture all the variables in custom tagged string literal:
 
 ```javascript
 function myCustom(strings, ...args) {
-  let vars = args[Symbol.iterator]();
+  let vars = args.values();
   let next = (x) => (x = vars.next(), x.done ? '' : x.value);
   let result = strings.map(s => s + next()).join('');
   return `Hello ${result}, welcome!`;

@@ -1,0 +1,53 @@
+created: 20220131162646000
+creator: Sukima
+modified: 20220131162646000
+modifier: Sukima
+title: Ember Togglable Helper
+tags: Ember JavaScript Coding Tips
+type: text/vnd.tiddlywiki
+
+!!! Helper
+
+```javascript
+import { Helper } from '@ember/helper';
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
+
+class Toggleable {
+  @tracked value;
+  constructor(initialValue) {
+    this.value = initialValue;
+  }
+
+  @action
+  set(value) {
+    this.value = value;
+  }
+
+  @action
+  toggle() {
+    this.set(!this.value);
+  }
+}
+
+export function toggleable(initialValue) {
+  return new Toggleable(initialValue);
+}
+
+export default Helper.helper(
+  ([initialValue]) => toggleable(initialValue)
+);
+```
+
+!!! Usage
+
+```handlebars
+{{#let (toggleable false) as |flag|}}
+  <button
+    type="button"
+    {{on "click" flag.toggle}}
+  >
+    Toggle
+  </button>
+  <div data-open={{flag.value}}>…</div>
+{{/let}}

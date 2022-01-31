@@ -1,0 +1,105 @@
+created: 20220131165040000
+creator: Sukima
+modified: 20220131165040000
+modifier: Sukima
+title: Ember Async Getter
+tags: Ember JavaScript Coding Tips
+type: text/vnd.tiddlywiki
+
+Inspired from:
+
+* [[Asynchronous Computed Properties in Ember]] by [[Sukima]]
+* [[Async Data and Autotracking in Ember Octane|https://v5.chriskrycho.com/journal/async-data-and-autotracking-in-ember-octane/]] by [[Chris Krycho|https://v5.chriskrycho.com/about]]
+
+!!! Helper
+
+```javascript
+import { Helper } from '@ember/helper';
+import { tracked } from '@glimmer/tracking';
+
+const STATES = new WeakMap();
+const TASKS = new WeakMap();
+
+class State {
+  @tracked state = { status: 'running' };
+  get status() {
+    return this.state.status;
+  }
+  get value() {
+    return this.state.value;
+  }
+  get error() {
+    return this.state.reason;
+  }
+  resolveWith(value) {
+    this.state = { status: 'done', value };
+  }
+  rejectWith(reason) {
+    this.state = { status: 'error', reason };
+  }
+  static for(key) {
+    let state = STATES.get(key) ?? new State();
+    STATES.set(key, state);
+    return state;
+  }
+}
+
+class Task {
+  constructor(promise) {
+    const state = State.for(this);
+    this.promise = promise;
+    promise.then(
+      value => state.resolveWith(value),
+      error => state.rejectWith(error),
+    );
+  }
+  get status() {
+    return State.for(this).status;
+  }
+  get value() {
+    return State.for(this).value;
+  }
+  get error() {
+    return State.for(this).error;
+  }
+  get is() {
+    return { [this.status]: true };
+  }
+  then(...args) {
+    return Task.from(this.promise.then(...args));
+  }
+  catch(...args) {
+    return Task.from(this.promise.catch(...args));
+  }
+  finally(...args) {
+    return Task.from(this.promise.finally(...args));
+  }
+  static from(promise) {
+    let task = TASKS.get(promise) ?? new Task(promise);
+    TASKS.set(promise, task);
+    return task;
+  }
+}
+
+export function load(promise) {
+  return Task.from(promise);
+}
+
+export default Helper.helper(
+  ([promise]) => load(promise);
+);
+```
+
+!!! Usage
+
+```handlebars
+{{#let (load this.myPromise) as |task|}}
+  {{#if task.is.running}}
+    <LoadingIndicator />
+  {{else if task.is.error}}
+    <Error @error={{task.error}} />
+  {{else}}
+    <DataTable @data={{task.value}} />
+  {{/if}}
+{{/let}}
+```
