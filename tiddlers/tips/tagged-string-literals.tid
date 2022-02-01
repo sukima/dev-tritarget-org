@@ -3,7 +3,7 @@ creator: Sukima
 modified: 20210520134119000
 modifier: Sukima
 title: Tagged String Literals
-tags: Tips Coding JavaScript
+tags: Tips Coding JavaScript snippits
 type: text/vnd.tiddlywiki
 
 Simple way to capture all the variables in custom tagged string literal:
