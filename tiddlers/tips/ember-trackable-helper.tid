@@ -2,7 +2,7 @@ created: 20220131162646000
 creator: Sukima
 modified: 20220131162646000
 modifier: Sukima
-title: Ember Togglable Helper
+title: Ember Trackable Helper
 tags: Ember JavaScript Coding Tips snippits
 type: text/vnd.tiddlywiki
 
@@ -13,15 +13,16 @@ import { Helper } from '@ember/helper';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
-class Toggleable {
+export class Trackable {
   @tracked value;
+
   constructor(initialValue) {
     this.value = initialValue;
   }
 
   @action
-  set(value) {
-    this.value = value;
+  set(newValue) {
+    this.value = newValue;
   }
 
   @action
@@ -30,19 +31,15 @@ class Toggleable {
   }
 }
 
-export function toggleable(initialValue) {
-  return new Toggleable(initialValue);
-}
-
 export default Helper.helper(
-  ([initialValue]) => toggleable(initialValue)
+  ([initialValue]) => new Trackable(initialValue)
 );
 ```
 
 !!! Usage
 
 ```handlebars
-{{#let (toggleable false) as |flag|}}
+{{#let (trackable false) as |flag|}}
   <button
     type="button"
     {{on "click" flag.toggle}}
@@ -51,3 +48,4 @@ export default Helper.helper(
   </button>
   <div data-open={{flag.value}}>…</div>
 {{/let}}
+```
