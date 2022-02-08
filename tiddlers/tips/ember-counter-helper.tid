@@ -1,0 +1,47 @@
+created: 20220208014832000
+creator: Sukima
+modified: 20220208014832000
+modifier: Sukima
+title: Ember Counter Helper
+tags: Ember JavaScript Coding Tips snippits
+type: text/vnd.tiddlywiki
+
+!!! Helper
+
+```javascript
+import { helper } from '@ember/component/helper';
+import { tracked } from '@glimmer/tracking';
+
+export class Counter {
+  @tracked value;
+  inc = () => ++this.value;
+  dec = () => --this.value;
+  set = (value) => (this.value = value);
+
+  constructor(value = 0) {
+    this.value = value;
+  }
+}
+
+export default helper(([value]) => new Counter(value));
+```
+
+!!! Usage
+
+```handlebars
+{{#let (counter) as |count|}}
+  <button
+    type="button"
+    {{on "click" count.inc}}
+  >
+    Increment
+  </button>
+  <button
+    type="button"
+    {{on "click" count.dec}}
+  >
+    Decrement
+  </button>
+  <p>{{count.value}}</p>
+{{/let}}
+```

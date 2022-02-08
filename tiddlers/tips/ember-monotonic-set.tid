@@ -1,0 +1,63 @@
+created: 20220208015319000
+creator: Sukima
+modified: 20220208015319000
+modifier: Sukima
+title: Ember Monotonic Set Helper
+tags: Ember JavaScript Coding Tips snippits
+type: text/vnd.tiddlywiki
+
+!!! Helper
+
+```javascript
+import { helper } from '@ember/component/helper';
+import { tracked } from '@glimmer/tracking';
+
+let COUNTER = 0;
+
+const uniqueId = () => ++COUNTER;
+
+export class MonotonicSet {
+  @tracked stack;
+  add = () => {
+    this.stack.add(uniqueId());
+    this.stack = new Set(this.stack);
+  };
+  remove = (id) => {
+    this.stack.delete(id);
+    this.stack = new Set(this.stack);
+  };
+
+  get size() {
+    return this.stack.size;
+  }
+
+  *[Symbol.iterator]() {
+    yield* this.stack;
+  }
+
+  constructor(length = 0) {
+    this.stack = new Set(Array.from({ length }, uniqueId));
+  }
+}
+
+export default helper(([size]) => new MonotonicSet(size));
+```
+
+!!! Usage
+
+```handlebars
+{{#let (monotonic-set) as |inputs|}}
+  <input name="foo[]">
+  {{#each inputs.stack as |id|}}
+    <input name="foo[]">
+    <button
+      type="button"
+      {{on "click" (fn inputs.remove id)}}
+    >X</button>
+  {{/each}}
+  <button
+    type="button"
+    {{on "click" inputs.add}}
+  >Add</button>
+{{/let}}
+```

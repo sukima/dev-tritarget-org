@@ -9,31 +9,24 @@ type: text/vnd.tiddlywiki
 !!! Helper
 
 ```javascript
-import { Helper } from '@ember/helper';
-import { action } from '@ember/object';
+import { Helper } from '@ember/component/helper';
 import { tracked } from '@glimmer/tracking';
 
 export class Trackable {
   @tracked value;
+  set = (value) => (this.value = value);
+  toggle = () => this.set(!this.value);
+
+  get is() {
+    return { [this.value]: true };
+  }
 
   constructor(initialValue) {
     this.value = initialValue;
   }
-
-  @action
-  set(newValue) {
-    this.value = newValue;
-  }
-
-  @action
-  toggle() {
-    this.set(!this.value);
-  }
 }
 
-export default Helper.helper(
-  ([initialValue]) => new Trackable(initialValue)
-);
+export default helper(([value]) => new Trackable(value));
 ```
 
 !!! Usage
