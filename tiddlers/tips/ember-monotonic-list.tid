@@ -2,7 +2,7 @@ created: 20220208015319000
 creator: Sukima
 modified: 20220208015319000
 modifier: Sukima
-title: Ember Monotonic Set Helper
+title: Ember Monotonic List Helper
 tags: Ember JavaScript Coding Tips snippits
 type: text/vnd.tiddlywiki
 
@@ -16,39 +16,39 @@ let COUNTER = 0;
 
 const uniqueId = () => ++COUNTER;
 
-export class MonotonicSet {
-  @tracked stack;
+export class MonotonicList {
+  @tracked list;
   add = () => {
-    this.stack.add(uniqueId());
-    this.stack = new Set(this.stack);
+    this.list.add(uniqueId());
+    this.list = new Set(this.list);
   };
   remove = (id) => {
-    this.stack.delete(id);
-    this.stack = new Set(this.stack);
+    this.list.delete(id);
+    this.list = new Set(this.list);
   };
 
   get size() {
-    return this.stack.size;
+    return this.list.size;
   }
 
   *[Symbol.iterator]() {
-    yield* this.stack;
+    yield* this.list;
   }
 
   constructor(length = 0) {
-    this.stack = new Set(Array.from({ length }, uniqueId));
+    this.list = new Set(Array.from({ length }, uniqueId));
   }
 }
 
-export default helper(([size]) => new MonotonicSet(size));
+export default helper(([size]) => new MonotonicList(size));
 ```
 
 !!! Usage
 
 ```handlebars
-{{#let (monotonic-set) as |inputs|}}
+{{#let (monotonic-list) as |inputs|}}
   <input name="foo[]">
-  {{#each inputs.stack as |id|}}
+  {{#each inputs as |id|}}
     <input name="foo[]">
     <button
       type="button"
