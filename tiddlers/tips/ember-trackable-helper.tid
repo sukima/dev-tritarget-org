@@ -12,7 +12,7 @@ type: text/vnd.tiddlywiki
 import { Helper } from '@ember/component/helper';
 import { tracked } from '@glimmer/tracking';
 
-export class Trackable {
+export class TrackedState {
   @tracked value;
   set = (value) => (this.value = value);
   toggle = () => this.set(!this.value);
@@ -26,19 +26,35 @@ export class Trackable {
   }
 }
 
-export default helper(([value]) => new Trackable(value));
+export default helper(([value]) => new TrackedState(value));
 ```
 
 !!! Usage
 
 ```handlebars
-{{#let (trackable false) as |flag|}}
-  <button
-    type="button"
-    {{on "click" flag.toggle}}
-  >
+{{#let (tracked-state) as |token|}}
+  <span>{{if token.value "ON" "OFF"}}</span>
+  <button type="button" {{on "click" token.toggle}}>
     Toggle
   </button>
-  <div data-open={{flag.value}}>…</div>
+{{/let}}
+
+{{#let (tracked-state "red") as |token|}}
+  {{#if token.is.red}}
+    <button type="button"
+      {{on "click" (fn token.set "green")}}>
+      <img src="red-light.png">
+    </button>
+  {{else if token.is.yellow}}
+    <button type="button"
+      {{on "click" (fn token.set "red")}}>
+      <img src="yellow-light.png">
+    </button>
+  {{else if token.is.green}}
+    <button type="button"
+      {{on "click" (fn token.set "yellow")}}>
+      <img src="green-light.png">
+    </button>
+  {{/if}}
 {{/let}}
 ```
