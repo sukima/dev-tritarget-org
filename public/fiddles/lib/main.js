@@ -214,7 +214,7 @@ class Editor { // {{{1
     this.codemirror = cmInstance;
     this.updateCallback = updateCallback;
     this.initialValue = this.currentValue;
-    this.onChange = this.update;
+    this.enableOnChangeEvents();
     this.attachEvents();
   }
 
@@ -253,7 +253,7 @@ class Editor { // {{{1
   }
 
   enableOnChangeEvents() {
-    this.onChange = this.update;
+    this.onChange = debounce(() => this.update(), 700);
   }
 
   disableOnChangeEvents() {
@@ -396,6 +396,14 @@ function updatePreview(content) { // {{{1
 
   let subtitle = preview.title || fiddleParam() || 'New Fiddle';
   $.element.title = `${BASE_TITLE} — ${subtitle}`;
+}
+
+function debounce(fn, delay = 10) { // {{{1
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
 }
 
 const cm = CodeMirror.fromTextArea($['#editor'].element, { // {{{1
