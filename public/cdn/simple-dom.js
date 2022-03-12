@@ -1,3 +1,71 @@
+/*******************************************/
+/* Version 1.0.0                           */
+/* License MIT                             */
+/* Copyright (C) 2022 Devin Weaver         */
+/* https://tritarget.org/cdn/simple-dom.js */
+/*******************************************/
+
+/**
+ * This micro lib is a compact and simple method to interact with the DOM. It
+ * facilitates the query mechanisms that querySelector and querySelectorAll use
+ * but in a compact fluent API. It also makes adding (and removing) events
+ * easy.
+ *
+ * Tests: https://tritarget.org/cdn/tests/simple-dom-test.js
+ *
+ * ## Query single element
+ *
+ * Queries are performed by property lookups. It will use querySelector()
+ * first. If that doesn't find anything it will default to getElementById().
+ *
+ * Calling methods/properties on the Element will be proxied. If however you
+ * need access to the actual Element use `.element`.
+ *
+ * @example
+ * ```js
+ * import $ from 'https://tritarget.org/cdn/simple-dom.js';
+ *
+ * // By ID
+ * $.anElementId.dataset.foo;
+ * $['#anElementId']dataset.foo;
+ *
+ * // By CSS selection
+ * $['.foobar'].classList.add('list-item');
+ * $['ul li'].classList.add('first-list-item');
+ * $['button[data-action]'].on.click(() => console.count('button action'));
+ * doSomethingWithRawElement($.foobar.element);
+ * ```
+ *
+ * ## Query many elements
+ *
+ * Selecting multiple can be opt-in with the `.all` property.
+ *
+ * Calling methods/properties on the NodeList will be proxied. If however you
+ * need access to the actual NodeList use `.elements`.
+ *
+ * @example
+ * ```js
+ * $.all['ul li'].classList.add('list-item');
+ * $.all['button'].on.click(() => { … });
+ * doSomethingWithRawNodeList($.all['.foobar'].elements);
+ * ```
+ *
+ * ## Events
+ *
+ * Events can be attach with the `.on` property followed by the event name as
+ * a function with the callback passed in. When attaching events it will return
+ * a teardown function.
+ *
+ * @example
+ * ```js
+ * let off = $.on.keyup(() => { … });
+ * off();
+ *
+ * $.button.on.click(() => { … });
+ * $.all['.btn'].on.customEvent(() => { … });
+ * ```
+ */
+
 const proxies = new WeakSet();
 
 function attachEvents(el, eventNames, fn, options) {
