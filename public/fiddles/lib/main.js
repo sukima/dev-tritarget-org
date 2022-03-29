@@ -388,8 +388,15 @@ class UrlLoader { // {{{1
 
 function updatePreview(content) { // {{{1
   const fiddleParam = () => new URL(window.location).searchParams.get('fiddle');
-  let preview = $['#preview'].contentWindow.document;
+  let previewFrame = $.createElement('iframe');
+  let oldPreview = $['#preview'].element;
+  let container = oldPreview.parentNode;
 
+  oldPreview.remove();
+  previewFrame.id = 'preview';
+  container.appendChild(previewFrame);
+
+  let preview = previewFrame.contentWindow.document;
   preview.open();
   preview.write(content);
   preview.close();
