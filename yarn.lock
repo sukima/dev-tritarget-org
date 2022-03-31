@@ -2299,10 +2299,10 @@ tar@^4:
     safe-buffer "^5.2.1"
     yallist "^3.1.1"
 
-tiddlywiki@5.2.1:
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/tiddlywiki/-/tiddlywiki-5.2.1.tgz#9bd70652e6d819a0b86677793930c183605d5abe"
-  integrity sha512-cfZX8G4/ymQzBmPcI8UWJ317eDrLf4INto99m7M8Nkbx5BMA3+Uapht7OPNaXZRR4RqvVJ7N1Ie1xYMWtvjnpw==
+tiddlywiki@5.2.2:
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/tiddlywiki/-/tiddlywiki-5.2.2.tgz#a51f3d3bfcc6ebc00e2baebcd11569c712d5e78f"
+  integrity sha512-xAY30p06CI6oFvebL/BnPtM9rbYRG14AVbpEfTvCHjpGutYsn6XBOogbhqnAxncmifFK3CaBGfiaqPNGi6rxGQ==
 
 to-fast-properties@^1.0.3:
   version "1.0.3"
