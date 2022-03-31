@@ -161,16 +161,38 @@ class FileBrowser { // {{{1
 }
 
 class Menu { // {{{1
-  constructor(element) {
+  constructor(element, triggerClose = noop) {
     this.element = element;
+    this.triggerClose = triggerClose;
   }
 
   open() {
     this.element.dataset.state = 'open';
+    requestAnimationFrame(() => this.attachDocumentEvents());
   }
 
   close() {
     this.element.dataset.state = 'closed';
+    this.removeDocumentEvents();
+  }
+
+  attachDocumentEvents() {
+    this.tearDownEvents = [
+      $.on.click(event => {
+        if (this.element.contains(event.target)) return;
+        event.stopPropagation();
+        this.triggerClose();
+      }, true),
+      $.on.keyup(event => {
+        if (event.key !== 'Escape') return;
+        event.stopPropagation();
+        this.triggerClose();
+      }, true),
+    ];
+  }
+
+  removeDocumentEvents() {
+    this.tearDownEvents?.forEach(i => i());
   }
 }
 
@@ -196,16 +218,16 @@ class Column { // {{{1
 
 class Button { // {{{1
   constructor(element, label) {
-    this.element = element;
-    this.label = label;
+    this.labelEl = element.querySelector('.label');
+    this.labelText = label;
   }
 
   activate() {
-    this.element.innerHTML = `${this.label} &#x2713`;
+    this.labelEl.innerHTML = `${this.labelText} &#x2713`;
   }
 
   deactivate() {
-    this.element.innerHTML = `${this.label}`;
+    this.labelEl.innerHTML = `${this.labelText}`;
   }
 }
 
@@ -422,7 +444,7 @@ const cm = CodeMirror.fromTextArea($['#editor'].element, { // {{{1
 
 const app = new Application({ // {{{1
   fileBrowser: new FileBrowser($['#file-open-input'].element),
-  menu: new Menu($['#menu'].element),
+  menu: new Menu($['#menu'].element, () => app.trigger('CLOSE_MENU')),
   editor: new Editor(cm, updatePreview),
   columns: {
     editor: new Column($['.editor'].element),

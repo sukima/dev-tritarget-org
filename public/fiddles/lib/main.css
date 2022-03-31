@@ -94,11 +94,14 @@ ul.menu-list li {
     margin-bottom: 0.5em;
 }
 ul.menu-list li button {
-    display: block;
+    display: flex;
+    flex-direction: column;
     padding: 0;
     margin: 0;
+    text-align: left;
+    width: 100%;
 }
-ul.menu-list li span {
+ul.menu-list li .sublabel {
     display: block;
     font-size: 0.6em;
     padding-top: 0.5em;
