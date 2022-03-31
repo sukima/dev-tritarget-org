@@ -4,12 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title>TriTarget CDN Tests</title>
-  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.14.0.css">
 </head>
 <body>
 <div id="qunit"></div>
 <div id="qunit-fixture"></div>
-<script src="https://code.jquery.com/qunit/qunit-2.14.0.js"></script>
+<script type="module">
+  import { QUnit } from '../testing.js';
+  const { module, test } = QUnit;
+  Object.assign(window, { module, test });
+</script>
 <script src="./validity-test.js" type="module"></script>
 <script src="./change-tracking-test.js" type="module"></script>
 <script src="./array-updater-test.js" type="module"></script>

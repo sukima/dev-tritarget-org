@@ -1,0 +1,54 @@
+/**
+ * This module will automatically configure the document.body to have the
+ * QUnit CSS and DOM nodes. It will also initialize Sinon properly.
+ *
+ * This module exposes the following libraries:
+ *
+ * ====[ QUnit ]====
+ *   import { QUnit } from './testing.js';
+ *   const { module, test } = QUnit;
+ *
+ * ====[ Sinon ]====
+ *   import { sinon } from './testing.js';
+ *   
+ *   module('…', function () {
+ *     test('…', function (assert) {
+ *       assert.calledWith(mySpy);
+ *     });
+ *   });
+ *
+ * ====[ XState ]====
+ *   import { xstate } from './testing.js';
+ *   const { createMachine, interpret } = xstate;
+ *
+ * ====[ @xstate/test ]====
+ *   import { QUnit, xstate, xstateTest, testWrapper } from './testing.js';
+ *   const { module, test } = QUnit;
+ *   const { createMachine } = xstate;
+ *   const { createModel } = xstateTest;
+ *   
+ *   const testMachine = createMachine({
+ *     initial: 'firstRender',
+ *     states: {
+ *       firstRender: {
+ *         meta: {
+ *           test: testWrapper(function ({ assert }) {
+ *             assert.ok(true);
+ *           }),
+ *         },
+ *       },
+ *     },
+ *   });
+ *   const testModel = createModel(testMachine).withEvents({});
+ *   const testPlans = testModel.getSimplePathPlans();
+ *   
+ *   testPlans.forEach(function (plan) {
+ *     module(plan.description, function () {
+ *       plan.paths.forEach(function (path) {
+ *         test(path.description, async function (assert) {
+ *           await path.test({ assert });
+ *         });
+ *       });
+ *     });
+ *   });
+ */
