@@ -1,5 +1,5 @@
 /*******************************************/
-/* Version 1.0.0                           */
+/* Version 1.1.0                           */
 /* License MIT                             */
 /* Copyright (C) 2022 Devin Weaver         */
 /* https://tritarget.org/cdn/simple-dom.js */
@@ -64,6 +64,17 @@
  * $.button.on.click(() => { … });
  * $.all['.btn'].on.customEvent(() => { … });
  * ```
+ *
+ * ## Creation
+ *
+ * Just because the typical createElement procedures can be a little tedius.
+ *
+ * @example
+ * ```js
+ * $.new.div({ class: 'foo bar' });
+ * $.new.div({ text: 'foobar' });
+ * $.new.div({ text: 'foobar' });
+ * ```
  */
 
 const proxies = new WeakSet();
@@ -120,6 +131,45 @@ function domAll(element) {
   }))();
 }
 
+function elementCreaterFor(tag) {
+  return function createEleemnt(configs = {}) {
+    let element = document.createElement(tag);
+    for (let [key, value] of Object.entries(configs)) {
+      switch (key) {
+        case 'classes':
+          element.classList.add(...value);
+          break;
+        case 'class':
+          element.className = value;
+          break;
+        case 'data':
+          Object.assign(element.dataset, value);
+          break;
+        case 'attrs':
+          Object.entries(value).forEach(([k, v]) => element.setAttribute(k, v));
+          break;
+        case 'text':
+          element.textContent = value;
+          break;
+        case 'html':
+          element.innerHTML = value;
+          break;
+        default:
+          element[key] = value;
+      }
+    }
+    return element;
+  }
+}
+
+function creatable() {
+  return new Proxy({}, {
+    get(_, prop) {
+      return elementCreaterFor(prop);
+    },
+  });
+}
+
 function dom(element) {
   const queryWrap = wrapper(prop => {
     return prop instanceof Node
@@ -132,6 +182,7 @@ function dom(element) {
       switch (prop) {
         case 'element': return element;
         case 'all': return domAll(element);
+        case 'new': return creatable();
         case 'on':
           return eventable(element === document ? document.body : element);
       }
