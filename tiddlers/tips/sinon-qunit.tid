@@ -1,9 +1,9 @@
 created: 20210817145155000
 creator: Sukima
-modified: 20210817145155000
+modified: 20220428181701635
 modifier: Sukima
+tags: Coding JavaScript Tips snippets
 title: sinon-qunit
-tags: Coding JavaScript Tips Snippets
 type: text/vnd.tiddlywiki
 
 When you want to use sinon in QUnit here is the setup:

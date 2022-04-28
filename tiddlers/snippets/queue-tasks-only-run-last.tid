@@ -1,9 +1,9 @@
 created: 20210923025336000
 creator: Sukima
-modified: 20210923025336000
+modified: 20220428181612643
 modifier: Sukima
+tags: snippets JavaScript Coding
 title: Queue async tasks but only run the last one
-tags: snippets JavaScript coding
 type: text/vnd.tiddlywiki
 
 Use case: spamming a button with click events and the handler spawns an expensive async task. You only want the last on in the microtask queue.

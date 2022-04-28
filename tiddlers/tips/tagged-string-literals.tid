@@ -1,9 +1,9 @@
 created: 20210520134119000
 creator: Sukima
-modified: 20210520134119000
+modified: 20220428181841155
 modifier: Sukima
+tags: Tips Coding JavaScript snippets
 title: Tagged String Literals
-tags: Tips Coding JavaScript snippits
 type: text/vnd.tiddlywiki
 
 Simple way to capture all the variables in custom tagged string literal:
