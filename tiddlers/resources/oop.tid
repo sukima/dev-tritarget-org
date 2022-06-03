@@ -1,12 +1,31 @@
 created: 20200717144228000
 creator: Sukima
-modified: 20200717144601609
+modified: 20220603200716898
 modifier: Sukima
 tags: Coding Resource Tips
 title: OOP Resources
 type: text/vnd.tiddlywiki
 
-* [[The Decision Between Inheritance And Composition|https://sergeyzhuk.me/2017/01/08/composition-over-inheritance/]]
+\define web() {{$:/core/images/globe}}
+\define doc() ''[Document]''
+\define book() ''[Book]''
+\define video() {{$:/core/images/video}}
+
+<style>
+.resource-links svg {
+width: 16px;
+height: 16px;
+margin: 0;
+padding: 0;
+}
+</style>
+
+<div class="resource-links">
+
+* [[The Decision Between Inheritance And Composition|https://sergeyzhuk.me/2017/01/08/composition-over-inheritance/]] <<web>>
+* [[RailsConf 2016 - Succession by Katrina Owen|https://www.youtube.com/watch?v=59YClXmkCVM]] <<video>> --- Refactoring
+
+</div>
 
 ! Sandi Metz
 
