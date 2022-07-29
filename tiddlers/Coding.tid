@@ -2,7 +2,7 @@ color: #663399
 created: 20160324192415096
 creator: Sukima
 icon: $:/core/images/file
-modified: 20200325031906015
+modified: 20220720161324956
 modifier: Sukima
 position: 20
 tags: NavBar TableOfContents
@@ -19,6 +19,10 @@ There are <$count filter="[tag[Coding]tag[Tips]]"/> <<tag "Tips">> about <<tag "
 
 <$button to="snippets" class="tc-summary-button">
 There are <$count filter="[tag[snippets]]"/> <<tag "snippets">>
+</$button>
+
+<$button to="CodingResources" class="tc-summary-button">
+There are <$count filter="[tag[Coding]tag[Resource]]"/> <<tag "Resource">> collections about <<tag "Coding">>
 </$button>
 
 ! Projects

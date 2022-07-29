@@ -1,0 +1,30 @@
+created: 20220720161426389
+modified: 20220720162222307
+tags: Coding Resource
+title: Pair Programming
+type: text/vnd.tiddlywiki
+
+\define web() {{$:/core/images/globe}}
+\define doc() ''[Document]''
+\define book() ''[Book]''
+\define video() {{$:/core/images/video}}
+
+<style>
+.resource-links svg {
+width: 16px;
+height: 16px;
+margin: 0;
+padding: 0;
+}
+</style>
+
+
+<div class="resource-links">
+
+* [[You Must Be CRAZY To Do Pair Programming|https://www.youtube.com/watch?v=aItVJprLYkg]] <<video>> --- Pair programming is one of the most powerful techniques I know of to liberate learning in teams.
+* [[Benefits of Pair Programming|https://hackernoon.com/benefits-of-pair-programming-s51a3ur8]] <<web>> --- Pair programming can be an excellent way for programmers to learn rapidly from other developers. You learn the entire complex process, not just by watching, but by participating.
+* [[The Benefits of Pair Programming|https://www.drovio.com/blog/the-benefits-of-pair-programming/]] <<web>> --- 90% of the active pair programmers say their job is more enjoyable working as a duo, and 96% of them agree they are now more confident in their work.
+* [[5 advantages of pair programming you should know about|https://dev.to/geshan/5-advantages-of-pair-programming-you-should-know-about-4hoa]] <<web>> --- This is probably a very undermined benefit of pair programming. While pair programming you observe the other software engineer and learn lots of things on the fly. While you are on the go you pick up how the other engineer uses keyboard shortcuts or tools that you were not aware of. This is really helpful when you pair program with someone senior to you, you get to know their routine and how they use the same tools more productively.
+* [[Pair Programming for Introverts|https://www.davefarley.net/?p=267]] <<web>> --- We learn best when we can try-out new ideas and quickly discard the bad ones. One way to test ideas is to bounce them off another person. So pair programming provides us with a mechanism to quickly and cheaply exercise ideas and weed out some of the bad ones.
+
+</div>

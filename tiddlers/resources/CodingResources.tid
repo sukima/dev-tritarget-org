@@ -1,0 +1,10 @@
+created: 20220720161350529
+modified: 20220720161414164
+title: CodingResources
+type: text/vnd.tiddlywiki
+
+<ul>
+<$list filter="[tag[Coding]tag[Resource]]">
+<li><$link to={{!!title}}><$view field="title" format="text"/></$link> - <$view field="modified" format="date" template="MMM DD, YYYY"/></li>
+</$list>
+</ul>
