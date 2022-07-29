@@ -1,0 +1,13 @@
+created: 20220729191829000
+creator: Sukima
+modified: 20220729191829000
+modifier: Sukima
+title: PageObject
+tags: Concepts Coding Resource
+type: text/vnd.tiddlywiki
+
+<<<
+When you write tests against a web page, you need to refer to elements within that web page in order to click links and determine what's displayed. However, if you write tests that manipulate the HTML elements directly your tests will be brittle to changes in the UI. A page object wraps an HTML page, or fragment, with an application-specific API, allowing you to manipulate page elements without digging around in the HTML
+<<< Martin Fowler — https://www.martinfowler.com/bliki/PageObject.html
+
+One of the best utils I found for this is [[fractal-page-object|https://github.com/bendemboski/fractal-page-object]].
