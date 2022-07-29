@@ -1,6 +1,6 @@
 created: 20200717135907000
 creator: Sukima
-modified: 20220720162252949
+modified: 20220729161535127
 modifier: Sukima
 tags: Coding Resource Tips
 title: Sandi Metz
@@ -45,3 +45,5 @@ She has done many talks about OOP and design and I found her insight ''invaluabl
 * [[99 Bottles of OOP|http://www.sandimetz.com/99bottles]] <<book>>
 
 </div>
+
+{{TestingMinimalistChart.png}}
