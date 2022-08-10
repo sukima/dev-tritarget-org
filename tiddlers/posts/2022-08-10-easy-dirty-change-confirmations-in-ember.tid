@@ -43,7 +43,7 @@ I expanded the state mutations into setter methods because we see later that hav
 
 With this class we can build a new dirty tracking state at any point in the framework lifecycle as we need. In the example of the route transitions in Ember this would be in the route's model hook because this really is a state scoped to the same session as the model data is. It makes sense to scope the dirty tracking there as well.
 
-```js
+```javascript
 export default MyRoute extends Route {
   async model() {
     let data = await loadMyData();
@@ -55,7 +55,7 @@ export default MyRoute extends Route {
 
 We then need to make sure we trap any changes to the form. An easy way is to add a modifier.
 
-```hbs
+```handlebars
 <form {{on "input" this.model.unloader.registerChanges}}>
 ```
 
@@ -73,13 +73,19 @@ class UnloadManager {
 
   @action
   registerChanges() {
-    window.addEventListener('beforeunload', this.beforeunload);
+    window.addEventListener(
+      'beforeunload',
+      this.beforeunload
+    );
     this.hasChanges = true;
   }
 
   @action
   resetChanges() {
-    window.removeEventListener('beforeunload', this.beforeunload);
+    window.removeEventListener(
+      'beforeunload',
+      this.beforeunload
+    );
     this.hasChanges = false;
   }
 
@@ -100,7 +106,7 @@ Now if you make changes on the form the `hasChanges` is set to true and the `bef
 
 <<.tip """The `beforeunload` can cause issues because it is quite invasive. It can help to have a way to turn it off especially in testing. An easy way to do that is with a global flag you can manage in your test code.""">>
 
-```js
+```javascript
 let beforeUnloadEnabled = true;
 
 export function disableBeforeunload() {
@@ -115,7 +121,10 @@ export enableBeforeunload() {
   @action
   registerChanges() {
     if (beforeUnloadEnabled) {
-      window.addEventListener('beforeunload', this.beforeunload);
+      window.addEventListener(
+        'beforeunload',
+        this.beforeunload
+      );
     }
     this.hasChanges = true;
   }
@@ -127,7 +136,7 @@ Well this is good for when the browser makes a non-Ember transition. But if Embe
 
 I found the best method of managing Modals is to make the modals a component, Have them position themselves (via `#in-element`) and let the consumer handle when they show or hide the modal via your basic `{{#if}}` constructs in the template. For example
 
-```hbs
+```handlebars
 {{#if this.showConfirmation}}
   <Modals::AbandonChangesConfirmation />
 {{/if}}
@@ -135,7 +144,7 @@ I found the best method of managing Modals is to make the modals a component, Ha
 
 To facilitate the closing and also capturing how the user responds to the modal we need a way to track that state. We also need to have a way to stop execution of the code that opens the modal so it can wait for the users response before reacting. Also known as async/await. My idea here is to make another class called a `ModalManager`.
 
-```js
+```javascript
 class ModalManager {
   #resolve = () => {};
   @tracked isOpen = false;
@@ -162,7 +171,7 @@ class ModalManager {
 
 Then in our unload manager we add one designed to manage a dirty data confirmation modal.
 
-```js
+```javascript
 class UnloadManager {
   @tracked hasChanges = false;
   confirmationModal = new ModalManager();
@@ -186,7 +195,7 @@ class UnloadManager {
 
 And we make sure our modal can all take an `@manager` so the buttons in the modal can call the manager's `confirm()` and `cancel()` actions.
 
-```hbs
+```handlebars
 {{#if this.model.unloader.showConfirmation}}
   <Modals::AbandonChangesConfirmation
     @manager={{this.model.unloader.confirmationModal}}
@@ -198,7 +207,7 @@ And we make sure our modal can all take an `@manager` so the buttons in the moda
 
 And the final piece it to attach this to the route's `willTransition` action.
 
-```js
+```javascript
 export default MyRoute extends Route {
   async model() { … }
 
