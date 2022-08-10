@@ -1,0 +1,222 @@
+created: 20220810192544000
+creator: Sukima
+modified: 20220810210527189
+modifier: Sukima
+tags: Article Coding Ember JavaScript
+title: Easy dirty change confirmations in Ember
+type: text/vnd.tiddlywiki
+
+<aside style="float: right; border: thin solid black; border-radius: 8px; padding: 0 1.5rem 0 0; margin: 0 0 1rem 1rem;">
+
+* [[Live DEMO|https://sukima.github.io/ember-dirty-change-example]]
+* [[Source code|https://github.com/sukima/ember-dirty-change-example]]
+
+</aside>
+
+I had the pleasure of working on what I thought was an easy problem to solve but turned out to be far more complex--Dirty state tracking. It seems simple, show a modal to confirm  that the user is willing to abandon their changes on the page before abandoning them. I discovered that there were many things to consider in this.
+
+For example, you need to track when there are changes, track when changes were undone and is no longer dirty, track when the user leave the page, track how they left the page, track attaching browser events, track tear down of those events. And if you are using a framework that handles their own roughting then you will also need to track when to show a modal confirmation dialog, and track how that dialog was dismissed (confirm, deny, or cancel).
+
+There is a lot more to this then I first thought. But I will dive in because I think I came up with an elegant solution to this problem. The first step is to look at the dirty tracking as that will be a core peice to this solution.
+
+! Dirty tracking
+
+The easiest way I know to handle dirty tracking is with a simple state class.
+
+```javascript
+class UnloadManager {
+  @tracked hasChanges = false;
+
+  @action
+  registerChanges() {
+    this.hasChanges = true;
+  }
+
+  @action
+  resetChanges() {
+    this.hasChanges = false;
+  }
+}
+```
+
+I expanded the state mutations into setter methods because we see later that having a place to trap changes will allow us to do more then just mutate the `hasChanges` flag.
+
+With this class we can build a new dirty tracking state at any point in the framework lifecycle as we need. In the example of the route transitions in Ember this would be in the route's model hook because this really is a state scoped to the same session as the model data is. It makes sense to scope the dirty tracking there as well.
+
+```js
+export default MyRoute extends Route {
+  async model() {
+    let data = await loadMyData();
+    let unloader = new UnloadManager;
+    return { data, unloader };
+  }
+}
+```
+
+We then need to make sure we trap any changes to the form. An easy way is to add a modifier.
+
+```hbs
+<form {{on "input" this.model.unloader.registerChanges}}>
+```
+
+Now on to what we do with dirty tracking.
+
+! beforeunload
+
+The first thing is to tell the browser to trap non-framework routing transitions. This can happen when a user clicks reload, closes the tab, or opens a bookmark. Since it happens outside the usual route transitions Ember has no way to trap this and thus we need to rely on browser support.
+
+I'll add a `beforeunload` method to the unload manager and then add and remove it as needed.
+
+```javascript
+class UnloadManager {
+  @tracked hasChanges = false;
+
+  @action
+  registerChanges() {
+    window.addEventListener('beforeunload', this.beforeunload);
+    this.hasChanges = true;
+  }
+
+  @action
+  resetChanges() {
+    window.removeEventListener('beforeunload', this.beforeunload);
+    this.hasChanges = false;
+  }
+
+  @action
+  beforeunload(event) {
+    event.preventDefault(); // FireFox
+    event.returnValue = true; // Chrome
+    return 'true'; // Safari
+  }
+}
+```
+
+And yes `registerChanges()` will be called many times. And you might think that means many `beforeunload` events listeners will be added--but `addEventListener` knows that it matches the same function reference and become a no-op on subsequent calls with the same arguments. Cool!
+
+The `beforeunload` method above has three key points. Browsers never developed a standard for how they handle the unload modal dialog that comes up. Long time ago this event handler use to provide a message that could be displayed in the dialog. But the soon was abused by malicious web sites so now-a-days all we get is a generic "Your changes could be lost" message provided by the browser. This dialog is triggered differently for each browser. FireFox uses the `event.preventDefault()` while chrome expects the `event.returnValue = true` and (I think) Safari still expects a string to be returned `return 'true'` while the content of the string is now ignored due to the same security reasons. In any case I found the above three lines to be more then sufficient to accomplish my goals.
+
+Now if you make changes on the form the `hasChanges` is set to true and the `beforeunload` event is added. If you refresh the page the browser should show an "Are you sure" dialog.
+
+<<.tip """
+
+The `beforeunload` can cause issues because it is quite invasive. It can help to have a way to turn it off especially in testing. An easy way to do that is with a global flag you can manage in your test code.
+
+```js
+let beforeUnloadEnabled = true;
+
+export function disableBeforeunload() {
+  beforeUnloadEnabled = false;
+}
+
+export enableBeforeunload() {
+  beforeUnloadEnabled = true;
+}
+
+…
+  @action
+  registerChanges() {
+    if (beforeUnloadEnabled) {
+      window.addEventListener('beforeunload', this.beforeunload);
+    }
+    this.hasChanges = true;
+  }
+```
+
+""">>
+
+! Modals
+
+Well this is good for when the browser makes a non-Ember transition. But if Ember performs the transition from one route to another the browser thinks it is still the same page and the `beforeunload` is never triggered. The solution here is to provide our own modal dialog. To do that I need to do a small tangent about modal dialogs in Ember. We will circle back to their use in this unload example after.
+
+I found the best method of managing Modals is to make the modals a component, Have them position themselves (via `#in-element`) and let the consumer handle when they show or hide the modal via your basic `{{#if}}` constructs in the template. For example
+
+```hbs
+{{#if this.showConfirmation}}
+  <Modals::AbandonChangesConfirmation />
+{{/if}}
+```
+
+To facilitate the closing and also capturing how the user responds to the modal we need a way to track that state. We also need to have a way to stop execution of the code that opens the modal so it can wait for the users response before reacting. Also known as async/await. My idea here is to make another class called a `ModalManager`.
+
+```js
+class ModalManager {
+  #resolve = () => {};
+  @tracked isOpen = false;
+
+  @action
+  open() {
+    return new Promise((resolve) => {
+      this.#resolve = resolve;
+      this.isOpen = true;
+    }).finally(() => this.isOpen = false);
+  }
+
+  @action
+  confirm(value) {
+    this.#resolve({ reason: 'confirmed', value });
+  }
+
+  @action
+  cancel(value) {
+    this.#resolve({ reason: 'cancelled', value });
+  }
+}
+```
+
+Then in our unload manager we add one designed to manage a dirty data confirmation modal.
+
+```js
+class UnloadManager {
+  @tracked hasChanges = false;
+  confirmationModal = new ModalManager();
+
+  get showConfirmation() {
+    return this.confirmationModal.isOpen;
+  }
+
+  @action
+  async confirmAbandonChanges() {
+    let result = await this.confirmationModal.open();
+    if (result.reason === 'confirmed') {
+      this.resetChanges();
+    }
+    return result;
+  }
+
+  …
+}
+```
+
+And we make sure our modal can all take an `@manager` so the buttons in the modal can call the manager's `confirm()` and `cancel()` actions.
+
+```hbs
+{{#if this.model.unloader.showConfirmation}}
+  <Modals::AbandonChangesConfirmation
+    @manager={{this.model.unloader.confirmationModal}}
+  />
+{{/if}}
+```
+
+! Route willTransition
+
+And the final piece it to attach this to the route's `willTransition` action.
+
+```js
+export default MyRoute extends Route {
+  async model() { … }
+
+  @action
+  async willTransition(transition) {
+    let { unloader } = this.modelFor(this.routeName);
+
+    if (!unloader.hasChanges) return;
+    transition.abort();
+    let { reason } = await unloader.confirmAbandonChanges();
+    if (reason === 'confirmed') transition.retry();
+  }
+}
+```
+
+See this all working in a [[live example DEMO|https://sukima.github.io/ember-dirty-change-example]].
+Or view [[the example source code|https://github.com/sukima/ember-dirty-change-example]].
