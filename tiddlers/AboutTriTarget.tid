@@ -10,7 +10,7 @@ type: text/vnd.tiddlywiki
 
 [img width="240" class="tc-float-right" [SiteLogo.svg]]
 
-This site is built with TiddlyWiki. You can view the source code for this site on GitHub.
+This site is built with TiddlyWiki. Please [[browse the source code|Source]] for this site.
 
 {{SiteLicense}}
 

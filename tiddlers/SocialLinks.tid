@@ -25,6 +25,7 @@ padding: 0;
 !!! Social Links
 
 * {{$:/site/images/rss}} [[RSS Feed|/atom.xml]]
+* {{$:/core/images/file}} [[Sourcehut|https://git.sr.ht/~sukima/]]
 * {{$:/core/images/github}} [[GitHub|https://github.com/sukima]]
 * {{$:/core/images/twitter}} [[Twitter|https://twitter.com/sukima]]
 * {{$:/core/images/locked-padlock}} [[Keybase|https://keybase.io/sukima]]

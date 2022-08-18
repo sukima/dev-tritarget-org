@@ -2,6 +2,10 @@
 
 **A blog of personal quality**
 
+Official source is available at: https://git.sr.ht/~sukima/tritarget.org
+
+Contributions, feedback, and especially patches are enthusiastically welcomed.
+
 ## Directories
 
 | Directory  | Description |
