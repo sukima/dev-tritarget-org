@@ -1,0 +1,39 @@
+created: 20220825234357000
+creator: Sukima
+modified: 20220825235009983
+modifier: Sukima
+tags: Article Coding Ember JavaScript
+title: changeset-validity — An Alternative Idea
+type: text/vnd.tiddlywiki
+
+I’m back at it again with ''validation'' and this time it concerns my arch nemesis: <dfn>[[ember-changeset]]</dfn>.
+
+But first a little recap―in my previous articles I discussed my ideas of defining the validation logic as close to the form fields as possible in “[[Managing validity in forms]]” and simple ways to track dirty changes in “[[Tracking changes with new Proxy()]]” and “[[Easy dirty change confirmations in Ember]].” But I found that in many cases I needed to use [[ember-changeset]] either because that is what former legacy choices dictated or political reasons. I personally feel it is unnecessary bloat and complexity. However, in this article it will be the main subject matter.
+
+I'll dive in with a sample of the complete template code so you get a taste of the idea I wish to highlight:
+
+<figure>
+
+```handlebars
+{{#let (validated-changeset) as |changeset|}}
+  <form>
+    <fieldset>
+      <label for="foobar">Foobar</label>
+      <input
+        id="foobar"
+        name="foobar"
+        value={{changeset.foobar}}
+        {{on "input" (changeset-set changeset "foobar")}}
+        {{changeset-validity
+          "foobar"
+          (validate-fancy-foobar)}}
+      >
+      <span class="validation">
+        {{changeset.error.foobar}}
+      </span>
+    </fieldset>
+  </form>
+{{/let}}
+```
+
+<figure>
