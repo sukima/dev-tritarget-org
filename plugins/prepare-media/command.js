@@ -301,13 +301,7 @@ class Photo extends Media {
   saveThumbTiddler(wiki) {}
 }
 
-export const info = {
-  name: 'prepare-media',
-  platforms: ['node'],
-  synchronous: false
-};
-
-export class Command {
+class Command {
   constructor(params, commander, callback) {
     loadModules();
     this.params = params;
@@ -423,3 +417,10 @@ export class Command {
     .then(() => this.callback(null));
   }
 }
+
+exports.Command = Command;
+exports.info = {
+  name: 'prepare-media',
+  platforms: ['node'],
+  synchronous: false
+};

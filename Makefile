@@ -1,9 +1,7 @@
-babel := node_modules/.bin/babel
 serve := node_modules/.bin/serve
 tiddlywiki := node_modules/.bin/tiddlywiki
 merge_json := ./bin/merge-json
 deploy_path := ktohg@tritarget.org:tritarget.org
-polyfill := wiki/plugins/babel-polyfill/files/polyfill.min.js
 plugins_src := $(shell find plugins -type f)
 plugins_out := $(patsubst plugins/%,wiki/plugins/%,$(plugins_src))
 asset_files := $(patsubst public/%,wiki/output/%,$(shell find public -type f))
@@ -60,14 +58,10 @@ deploy: build
 
 assets: $(asset_files)
 
-build-files: wiki/tiddlywiki.info wiki/tiddlers wiki/themes generated diagrams $(polyfill) $(plugins_out)
+build-files: wiki/tiddlywiki.info wiki/tiddlers wiki/themes generated diagrams $(plugins_out)
 
 tiddlywiki: build-files
 	$(tiddlywiki) wiki --build index favicon static feed
-
-$(polyfill): node_modules/babel-polyfill/dist/polyfill.min.js
-	@mkdir -p $(dir $@)
-	cp $< $@
 
 wiki/tiddlers:
 	ln -s ../tiddlers $@
@@ -78,10 +72,6 @@ wiki/themes:
 wiki/tiddlywiki.info: config/tiddlywiki.info config/includes.json
 	@mkdir -p $(dir $@)
 	$(merge_json) config/tiddlywiki.info config/includes.json > $@ || rm $@
-
-wiki/plugins/%.js: plugins/%.js
-	@mkdir -p $(dir $@)
-	$(babel) $< --out-file $@
 
 wiki/plugins/%: plugins/%
 	@mkdir -p $(dir $@)

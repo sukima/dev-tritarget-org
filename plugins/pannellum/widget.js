@@ -6,8 +6,8 @@ module-type: widget
 
 A TiddlyWiki widget to embed a Pannellum panorama viewer.
 \*/
-import '$:/plugins/sukima/pannellum/pannellum.js';
-import { widget as Widget } from '$:/core/modules/widgets/widget.js';
+require('$:/plugins/sukima/pannellum/pannellum.js');
+const { widget: Widget } = require('$:/core/modules/widgets/widget.js');
 
 class ConfigError {
   constructor(message) {
@@ -94,4 +94,4 @@ class PanoramaWidget extends Widget {
   }
 }
 
-export { PanoramaWidget as panorama };
+exports.panorama = PanoramaWidget;
