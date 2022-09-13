@@ -103,6 +103,7 @@ const applicationMachine = createMachine({ // {{{1
 });
 
 class Application { // {{{1
+  savedFilename = 'index.html';
   machine = interpret(applicationMachine.withConfig({
     actions: {
       openMenu: () => this.menu.open(),
@@ -128,8 +129,8 @@ class Application { // {{{1
       activateManualPreviewConfig: () => this.buttons.manualPreview.activate(),
       deactivateManualPreviewConfig: () => this.buttons.manualPreview.deactivate(),
       saveEditorContents: async () => {
-        let filename = prompt('Save As: Enter a file name', 'index.html');
-        let saver = FileSaver.create(filename);
+        this.savedFilename = prompt('Save As: Enter a file name', this.savedFilename);
+        let saver = FileSaver.create(this.savedFilename);
         saver.onDone(() => this.trigger('SAVED'));
         await this.editor.save(saver);
       },
