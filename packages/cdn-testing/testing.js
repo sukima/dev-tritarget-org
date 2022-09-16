@@ -17,8 +17,8 @@ export function testWrapper(testFn) {
   };
 };
 
-sinon.assert.pass = (assertion) => QUnit.ok(true, assertion);
-sinon.assert.fail = (assertion) => QUnit.ok(false, assertion);
+sinon.assert.pass = (assertion) => QUnit.assert.ok(true, assertion);
+sinon.assert.fail = (assertion) => QUnit.assert.ok(false, assertion);
 sinon.assert.expose(QUnit.assert, { prefix: '' });
 QUnit.testDone(() => sinon.restore());
 

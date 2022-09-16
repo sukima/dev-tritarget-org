@@ -10,7 +10,7 @@
  *
  * ====[ Sinon ]====
  *   import { sinon } from './testing.js';
- *   
+ *
  *   module('…', function () {
  *     test('…', function (assert) {
  *       assert.calledWith(mySpy);
@@ -26,7 +26,7 @@
  *   const { module, test } = QUnit;
  *   const { createMachine } = xstate;
  *   const { createModel } = xstateTest;
- *   
+ *
  *   const testMachine = createMachine({
  *     initial: 'firstRender',
  *     states: {
@@ -41,7 +41,7 @@
  *   });
  *   const testModel = createModel(testMachine).withEvents({});
  *   const testPlans = testModel.getSimplePathPlans();
- *   
+ *
  *   testPlans.forEach(function (plan) {
  *     module(plan.description, function () {
  *       plan.paths.forEach(function (path) {
@@ -53,493 +53,11 @@
  *   });
  */
 
-var QUNIT_CSS = `/*!
- * QUnit 2.18.1
- * https://qunitjs.com/
- *
- * Copyright OpenJS Foundation and other contributors
- * Released under the MIT license
- * https://jquery.org/license
- */
-
-/** Font Family and Sizes */
-
-/* Style our buttons in a simple way, uninfluenced by the styles
-   the tested app might load. Don't affect buttons in #qunit-fixture!
-   https://github.com/qunitjs/qunit/pull/1395
-   https://github.com/qunitjs/qunit/issues/1437 */
-#qunit-testrunner-toolbar button,
-#qunit-testresult button {
-	font-size: initial;
-	border: initial;
-	background-color: buttonface;
-}
-
-#qunit-tests, #qunit-header, #qunit-banner, #qunit-testrunner-toolbar, #qunit-filteredTest, #qunit-userAgent, #qunit-testresult {
-	font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial, sans-serif;
-}
-
-#qunit-testrunner-toolbar, #qunit-filteredTest, #qunit-userAgent, #qunit-testresult, #qunit-tests li { font-size: small; }
-#qunit-tests { font-size: smaller; }
-
-
-/** Resets */
-
-#qunit-tests, #qunit-header, #qunit-banner, #qunit-filteredTest, #qunit-userAgent, #qunit-testresult, #qunit-modulefilter {
-	margin: 0;
-	padding: 0;
-}
-
-
-/** Fixed headers with scrollable tests */
-
-@supports (display: flex) or (display: -webkit-box) {
-	@media (min-height: 500px) {
-		#qunit {
-			position: fixed;
-			left: 0px;
-			right: 0px;
-			top: 0px;
-			bottom: 0px;
-			padding: 8px;
-			display: -webkit-box;
-			display: flex;
-			flex-direction: column;
-		}
-
-		#qunit-tests {
-			overflow: scroll;
-		}
-
-		#qunit-banner {
-			flex: 5px 0 0;
-		}
-	}
-}
-
-
-/** Header (excluding toolbar) */
-
-#qunit-header {
-	padding: 0.5em 0 0.5em 1em;
-
-	color: #C2CCD1;
-	background-color: #0D3349;
-
-	font-size: 1.5em;
-	line-height: 1em;
-	font-weight: 400;
-
-	border-radius: 5px 5px 0 0;
-}
-
-#qunit-header a {
-	text-decoration: none;
-	color: inherit;
-}
-
-#qunit-header a:hover,
-#qunit-header a:focus {
-	color: #FFF;
-}
-
-#qunit-banner {
-	height: 5px;
-}
-
-#qunit-filteredTest {
-	padding: 0.5em 1em 0.5em 1em;
-	color: #366097;
-	background-color: #F4FF77;
-}
-
-#qunit-userAgent {
-	padding: 0.5em 1em 0.5em 1em;
-	color: #FFF;
-	background-color: #2B81AF;
-	text-shadow: rgba(0, 0, 0, 0.5) 2px 2px 1px;
-}
-
-
-/** Toolbar */
-
-#qunit-testrunner-toolbar {
-	padding: 0.5em 1em 0.5em 1em;
-	color: #5E740B;
-	background-color: #EEE;
-}
-
-#qunit-testrunner-toolbar .clearfix {
-	height: 0;
-	clear: both;
-}
-
-#qunit-testrunner-toolbar label {
-	display: inline-block;
-}
-
-#qunit-testrunner-toolbar input[type=checkbox],
-#qunit-testrunner-toolbar input[type=radio] {
-	margin: 3px;
-	vertical-align: -2px;
-}
-
-#qunit-testrunner-toolbar input[type=text] {
-	box-sizing: border-box;
-	height: 1.6em;
-}
-
-#qunit-toolbar-filters {
-	float: right;
-}
-
-.qunit-url-config,
-.qunit-filter,
-#qunit-modulefilter {
-	display: inline-block;
-	line-height: 2.1em;
-}
-
-.qunit-filter,
-#qunit-modulefilter {
-	position: relative;
-	margin-left: 1em;
-}
-
-.qunit-url-config label {
-	margin-right: 0.5em;
-}
-
-#qunit-modulefilter-search {
-	box-sizing: border-box;
-	min-width: 400px;
-}
-
-#qunit-modulefilter-search-container:after {
-	position: absolute;
-	right: 0.3em;
-	content: "\\25bc";
-	color: black;
-}
-
-#qunit-modulefilter-dropdown {
-	/* align with #qunit-modulefilter-search */
-	box-sizing: border-box;
-	min-width: 400px;
-	position: absolute;
-	right: 0;
-	top: 50%;
-	margin-top: 0.8em;
-
-	border: 1px solid #D3D3D3;
-	border-top: none;
-	border-radius: 0 0 .25em .25em;
-	color: #0D3349;
-	background-color: #F5F5F5;
-	z-index: 99;
-}
-
-#qunit-modulefilter-dropdown a {
-	color: inherit;
-	text-decoration: none;
-}
-
-#qunit-modulefilter-dropdown .clickable.checked {
-	font-weight: bold;
-	color: #0D3349;
-	background-color: #E2F0F7;
-}
-
-#qunit-modulefilter-dropdown .clickable:hover {
-	color: #FFF;
-	background-color: #0D3349;
-}
-
-#qunit-modulefilter-actions {
-	display: block;
-	overflow: auto;
-
-	/* align with #qunit-modulefilter-dropdown-list */
-	font: smaller/1.5em sans-serif;
-}
-
-#qunit-modulefilter-dropdown #qunit-modulefilter-actions > * {
-	box-sizing: border-box;
-	max-height: 2.8em;
-	display: block;
-	padding: 0.4em;
-}
-
-#qunit-modulefilter-dropdown #qunit-modulefilter-actions > button {
-	float: right;
-	font: inherit;
-}
-
-#qunit-modulefilter-dropdown #qunit-modulefilter-actions > :last-child {
-	/* insert padding to align with checkbox margins */
-	padding-left: 3px;
-}
-
-#qunit-modulefilter-dropdown-list {
-	max-height: 200px;
-	overflow-y: auto;
-	margin: 0;
-	border-top: 2px groove threedhighlight;
-	padding: 0.4em 0 0;
-	font: smaller/1.5em sans-serif;
-}
-
-#qunit-modulefilter-dropdown-list li {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-#qunit-modulefilter-dropdown-list .clickable {
-	display: block;
-	padding-left: 0.15em;
-	padding-right: 0.5em;
-}
-
-
-/** Tests: Pass/Fail */
-
-#qunit-tests {
-	list-style-position: inside;
-}
-
-#qunit-tests li {
-	padding: 0.4em 1em 0.4em 1em;
-	border-bottom: 1px solid #FFF;
-	list-style-position: inside;
-}
-
-#qunit-tests > li {
-	display: none;
-}
-
-#qunit-tests li.running,
-#qunit-tests li.pass,
-#qunit-tests li.fail,
-#qunit-tests li.skipped,
-#qunit-tests li.aborted {
-	display: list-item;
-}
-
-#qunit-tests.hidepass {
-	position: relative;
-}
-
-#qunit-tests.hidepass li.running,
-#qunit-tests.hidepass li.pass:not(.todo) {
-	visibility: hidden;
-	position: absolute;
-	width:   0;
-	height:  0;
-	padding: 0;
-	border:  0;
-	margin:  0;
-}
-
-#qunit-tests li strong {
-	cursor: pointer;
-}
-
-#qunit-tests li.skipped strong {
-	cursor: default;
-}
-
-#qunit-tests li a {
-	padding: 0.5em;
-	color: inherit;
-	text-decoration: underline;
-}
-#qunit-tests li a:hover,
-#qunit-tests li a:focus {
-	color: #0D3349;
-}
-
-#qunit-tests li .runtime {
-	float: right;
-	font-size: smaller;
-}
-
-.qunit-assert-list {
-	margin-top: 0.5em;
-	padding: 0.5em;
-
-	background-color: #FFF;
-
-	border-radius: 5px;
-}
-
-.qunit-source {
-	margin: 0.6em 0 0.3em;
-}
-
-.qunit-collapsed {
-	display: none;
-}
-
-#qunit-tests table {
-	border-collapse: collapse;
-	margin-top: 0.2em;
-}
-
-#qunit-tests th {
-	text-align: right;
-	vertical-align: top;
-	padding: 0 0.5em 0 0;
-}
-
-#qunit-tests td {
-	vertical-align: top;
-}
-
-#qunit-tests pre {
-	margin: 0;
-	white-space: pre-wrap;
-	word-wrap: break-word;
-}
-
-#qunit-tests del {
-	color: #374E0C;
-	background-color: #E0F2BE;
-	text-decoration: none;
-}
-
-#qunit-tests ins {
-	color: #500;
-	background-color: #FFCACA;
-	text-decoration: none;
-}
-
-/*** Test Counts */
-
-#qunit-tests b.counts                       { color: #0D3349; }
-#qunit-tests b.passed                       { color: #5E740B; }
-#qunit-tests b.failed                       { color: #710909; }
-
-#qunit-tests li li {
-	padding: 5px;
-	background-color: #FFF;
-	border-bottom: none;
-	list-style-position: inside;
-}
-
-/*** Passing Styles */
-
-
-#qunit-tests .pass {
-	color: #2F68DA;
-	background-color: #E2F0F7;
-}
-
-#qunit-tests .pass .test-name {
-	color: #366097;
-}
-
-#qunit-tests li li.pass {
-	color: #3C510C;
-	background-color: #FFF;
-	border-left: 10px solid #C6E746;
-}
-
-#qunit-tests .pass .test-actual,
-#qunit-tests .pass .test-expected           { color: #999; }
-
-#qunit-banner.qunit-pass                    { background-color: #C6E746; }
-
-/*** Failing Styles */
-
-#qunit-tests .fail {
-	color: #000;
-	background-color: #EE5757;
-}
-
-#qunit-tests li li.fail {
-	color: #710909;
-	background-color: #FFF;
-	border-left: 10px solid #EE5757;
-	white-space: pre;
-}
-
-#qunit-tests > li:last-child {
-	border-radius: 0 0 5px 5px;
-}
-
-#qunit-tests .fail .test-actual             { color: #EE5757; }
-#qunit-tests .fail .test-expected           { color: #008000; }
-
-#qunit-banner.qunit-fail                    { background-color: #EE5757; }
-
-
-/*** Aborted tests */
-#qunit-tests .aborted { color: #000; background-color: orange; }
-/*** Skipped tests */
-
-#qunit-tests .skipped {
-	background-color: #EBECE9;
-}
-
-#qunit-tests .qunit-todo-label,
-#qunit-tests .qunit-skipped-label {
-	background-color: #F4FF77;
-	display: inline-block;
-	font-style: normal;
-	color: #366097;
-	line-height: 1.8em;
-	padding: 0 0.5em;
-	margin: -0.4em 0.4em -0.4em 0;
-}
-
-#qunit-tests .qunit-todo-label {
-	background-color: #EEE;
-}
-
-/** Result */
-
-#qunit-testresult {
-	color: #366097;
-	background-color: #E2F0F7;
-
-	border-bottom: 1px solid #FFF;
-}
-#qunit-testresult a {
-	color: #2F68DA;
-}
-#qunit-testresult .clearfix {
-	height: 0;
-	clear: both;
-}
-#qunit-testresult .module-name {
-	font-weight: 700;
-}
-#qunit-testresult-display {
-	padding: 0.5em 1em 0.5em 1em;
-	width: 85%;
-	float:left;
-}
-#qunit-testresult-controls {
-	padding: 0.5em 1em 0.5em 1em;
-  width: 10%;
-	float:left;
-}
-
-/** Fixture */
-
-#qunit-fixture {
-	position: absolute;
-	top: -10000px;
-	left: -10000px;
-	width: 1000px;
-	height: 1000px;
-}
-`;
+var QUNIT_CSS = '/*!\n * QUnit 2.19.1\n * https://qunitjs.com/\n *\n * Copyright OpenJS Foundation and other contributors\n * Released under the MIT license\n * https://jquery.org/license\n */#qunit-tests,#qunit-header,#qunit-banner,#qunit-testrunner-toolbar,#qunit-filteredTest,#qunit-userAgent,#qunit-testresult{font-family:Helvetica Neue Light,HelveticaNeue-Light,Helvetica Neue,Calibri,Helvetica,Arial,sans-serif}#qunit-testrunner-toolbar,#qunit-filteredTest,#qunit-userAgent,#qunit-testresult,#qunit-tests li{font-size:small}#qunit-tests{font-size:smaller}#qunit-tests,#qunit-header,#qunit-banner,#qunit-filteredTest,#qunit-userAgent,#qunit-testresult,#qunit-modulefilter{margin:0;padding:0}#qunit-testrunner-toolbar button,#qunit-testresult button{all:unset;font:inherit;color:initial;border:initial;background-color:buttonface;padding:0 4px}@supports (display: flex) or (display: -webkit-box){@media (min-height: 500px){#qunit{position:fixed;left:0px;right:0px;top:0px;bottom:0px;padding:8px;display:-webkit-box;display:flex;flex-direction:column}#qunit-tests{overflow:scroll}#qunit-banner{flex:5px 0 0}}}#qunit-header{padding:.5em 0 .5em 1em;color:#c2ccd1;background-color:#0d3349;font-size:1.5em;line-height:1em;font-weight:400;border-radius:5px 5px 0 0}#qunit-header a{text-decoration:none;color:inherit}#qunit-header a:hover,#qunit-header a:focus{color:#fff}#qunit-banner{height:5px}#qunit-filteredTest{padding:.5em 1em;color:#366097;background-color:#f4ff77}#qunit-userAgent{padding:.5em 1em;color:#fff;background-color:#2b81af;text-shadow:rgba(0,0,0,.5) 2px 2px 1px}#qunit-testrunner-toolbar{padding:.5em 1em;color:#5e740b;background-color:#eee}#qunit-testrunner-toolbar .clearfix{height:0;clear:both}#qunit-testrunner-toolbar label{display:inline-block}#qunit-testrunner-toolbar input[type=checkbox],#qunit-testrunner-toolbar input[type=radio]{margin:3px;vertical-align:-2px}#qunit-testrunner-toolbar input[type=text]{box-sizing:border-box;height:1.6em}#qunit-testrunner-toolbar button,#qunit-testresult button{border-radius:.25em;border:1px solid #AAA;background-color:#f8f8f8;color:#222;line-height:1.6;cursor:pointer}#qunit-testrunner-toolbar button:hover,#qunit-testresult button:hover{border-color:#aaa;background-color:#fff;color:#444}#qunit-testrunner-toolbar button:active,#qunit-testresult button:active{border-color:#777;background-color:#ccc;color:#000}#qunit-testrunner-toolbar button:focus,#qunit-testresult button:focus{border-color:#2f68da;box-shadow:inset 0 0 0 1px #2f68da}#qunit-testrunner-toolbar button:disabled,#qunit-testresult button:disabled{border-color:#ccc;background-color:#ccc;color:#fff;cursor:default}#qunit-toolbar-filters{float:right;text-align:right}.qunit-url-config,.qunit-filter,#qunit-modulefilter{display:inline-block;line-height:2.1em;text-align:left}.qunit-filter,#qunit-modulefilter{position:relative;margin-left:1em}.qunit-url-config label{margin-right:.5em}#qunit-modulefilter-search{box-sizing:border-box;min-width:400px;min-width:min(400px,80vw)}#qunit-modulefilter-search-container{position:relative}#qunit-modulefilter-search-container:after{position:absolute;right:.3em;bottom:0;line-height:100%;content:"\\25bc";color:#000}#qunit-modulefilter-dropdown{box-sizing:border-box;min-width:400px;min-width:min(400px,80vw);max-width:80vw;position:absolute;right:0;top:100%;margin-top:2px;min-height:3em;border:1px solid #AAA;border-top-color:transparent;border-radius:0 0 .25em .25em;color:#0d3349;background-color:#f5f5f5;z-index:99}#qunit-modulefilter-actions{display:block;overflow:auto;font:smaller/1.5em sans-serif}@media (min-width: 350px){#qunit-modulefilter-actions{position:absolute;right:0}}#qunit-modulefilter-dropdown #qunit-modulefilter-actions>*{box-sizing:border-box;max-height:2.8em;display:block;padding:.4em}#qunit-modulefilter-dropdown #qunit-modulefilter-actions>button{float:right;margin:.25em}#qunit-modulefilter-dropdown-list{margin:0;padding:0;font:smaller/1.5em sans-serif}#qunit-modulefilter-dropdown-list li{list-style:none}#qunit-modulefilter-dropdown-list .clickable{display:block;padding:.25em .5em .25em .15em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#qunit-modulefilter-dropdown-list .clickable.checked{font-weight:700;background-color:#e2f0f7;color:#0d3349}#qunit-modulefilter-dropdown .clickable:hover{background-color:#fff;color:#444}#qunit-tests{list-style-position:inside}#qunit-tests li{padding:.4em 1em;border-bottom:1px solid #FFF;list-style-position:inside}#qunit-tests>li{display:none}#qunit-tests li.running,#qunit-tests li.pass,#qunit-tests li.fail,#qunit-tests li.skipped,#qunit-tests li.aborted{display:list-item}#qunit-tests.hidepass{position:relative}#qunit-tests.hidepass li.running,#qunit-tests.hidepass li.pass:not(.todo){visibility:hidden;position:absolute;width:0;height:0;padding:0;border:0;margin:0}#qunit-tests li strong{cursor:pointer}#qunit-tests li.skipped strong{cursor:default}#qunit-tests li a{padding:.5em;color:inherit;text-decoration:underline}#qunit-tests li a:hover,#qunit-tests li a:focus{color:#0d3349}#qunit-tests li .runtime{float:right;font-size:smaller}.qunit-assert-list{margin-top:.5em;padding:.5em;background-color:#fff;border-radius:5px}.qunit-source{margin:.6em 0 .3em}.qunit-collapsed{display:none}#qunit-tests table{border-collapse:collapse;margin-top:.2em}#qunit-tests th{text-align:right;vertical-align:top;padding:0 .5em 0 0}#qunit-tests td{vertical-align:top}#qunit-tests pre{margin:0;white-space:pre-wrap;word-wrap:break-word}#qunit-tests del{color:#374e0c;background-color:#e0f2be;text-decoration:none}#qunit-tests ins{color:#500;background-color:#ffcaca;text-decoration:none}#qunit-tests b.counts{color:#0d3349}#qunit-tests b.passed{color:#5e740b}#qunit-tests b.failed{color:#710909}#qunit-tests li li{padding:5px;background-color:#fff;border-bottom:none;list-style-position:inside}#qunit-tests .pass{color:#2f68da;background-color:#e2f0f7}#qunit-tests .pass .test-name{color:#366097}#qunit-tests li li.pass{color:#3c510c;background-color:#fff;border-left:10px solid #C6E746}#qunit-tests .pass .test-actual,#qunit-tests .pass .test-expected{color:#999}#qunit-banner.qunit-pass{background-color:#c6e746}#qunit-tests .fail{color:#000;background-color:#ee5757}#qunit-tests li li.fail{color:#710909;background-color:#fff;border-left:10px solid #EE5757;white-space:pre}#qunit-tests>li:last-child{border-radius:0 0 5px 5px}#qunit-tests .fail .test-actual{color:#ee5757}#qunit-tests .fail .test-expected{color:green}#qunit-banner.qunit-fail{background-color:#ee5757}#qunit-tests .aborted{color:#000;background-color:orange}#qunit-tests .skipped{background-color:#ebece9}#qunit-tests .qunit-todo-label,#qunit-tests .qunit-skipped-label{background-color:#f4ff77;display:inline-block;font-style:normal;color:#366097;line-height:1.8em;padding:0 .5em;margin:-.4em .4em -.4em 0}#qunit-tests .qunit-todo-label{background-color:#eee}#qunit-testresult{color:#366097;background-color:#e2f0f7;border-bottom:1px solid #FFF}#qunit-testresult a{color:#2f68da}#qunit-testresult .clearfix{height:0;clear:both}#qunit-testresult .module-name{font-weight:700}#qunit-testresult-display{padding:.5em 1em;width:85%;float:left}#qunit-testresult-controls{padding:.5em 1em;width:10%;float:left}#qunit-fixture{position:absolute;top:-10000px;left:-10000px;width:1000px;height:1000px}\n';
 var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
 var qunit = { exports: {} };
 /*!
- * QUnit 2.18.1
+ * QUnit 2.19.1
  * https://qunitjs.com/
  *
  * Copyright OpenJS Foundation and other contributors
@@ -548,80 +66,13 @@ var qunit = { exports: {} };
  */
 (function(module, exports) {
   (function() {
-    function getGlobalThis() {
-      if (typeof globalThis !== "undefined") {
-        return globalThis;
-      }
-      if (typeof self !== "undefined") {
-        return self;
-      }
-      if (typeof window$1 !== "undefined") {
-        return window$1;
-      }
-      if (typeof commonjsGlobal !== "undefined") {
-        return commonjsGlobal;
-      }
-      throw new Error("Unable to locate global object");
-    }
-    var g = getGlobalThis();
-    var window$1 = g.window;
-    var console$1 = g.console;
-    var setTimeout$1 = g.setTimeout;
-    var clearTimeout2 = g.clearTimeout;
-    var document2 = window$1 && window$1.document;
-    var navigator = window$1 && window$1.navigator;
-    var localSessionStorage = function() {
-      var x = "qunit-test-string";
-      try {
-        g.sessionStorage.setItem(x, x);
-        g.sessionStorage.removeItem(x);
-        return g.sessionStorage;
-      } catch (e) {
-        return void 0;
-      }
-    }();
-    var StringMap = typeof g.Map === "function" ? g.Map : function StringMap2() {
-      var store = /* @__PURE__ */ Object.create(null);
-      var hasOwn2 = Object.prototype.hasOwnProperty;
-      this.get = function(strKey) {
-        return store[strKey];
-      };
-      this.set = function(strKey, val) {
-        if (!hasOwn2.call(store, strKey)) {
-          this.size++;
-        }
-        store[strKey] = val;
-        return this;
-      };
-      this.delete = function(strKey) {
-        if (hasOwn2.call(store, strKey)) {
-          delete store[strKey];
-          this.size--;
-        }
-      };
-      this.forEach = function(callback) {
-        for (var strKey in store) {
-          callback(store[strKey], strKey);
-        }
-      };
-      this.clear = function() {
-        store = /* @__PURE__ */ Object.create(null);
-        this.size = 0;
-      };
-      this.size = 0;
-    };
     function _typeof(obj) {
       "@babel/helpers - typeof";
-      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-        _typeof = function(obj2) {
-          return typeof obj2;
-        };
-      } else {
-        _typeof = function(obj2) {
-          return obj2 && typeof Symbol === "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-        };
-      }
-      return _typeof(obj);
+      return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj2) {
+        return typeof obj2;
+      } : function(obj2) {
+        return obj2 && "function" == typeof Symbol && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+      }, _typeof(obj);
     }
     function _classCallCheck(instance, Constructor) {
       if (!(instance instanceof Constructor)) {
@@ -643,6 +94,9 @@ var qunit = { exports: {} };
         _defineProperties(Constructor.prototype, protoProps);
       if (staticProps)
         _defineProperties(Constructor, staticProps);
+      Object.defineProperty(Constructor, "prototype", {
+        writable: false
+      });
       return Constructor;
     }
     function _slicedToArray(arr, i) {
@@ -771,15 +225,86 @@ var qunit = { exports: {} };
         }
       };
     }
+    function getGlobalThis() {
+      if (typeof globalThis !== "undefined") {
+        return globalThis;
+      }
+      if (typeof self !== "undefined") {
+        return self;
+      }
+      if (typeof window$1 !== "undefined") {
+        return window$1;
+      }
+      if (typeof commonjsGlobal !== "undefined") {
+        return commonjsGlobal;
+      }
+      throw new Error("Unable to locate global object");
+    }
+    var g = getGlobalThis();
+    var window$1 = g.window;
+    var console$1 = g.console;
+    var setTimeout$1 = g.setTimeout;
+    var clearTimeout2 = g.clearTimeout;
+    var document2 = window$1 && window$1.document;
+    var navigator = window$1 && window$1.navigator;
+    var localSessionStorage = function() {
+      var x = "qunit-test-string";
+      try {
+        g.sessionStorage.setItem(x, x);
+        g.sessionStorage.removeItem(x);
+        return g.sessionStorage;
+      } catch (e) {
+        return void 0;
+      }
+    }();
+    var StringMap = typeof g.Map === "function" && typeof g.Map.prototype.keys === "function" && typeof g.Symbol === "function" && _typeof(g.Symbol.iterator) === "symbol" ? g.Map : function StringMap2(input) {
+      var _this = this;
+      var store = /* @__PURE__ */ Object.create(null);
+      var hasOwn2 = Object.prototype.hasOwnProperty;
+      this.has = function(strKey) {
+        return hasOwn2.call(store, strKey);
+      };
+      this.get = function(strKey) {
+        return store[strKey];
+      };
+      this.set = function(strKey, val) {
+        if (!hasOwn2.call(store, strKey)) {
+          this.size++;
+        }
+        store[strKey] = val;
+        return this;
+      };
+      this.delete = function(strKey) {
+        if (hasOwn2.call(store, strKey)) {
+          delete store[strKey];
+          this.size--;
+        }
+      };
+      this.forEach = function(callback) {
+        for (var strKey in store) {
+          callback(store[strKey], strKey);
+        }
+      };
+      this.keys = function() {
+        return Object.keys(store);
+      };
+      this.clear = function() {
+        store = /* @__PURE__ */ Object.create(null);
+        this.size = 0;
+      };
+      this.size = 0;
+      if (input) {
+        input.forEach(function(val, strKey) {
+          _this.set(strKey, val);
+        });
+      }
+    };
     var Logger = {
       warn: console$1 ? Function.prototype.bind.call(console$1.warn || console$1.log, console$1) : function() {
       }
     };
     var toString = Object.prototype.toString;
     var hasOwn$1 = Object.prototype.hasOwnProperty;
-    var now = Date.now || function() {
-      return new Date().getTime();
-    };
     var nativePerf = getNativePerf();
     function getNativePerf() {
       if (window$1 && typeof window$1.performance !== "undefined" && typeof window$1.performance.mark === "function" && typeof window$1.performance.measure === "function") {
@@ -789,7 +314,7 @@ var qunit = { exports: {} };
       }
     }
     var performance = {
-      now: nativePerf ? nativePerf.now.bind(nativePerf) : now,
+      now: nativePerf ? nativePerf.now.bind(nativePerf) : Date.now,
       measure: nativePerf ? function(comment, startMark, endMark) {
         try {
           nativePerf.measure(comment, startMark, endMark);
@@ -907,9 +432,6 @@ var qunit = { exports: {} };
     }
     var equiv = function() {
       var pairs = [];
-      var getProto = Object.getPrototypeOf || function(obj) {
-        return obj.__proto__;
-      };
       function useStrictEquality(a, b) {
         if (_typeof(a) === "object") {
           a = a.valueOf();
@@ -920,8 +442,8 @@ var qunit = { exports: {} };
         return a === b;
       }
       function compareConstructors(a, b) {
-        var protoA = getProto(a);
-        var protoB = getProto(b);
+        var protoA = Object.getPrototypeOf(a);
+        var protoB = Object.getPrototypeOf(b);
         if (a.constructor === b.constructor) {
           return true;
         }
@@ -1088,22 +610,19 @@ var qunit = { exports: {} };
       };
     }();
     var config = {
-      queue: [],
-      stats: {
-        all: 0,
-        bad: 0,
-        testCount: 0
-      },
-      blocking: true,
-      failOnZeroTests: true,
-      reorder: true,
       altertitle: true,
       collapse: true,
-      scrolltop: true,
+      failOnZeroTests: true,
+      filter: void 0,
       maxDepth: 5,
+      module: void 0,
+      moduleId: void 0,
+      reorder: true,
       requireExpects: false,
+      scrolltop: true,
+      storage: localSessionStorage,
+      testId: void 0,
       urlConfig: [],
-      modules: [],
       currentModule: {
         name: "",
         tests: [],
@@ -1118,8 +637,15 @@ var qunit = { exports: {} };
         }
       },
       globalHooks: {},
+      blocking: true,
       callbacks: {},
-      storage: localSessionStorage
+      modules: [],
+      queue: [],
+      stats: {
+        all: 0,
+        bad: 0,
+        testCount: 0
+      }
     };
     var preConfig = g && g.QUnit && !g.QUnit.version && g.QUnit.config;
     if (preConfig) {
@@ -1296,7 +822,7 @@ var qunit = { exports: {} };
             var ret = open + tag;
             var attrs = _node.attributes;
             if (attrs) {
-              for (var i = 0, len = attrs.length; i < len; i++) {
+              for (var i = 0; i < attrs.length; i++) {
                 var val = attrs[i].nodeValue;
                 if (val && val !== "inherit") {
                   ret += " " + attrs[i].nodeName + "=" + dump2.parse(val, "attribute");
@@ -1409,7 +935,7 @@ var qunit = { exports: {} };
       }, {
         key: "getRuntime",
         value: function getRuntime() {
-          return this._endTime - this._startTime;
+          return Math.round(this._endTime - this._startTime);
         }
       }, {
         key: "getTestCounts",
@@ -1520,7 +1046,7 @@ var qunit = { exports: {} };
     }
     function processModule(name, options, executeNow) {
       var modifiers = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : {};
-      if (objectType(options) === "function") {
+      if (typeof options === "function") {
         executeNow = options;
         options = void 0;
       }
@@ -1539,11 +1065,11 @@ var qunit = { exports: {} };
       };
       var prevModule = config.currentModule;
       config.currentModule = module2;
-      if (objectType(executeNow) === "function") {
+      if (typeof executeNow === "function") {
         moduleStack.push(module2);
         try {
           var cbReturnValue = executeNow.call(module2.testEnvironment, moduleFns);
-          if (cbReturnValue != null && objectType(cbReturnValue.then) === "function") {
+          if (cbReturnValue && typeof cbReturnValue.then === "function") {
             Logger.warn("Returning a promise from a module callback is not supported. Instead, use hooks for async behavior. This will become an error in QUnit 3.0.");
           }
         } finally {
@@ -1584,7 +1110,7 @@ var qunit = { exports: {} };
         todo: true
       });
     };
-    var fileName = (sourceFromStacktrace(0) || "").replace(/(:\d+)+\)?/, "").replace(/.+\//, "");
+    var fileName = (sourceFromStacktrace(0) || "").replace(/(:\d+)+\)?/, "").replace(/.+[/\\]/, "");
     function extractStacktrace(e, offset) {
       offset = offset === void 0 ? 4 : offset;
       if (e && e.stack) {
@@ -1644,9 +1170,9 @@ var qunit = { exports: {} };
           var assertionMessage = message;
           var result = !!message;
           this.test.steps.push(message);
-          if (objectType(message) === "undefined" || message === "") {
+          if (typeof message === "undefined" || message === "") {
             assertionMessage = "You must provide a message to assert.step";
-          } else if (objectType(message) !== "string") {
+          } else if (typeof message !== "string") {
             assertionMessage = "You must provide a string value to assert.step";
             result = false;
           }
@@ -1872,7 +1398,7 @@ var qunit = { exports: {} };
           expected = _validateExpectedExce2[0];
           message = _validateExpectedExce2[1];
           var currentTest = this instanceof Assert2 && this.test || config.current;
-          if (objectType(block) !== "function") {
+          if (typeof block !== "function") {
             var _message = 'The value provided to `assert.throws` in "' + currentTest.testName + '" was not a function.';
             currentTest.assert.pushResult({
               result: false,
@@ -1913,7 +1439,7 @@ var qunit = { exports: {} };
           message = _validateExpectedExce4[1];
           var currentTest = this instanceof Assert2 && this.test || config.current;
           var then = promise && promise.then;
-          if (objectType(then) !== "function") {
+          if (typeof then !== "function") {
             var _message2 = 'The value provided to `assert.rejects` in "' + currentTest.testName + '" was not a promise.';
             currentTest.assert.pushResult({
               result: false,
@@ -1995,7 +1521,7 @@ var qunit = { exports: {} };
     var LISTENERS = /* @__PURE__ */ Object.create(null);
     var SUPPORTED_EVENTS = ["error", "runStart", "suiteStart", "testStart", "assertion", "testEnd", "suiteEnd", "runEnd"];
     function emit(eventName, data) {
-      if (objectType(eventName) !== "string") {
+      if (typeof eventName !== "string") {
         throw new TypeError("eventName must be a string when emitting an event");
       }
       var originalCallbacks = LISTENERS[eventName];
@@ -2005,12 +1531,12 @@ var qunit = { exports: {} };
       }
     }
     function on(eventName, callback) {
-      if (objectType(eventName) !== "string") {
+      if (typeof eventName !== "string") {
         throw new TypeError("eventName must be a string when registering a listener");
       } else if (!inArray(eventName, SUPPORTED_EVENTS)) {
         var events = SUPPORTED_EVENTS.join(", ");
         throw new Error('"'.concat(eventName, '" is not a valid event; must be one of: ').concat(events, "."));
-      } else if (objectType(callback) !== "function") {
+      } else if (typeof callback !== "function") {
         throw new TypeError("callback must be a function when registering a listener");
       }
       if (!LISTENERS[eventName]) {
@@ -2294,17 +1820,16 @@ var qunit = { exports: {} };
     function registerLoggingCallbacks(obj) {
       var callbackNames = ["begin", "done", "log", "testStart", "testDone", "moduleStart", "moduleDone"];
       function registerLoggingCallback(key2) {
-        var loggingCallback = function loggingCallback2(callback) {
-          if (objectType(callback) !== "function") {
-            throw new Error("QUnit logging methods require a callback function as their first parameters.");
+        return function loggingCallback(callback) {
+          if (typeof callback !== "function") {
+            throw new Error("Callback parameter must be a function");
           }
           config.callbacks[key2].push(callback);
         };
-        return loggingCallback;
       }
-      for (var i = 0, l = callbackNames.length; i < l; i++) {
+      for (var i = 0; i < callbackNames.length; i++) {
         var key = callbackNames[i];
-        if (objectType(config.callbacks[key]) === "undefined") {
+        if (typeof config.callbacks[key] === "undefined") {
           config.callbacks[key] = [];
         }
         obj[key] = registerLoggingCallback(key);
@@ -2318,11 +1843,13 @@ var qunit = { exports: {} };
         });
         return;
       }
-      return callbacks.reduce(function(promiseChain, callback) {
-        return promiseChain.then(function() {
+      var promiseChain = _Promise.resolve();
+      callbacks.forEach(function(callback) {
+        promiseChain = promiseChain.then(function() {
           return _Promise.resolve(callback(args));
         });
-      }, _Promise.resolve([]));
+      });
+      return promiseChain;
     }
     var priorityCount = 0;
     var unitSampler;
@@ -2334,14 +1861,14 @@ var qunit = { exports: {} };
       }
     }
     function advanceTaskQueue() {
-      var start2 = now();
+      var start2 = performance.now();
       config.depth = (config.depth || 0) + 1;
       processTaskQueue(start2);
       config.depth--;
     }
     function processTaskQueue(start2) {
       if (taskQueue.length && !config.blocking) {
-        var elapsedTime = now() - start2;
+        var elapsedTime = performance.now() - start2;
         if (!setTimeout$1 || config.updateRate <= 0 || elapsedTime < config.updateRate) {
           var task = taskQueue.shift();
           _Promise.resolve(task()).then(function() {
@@ -2426,7 +1953,7 @@ var qunit = { exports: {} };
         return;
       }
       var storage = config.storage;
-      var runtime = now() - config.started;
+      var runtime = Math.round(performance.now() - config.started);
       var passed = config.stats.all - config.stats.bad;
       ProcessingQueue.finished = true;
       emit("runEnd", runSuite.end(true));
@@ -2506,7 +2033,7 @@ var qunit = { exports: {} };
       }, {
         key: "getRuntime",
         value: function getRuntime() {
-          return this._endTime - this._startTime;
+          return Math.round(this._endTime - this._startTime);
         }
       }, {
         key: "getStatus",
@@ -2621,12 +2148,13 @@ var qunit = { exports: {} };
         var _this = this;
         var module2 = this.module;
         var notStartedModules = getNotStartedModules(module2);
-        var callbackPromises = notStartedModules.reduce(function(promiseChain, startModule) {
-          return promiseChain.then(function() {
+        var moduleStartChain = _Promise.resolve();
+        notStartedModules.forEach(function(startModule) {
+          moduleStartChain = moduleStartChain.then(function() {
             startModule.stats = {
               all: 0,
               bad: 0,
-              started: now()
+              started: performance.now()
             };
             emit("suiteStart", startModule.suiteReport.start(true));
             return runLoggingCallbacks("moduleStart", {
@@ -2634,11 +2162,11 @@ var qunit = { exports: {} };
               tests: startModule.tests
             });
           });
-        }, _Promise.resolve([]));
-        return callbackPromises.then(function() {
+        });
+        return moduleStartChain.then(function() {
           config.current = _this;
           _this.testEnvironment = extend({}, module2.testEnvironment);
-          _this.started = now();
+          _this.started = performance.now();
           emit("testStart", _this.testReport.start(true));
           return runLoggingCallbacks("testStart", {
             name: _this.testName,
@@ -2654,7 +2182,6 @@ var qunit = { exports: {} };
       },
       run: function run2() {
         config.current = this;
-        this.callbackStarted = now();
         if (config.notrycatch) {
           runTest(this);
           return;
@@ -2778,7 +2305,7 @@ var qunit = { exports: {} };
         var todo = !!this.todo;
         var bad = 0;
         var storage = config.storage;
-        this.runtime = now() - this.started;
+        this.runtime = Math.round(performance.now() - this.started);
         config.stats.all += this.assertions.length;
         config.stats.testCount += 1;
         module2.stats.all += this.assertions.length;
@@ -2826,11 +2353,13 @@ var qunit = { exports: {} };
               completedModules.push(parent);
               parent = parent.parentModule;
             }
-            return completedModules.reduce(function(promiseChain, completedModule) {
-              return promiseChain.then(function() {
+            var moduleDoneChain = _Promise.resolve();
+            completedModules.forEach(function(completedModule) {
+              moduleDoneChain = moduleDoneChain.then(function() {
                 return logSuiteEnd(completedModule);
               });
-            }, _Promise.resolve([]));
+            });
+            return moduleDoneChain;
           }
         }).then(function() {
           config.current = void 0;
@@ -2849,7 +2378,7 @@ var qunit = { exports: {} };
             failed: module3.stats.bad,
             passed: module3.stats.all - module3.stats.bad,
             total: module3.stats.all,
-            runtime: now() - module3.stats.started
+            runtime: Math.round(performance.now() - module3.stats.started)
           });
         }
       },
@@ -2898,7 +2427,7 @@ var qunit = { exports: {} };
           actual: resultInfo.actual,
           testId: this.testId,
           negative: resultInfo.negative || false,
-          runtime: now() - this.started,
+          runtime: Math.round(performance.now() - this.started),
           todo: !!this.todo
         };
         if (hasOwn$1.call(resultInfo, "expected")) {
@@ -3000,7 +2529,7 @@ var qunit = { exports: {} };
         if (promise != null) {
           var _test = this;
           var then = promise.then;
-          if (objectType(then) === "function") {
+          if (typeof then === "function") {
             var resume = _test.internalStop();
             var resolve = function resolve2() {
               resume();
@@ -3020,38 +2549,41 @@ var qunit = { exports: {} };
         }
       },
       valid: function valid() {
-        var filter = config.filter;
-        var regexFilter = /^(!?)\/([\w\W]*)\/(i?$)/.exec(filter);
-        var module2 = config.module && config.module.toLowerCase();
-        var fullName = this.module.name + ": " + this.testName;
-        function moduleChainNameMatch(testModule) {
+        if (this.callback && this.callback.validTest) {
+          return true;
+        }
+        function moduleChainIdMatch(testModule, selectedId) {
+          return !selectedId || !selectedId.length || inArray(testModule.moduleId, selectedId) || testModule.parentModule && moduleChainIdMatch(testModule.parentModule, selectedId);
+        }
+        if (!moduleChainIdMatch(this.module, config.moduleId)) {
+          return false;
+        }
+        if (config.testId && config.testId.length && !inArray(this.testId, config.testId)) {
+          return false;
+        }
+        function moduleChainNameMatch(testModule, selectedModule2) {
+          if (!selectedModule2) {
+            return true;
+          }
           var testModuleName = testModule.name ? testModule.name.toLowerCase() : null;
-          if (testModuleName === module2) {
+          if (testModuleName === selectedModule2) {
             return true;
           } else if (testModule.parentModule) {
-            return moduleChainNameMatch(testModule.parentModule);
+            return moduleChainNameMatch(testModule.parentModule, selectedModule2);
           } else {
             return false;
           }
         }
-        function moduleChainIdMatch(testModule) {
-          return inArray(testModule.moduleId, config.moduleId) || testModule.parentModule && moduleChainIdMatch(testModule.parentModule);
-        }
-        if (this.callback && this.callback.validTest) {
-          return true;
-        }
-        if (config.moduleId && config.moduleId.length > 0 && !moduleChainIdMatch(this.module)) {
+        var selectedModule = config.module && config.module.toLowerCase();
+        if (!moduleChainNameMatch(this.module, selectedModule)) {
           return false;
         }
-        if (config.testId && config.testId.length > 0 && !inArray(this.testId, config.testId)) {
-          return false;
-        }
-        if (module2 && !moduleChainNameMatch(this.module)) {
-          return false;
-        }
+        var filter = config.filter;
         if (!filter) {
           return true;
         }
+        var regexFilter = /^(!?)\/([\w\W]*)\/(i?$)/.exec(filter);
+        var fullName = this.module.name + ": " + this.testName;
         return regexFilter ? this.regexFilter(!!regexFilter[1], regexFilter[2], regexFilter[3], fullName) : this.stringFilter(filter, fullName);
       },
       regexFilter: function regexFilter(exclude, pattern, flags, fullName) {
@@ -3648,7 +3180,7 @@ var qunit = { exports: {} };
     var globalStartCalled = false;
     var runStarted = false;
     QUnit2.isLocal = window$1 && window$1.location && window$1.location.protocol === "file:";
-    QUnit2.version = "2.18.1";
+    QUnit2.version = "2.19.1";
     extend(QUnit2, {
       config,
       dump,
@@ -3742,17 +3274,19 @@ var qunit = { exports: {} };
         unblockAndAdvanceQueue();
         return;
       }
-      config.started = now();
+      config.started = performance.now();
       if (config.modules[0].name === "" && config.modules[0].tests.length === 0) {
         config.modules.shift();
       }
-      var l = config.modules.length;
       var modulesLog = [];
-      for (var i = 0; i < l; i++) {
-        modulesLog.push({
-          name: config.modules[i].name,
-          tests: config.modules[i].tests
-        });
+      for (var i = 0; i < config.modules.length; i++) {
+        if (config.modules[i].name !== "") {
+          modulesLog.push({
+            name: config.modules[i].name,
+            moduleId: config.modules[i].moduleId,
+            tests: config.modules[i].tests
+          });
+        }
       }
       emit("runStart", runSuite.start(true));
       runLoggingCallbacks("begin", {
@@ -3802,10 +3336,10 @@ var qunit = { exports: {} };
       }
       var urlParams = getUrlParams();
       QUnit2.urlParams = urlParams;
+      QUnit2.config.filter = urlParams.filter;
+      QUnit2.config.module = urlParams.module;
       QUnit2.config.moduleId = [].concat(urlParams.moduleId || []);
       QUnit2.config.testId = [].concat(urlParams.testId || []);
-      QUnit2.config.module = urlParams.module;
-      QUnit2.config.filter = urlParams.filter;
       if (urlParams.seed === true) {
         QUnit2.config.seed = Math.random().toString(36).slice(2);
       } else if (urlParams.seed) {
@@ -4608,12 +4142,12 @@ var qunit = { exports: {} };
             }
             r[n2] = e2;
           }, e.poll = function() {
-            if (o !== 0) {
+            if (0 !== o) {
               var e2 = r[0];
               return r[0] = r[--o], n(), e2;
             }
           }, e.peek = function(e2) {
-            if (o !== 0)
+            if (0 !== o)
               return r[0];
           }, e.replaceTop = function(o2) {
             r[0] = o2, n();
@@ -4629,13 +4163,12 @@ var qunit = { exports: {} };
       defined: 0,
       completed: 0
     };
-    function escapeText(s) {
-      if (!s) {
+    function escapeText(str) {
+      if (!str) {
         return "";
       }
-      s = s + "";
-      return s.replace(/['"<>&]/g, function(s2) {
-        switch (s2) {
+      return ("" + str).replace(/['"<>&]/g, function(s) {
+        switch (s) {
           case "'":
             return "&#039;";
           case '"':
@@ -4663,6 +4196,7 @@ var qunit = { exports: {} };
         moduleId: void 0,
         testId: void 0
       });
+      var dropdownData = null;
       function trim(string) {
         if (typeof string.trim === "function") {
           return string.trim();
@@ -4834,18 +4368,10 @@ var qunit = { exports: {} };
         return location.protocol + "//" + location.host + location.pathname + querystring.slice(0, -1);
       }
       function applyUrlParams() {
-        var i;
-        var selectedModules = [];
-        var modulesList = id("qunit-modulefilter-dropdown-list").getElementsByTagName("input");
         var filter = id("qunit-filter-input").value;
-        for (i = 0; i < modulesList.length; i++) {
-          if (modulesList[i].checked) {
-            selectedModules.push(modulesList[i].value);
-          }
-        }
         window$1.location = setUrl({
           filter: filter === "" ? void 0 : filter,
-          moduleId: selectedModules.length === 0 ? void 0 : selectedModules,
+          moduleId: _toConsumableArray(dropdownData.selectedMap.keys()),
           module: void 0,
           testId: void 0
         });
@@ -4884,79 +4410,103 @@ var qunit = { exports: {} };
         addEvent(filter, "submit", interceptNavigation);
         return filter;
       }
-      function moduleListHtml(modules) {
+      function createModuleListItem(moduleId, name, checked) {
+        return '<li><label class="clickable' + (checked ? " checked" : "") + '"><input type="checkbox" value="' + escapeText(moduleId) + '"' + (checked ? ' checked="checked"' : "") + " />" + escapeText(name) + "</label></li>";
+      }
+      function moduleListHtml(results) {
         var html = "";
-        for (var i = 0; i < modules.length; i++) {
-          if (modules[i].name !== "") {
-            var checked = config2.moduleId.indexOf(modules[i].moduleId) > -1;
-            html += "<li><label class='clickable" + (checked ? " checked" : "") + "'><input type='checkbox' value='" + modules[i].moduleId + "'" + (checked ? " checked='checked'" : "") + " />" + escapeText(modules[i].name) + "</label></li>";
+        dropdownData.selectedMap.forEach(function(name, moduleId) {
+          html += createModuleListItem(moduleId, name, true);
+        });
+        for (var i = 0; i < results.length; i++) {
+          var mod = results[i].obj;
+          if (!dropdownData.selectedMap.has(mod.moduleId)) {
+            html += createModuleListItem(mod.moduleId, mod.name, false);
           }
         }
         return html;
       }
-      function toolbarModuleFilter() {
-        var moduleFilter = document2.createElement("form");
-        var label = document2.createElement("label");
+      function toolbarModuleFilter(beginDetails) {
+        var initialSelected = null;
+        dropdownData = {
+          options: beginDetails.modules.slice(),
+          selectedMap: new StringMap(),
+          isDirty: function isDirty() {
+            return _toConsumableArray(dropdownData.selectedMap.keys()).sort().join(",") !== _toConsumableArray(initialSelected.keys()).sort().join(",");
+          }
+        };
+        if (config2.moduleId.length) {
+          for (var i = 0; i < beginDetails.modules.length; i++) {
+            var mod = beginDetails.modules[i];
+            if (config2.moduleId.indexOf(mod.moduleId) !== -1) {
+              dropdownData.selectedMap.set(mod.moduleId, mod.name);
+            }
+          }
+        }
+        initialSelected = new StringMap(dropdownData.selectedMap);
         var moduleSearch = document2.createElement("input");
-        var dropDown = document2.createElement("div");
-        var actions2 = document2.createElement("span");
-        var applyButton = document2.createElement("button");
-        var resetButton = document2.createElement("button");
-        var allModulesLabel = document2.createElement("label");
-        var allCheckbox = document2.createElement("input");
-        var dropDownList = document2.createElement("ul");
-        var dirty = false;
         moduleSearch.id = "qunit-modulefilter-search";
         moduleSearch.autocomplete = "off";
         addEvent(moduleSearch, "input", searchInput);
         addEvent(moduleSearch, "input", searchFocus);
         addEvent(moduleSearch, "focus", searchFocus);
         addEvent(moduleSearch, "click", searchFocus);
-        config2.modules.forEach(function(module2) {
-          module2.namePrepared = fuzzysort.prepare(module2.name);
-        });
-        label.id = "qunit-modulefilter-search-container";
-        label.innerHTML = "Module: ";
-        label.appendChild(moduleSearch);
+        var label = document2.createElement("label");
+        label.htmlFor = "qunit-modulefilter-search";
+        label.textContent = "Module:";
+        var searchContainer = document2.createElement("span");
+        searchContainer.id = "qunit-modulefilter-search-container";
+        searchContainer.appendChild(moduleSearch);
+        var applyButton = document2.createElement("button");
         applyButton.textContent = "Apply";
-        applyButton.style.display = "none";
+        applyButton.title = "Re-run the selected test modules";
+        addEvent(applyButton, "click", applyUrlParams);
+        var resetButton = document2.createElement("button");
         resetButton.textContent = "Reset";
         resetButton.type = "reset";
-        resetButton.style.display = "none";
-        allCheckbox.type = "checkbox";
-        allCheckbox.checked = config2.moduleId.length === 0;
-        allModulesLabel.className = "clickable";
-        if (config2.moduleId.length) {
-          allModulesLabel.className = "checked";
-        }
-        allModulesLabel.appendChild(allCheckbox);
-        allModulesLabel.appendChild(document2.createTextNode("All modules"));
+        resetButton.title = "Restore the previous module selection";
+        var clearButton = document2.createElement("button");
+        clearButton.textContent = "Select none";
+        clearButton.type = "button";
+        clearButton.title = "Clear the current module selection";
+        addEvent(clearButton, "click", function() {
+          dropdownData.selectedMap.clear();
+          selectionChange();
+          searchInput();
+        });
+        var actions2 = document2.createElement("span");
         actions2.id = "qunit-modulefilter-actions";
         actions2.appendChild(applyButton);
         actions2.appendChild(resetButton);
-        actions2.appendChild(allModulesLabel);
-        var commit = actions2.firstChild;
-        var reset = commit.nextSibling;
-        addEvent(commit, "click", applyUrlParams);
+        if (initialSelected.size) {
+          actions2.appendChild(clearButton);
+        }
+        var dropDownList = document2.createElement("ul");
         dropDownList.id = "qunit-modulefilter-dropdown-list";
-        dropDownList.innerHTML = moduleListHtml(config2.modules);
+        var dropDown = document2.createElement("div");
         dropDown.id = "qunit-modulefilter-dropdown";
         dropDown.style.display = "none";
         dropDown.appendChild(actions2);
         dropDown.appendChild(dropDownList);
         addEvent(dropDown, "change", selectionChange);
+        searchContainer.appendChild(dropDown);
         selectionChange();
+        var moduleFilter = document2.createElement("form");
         moduleFilter.id = "qunit-modulefilter";
         moduleFilter.appendChild(label);
-        moduleFilter.appendChild(dropDown);
+        moduleFilter.appendChild(document2.createTextNode(" "));
+        moduleFilter.appendChild(searchContainer);
         addEvent(moduleFilter, "submit", interceptNavigation);
         addEvent(moduleFilter, "reset", function() {
-          window$1.setTimeout(selectionChange);
+          dropdownData.selectedMap = new StringMap(initialSelected);
+          selectionChange();
+          searchInput();
         });
         function searchFocus() {
           if (dropDown.style.display !== "none") {
             return;
           }
+          searchInput();
           dropDown.style.display = "block";
           addEvent(document2, "click", hideHandler);
           addEvent(document2, "keydown", hideHandler);
@@ -4975,67 +4525,59 @@ var qunit = { exports: {} };
           }
         }
         function filterModules(searchText) {
+          var results;
           if (searchText === "") {
-            return config2.modules;
+            results = dropdownData.options.slice(0, 20).map(function(obj) {
+              return {
+                obj
+              };
+            });
+          } else {
+            results = fuzzysort.go(searchText, dropdownData.options, {
+              limit: 20,
+              key: "name",
+              allowTypo: true
+            });
           }
-          return fuzzysort.go(searchText, config2.modules, {
-            key: "namePrepared",
-            threshold: -1e4
-          }).map(function(module2) {
-            return module2.obj;
-          });
+          return moduleListHtml(results);
         }
         var searchInputTimeout;
         function searchInput() {
           window$1.clearTimeout(searchInputTimeout);
           searchInputTimeout = window$1.setTimeout(function() {
-            var searchText = moduleSearch.value.toLowerCase();
-            var filteredModules = filterModules(searchText);
-            dropDownList.innerHTML = moduleListHtml(filteredModules);
-          }, 200);
+            dropDownList.innerHTML = filterModules(moduleSearch.value);
+          });
         }
         function selectionChange(evt) {
-          var checkbox = evt && evt.target || allCheckbox;
-          var modulesList = dropDownList.getElementsByTagName("input");
-          var selectedNames = [];
-          toggleClass(checkbox.parentNode, "checked", checkbox.checked);
-          dirty = false;
-          if (checkbox.checked && checkbox !== allCheckbox) {
-            allCheckbox.checked = false;
-            removeClass(allCheckbox.parentNode, "checked");
-          }
-          for (var i = 0; i < modulesList.length; i++) {
-            var item = modulesList[i];
-            if (!evt) {
-              toggleClass(item.parentNode, "checked", item.checked);
-            } else if (checkbox === allCheckbox && checkbox.checked) {
-              item.checked = false;
-              removeClass(item.parentNode, "checked");
+          var checkbox = evt && evt.target || null;
+          if (checkbox) {
+            if (checkbox.checked) {
+              dropdownData.selectedMap.set(checkbox.value, checkbox.parentNode.textContent);
+            } else {
+              dropdownData.selectedMap.delete(checkbox.value);
             }
-            dirty = dirty || item.checked !== item.defaultChecked;
-            if (item.checked) {
-              selectedNames.push(item.parentNode.textContent);
-            }
+            toggleClass(checkbox.parentNode, "checked", checkbox.checked);
           }
-          commit.style.display = reset.style.display = dirty ? "" : "none";
-          moduleSearch.placeholder = selectedNames.join(", ") || allCheckbox.parentNode.textContent;
-          moduleSearch.title = "Type to filter list. Current selection:\n" + (selectedNames.join("\n") || allCheckbox.parentNode.textContent);
+          var textForm = dropdownData.selectedMap.size ? dropdownData.selectedMap.size + " " + (dropdownData.selectedMap.size === 1 ? "module" : "modules") : "All modules";
+          moduleSearch.placeholder = textForm;
+          moduleSearch.title = "Type to search through and reduce the list.";
+          resetButton.disabled = !dropdownData.isDirty();
+          clearButton.style.display = dropdownData.selectedMap.size ? "" : "none";
         }
         return moduleFilter;
       }
-      function toolbarFilters() {
-        var toolbarFilters2 = document2.createElement("span");
-        toolbarFilters2.id = "qunit-toolbar-filters";
-        toolbarFilters2.appendChild(toolbarLooseFilter());
-        toolbarFilters2.appendChild(toolbarModuleFilter());
-        return toolbarFilters2;
-      }
-      function appendToolbar() {
+      function appendToolbar(beginDetails) {
         var toolbar = id("qunit-testrunner-toolbar");
         if (toolbar) {
           toolbar.appendChild(toolbarUrlConfigContainer());
-          toolbar.appendChild(toolbarFilters());
-          toolbar.appendChild(document2.createElement("div")).className = "clearfix";
+          var toolbarFilters = document2.createElement("span");
+          toolbarFilters.id = "qunit-toolbar-filters";
+          toolbarFilters.appendChild(toolbarLooseFilter());
+          toolbarFilters.appendChild(toolbarModuleFilter(beginDetails));
+          var clearfix = document2.createElement("div");
+          clearfix.className = "clearfix";
+          toolbar.appendChild(toolbarFilters);
+          toolbar.appendChild(clearfix);
         }
       }
       function appendHeader() {
@@ -5084,7 +4626,7 @@ var qunit = { exports: {} };
           userAgent.appendChild(document2.createTextNode("QUnit " + QUnit2.version + "; " + navigator.userAgent));
         }
       }
-      function appendInterface() {
+      function appendInterface(beginDetails) {
         var qunit2 = id("qunit");
         if (qunit2) {
           qunit2.setAttribute("role", "main");
@@ -5094,7 +4636,7 @@ var qunit = { exports: {} };
         appendBanner();
         appendTestResults();
         appendUserAgent();
-        appendToolbar();
+        appendToolbar(beginDetails);
       }
       function appendTest(name, testId, moduleName) {
         var tests = id("qunit-tests");
@@ -5123,8 +4665,8 @@ var qunit = { exports: {} };
       QUnit2.on("runStart", function(runStart) {
         stats.defined = runStart.testCounts.total;
       });
-      QUnit2.begin(function() {
-        appendInterface();
+      QUnit2.begin(function(beginDetails) {
+        appendInterface(beginDetails);
       });
       function getRerunFailedHtml(failedTests) {
         if (failedTests.length === 0) {
@@ -6015,14 +5557,14 @@ var qunit = { exports: {} };
   })();
 })(qunit, qunit.exports);
 var QUnit = qunit.exports;
-/* Sinon.JS 13.0.1, 2022-02-01, @license BSD-3 */
+/* Sinon.JS 13.0.2, 2022-04-14, @license BSD-3 */
 let sinon;
 (function() {
   function r(e, n, t2) {
     function o(i2, f) {
       if (!n[i2]) {
         if (!e[i2]) {
-          var c = typeof require == "function" && require;
+          var c = "function" == typeof require && require;
           if (!f && c)
             return c(i2, true);
           if (u)
@@ -6038,7 +5580,7 @@ let sinon;
       }
       return n[i2].exports;
     }
-    for (var u = typeof require == "function" && require, i = 0; i < t2.length; i++)
+    for (var u = "function" == typeof require && require, i = 0; i < t2.length; i++)
       o(t2[i]);
     return o;
   }
@@ -6069,7 +5611,9 @@ let sinon;
     fakeServer: nise.fakeServer,
     fakeServerWithClock: nise.fakeServerWithClock,
     createFakeServer: nise.fakeServer.create.bind(nise.fakeServer),
-    createFakeServerWithClock: nise.fakeServerWithClock.create.bind(nise.fakeServerWithClock),
+    createFakeServerWithClock: nise.fakeServerWithClock.create.bind(
+      nise.fakeServerWithClock
+    ),
     addBehavior: function(name, fn) {
       behavior.addBehavior(stub, name, fn);
     },
@@ -6120,7 +5664,9 @@ let sinon;
         case "calledTwice":
         case "calledThrice":
           if (assertionArgs.length !== 0) {
-            assert.fail(`${assertionMethod} takes 1 argument but was called with ${assertionArgs.length + 1} arguments`);
+            assert.fail(
+              `${assertionMethod} takes 1 argument but was called with ${assertionArgs.length + 1} arguments`
+            );
           }
           break;
       }
@@ -6148,7 +5694,13 @@ let sinon;
           failed = typeof fake[meth] === "function" ? !fake[meth].apply(fake, args) : !fake[meth];
         }
         if (failed) {
-          failAssertion(this, (fake.printf || fake.proxy.printf).apply(fake, concat([msg], args)));
+          failAssertion(
+            this,
+            (fake.printf || fake.proxy.printf).apply(
+              fake,
+              concat([msg], args)
+            )
+          );
         } else {
           assert.pass(name);
         }
@@ -6184,7 +5736,10 @@ let sinon;
             actual = join(orderByFirstCall(calls), ", ");
           } catch (e) {
           }
-          failAssertion(this, `expected ${expected} to be called in order but were called as ${actual}`);
+          failAssertion(
+            this,
+            `expected ${expected} to be called in order but were called as ${actual}`
+          );
         } else {
           assert.pass("callOrder");
         }
@@ -6231,27 +5786,82 @@ let sinon;
         }
       }
     };
-    mirrorPropAsAssertion("called", "expected %n to have been called at least once but was never called");
-    mirrorPropAsAssertion("notCalled", function(spy) {
-      return !spy.called;
-    }, "expected %n to not have been called but was called %c%C");
-    mirrorPropAsAssertion("calledOnce", "expected %n to be called once but was called %c%C");
-    mirrorPropAsAssertion("calledTwice", "expected %n to be called twice but was called %c%C");
-    mirrorPropAsAssertion("calledThrice", "expected %n to be called thrice but was called %c%C");
-    mirrorPropAsAssertion("calledOn", "expected %n to be called with %1 as this but was called with %t");
-    mirrorPropAsAssertion("alwaysCalledOn", "expected %n to always be called with %1 as this but was called with %t");
+    mirrorPropAsAssertion(
+      "called",
+      "expected %n to have been called at least once but was never called"
+    );
+    mirrorPropAsAssertion(
+      "notCalled",
+      function(spy) {
+        return !spy.called;
+      },
+      "expected %n to not have been called but was called %c%C"
+    );
+    mirrorPropAsAssertion(
+      "calledOnce",
+      "expected %n to be called once but was called %c%C"
+    );
+    mirrorPropAsAssertion(
+      "calledTwice",
+      "expected %n to be called twice but was called %c%C"
+    );
+    mirrorPropAsAssertion(
+      "calledThrice",
+      "expected %n to be called thrice but was called %c%C"
+    );
+    mirrorPropAsAssertion(
+      "calledOn",
+      "expected %n to be called with %1 as this but was called with %t"
+    );
+    mirrorPropAsAssertion(
+      "alwaysCalledOn",
+      "expected %n to always be called with %1 as this but was called with %t"
+    );
     mirrorPropAsAssertion("calledWithNew", "expected %n to be called with new");
-    mirrorPropAsAssertion("alwaysCalledWithNew", "expected %n to always be called with new");
-    mirrorPropAsAssertion("calledWith", "expected %n to be called with arguments %D");
-    mirrorPropAsAssertion("calledWithMatch", "expected %n to be called with match %D");
-    mirrorPropAsAssertion("alwaysCalledWith", "expected %n to always be called with arguments %D");
-    mirrorPropAsAssertion("alwaysCalledWithMatch", "expected %n to always be called with match %D");
-    mirrorPropAsAssertion("calledWithExactly", "expected %n to be called with exact arguments %D");
-    mirrorPropAsAssertion("calledOnceWithExactly", "expected %n to be called once and with exact arguments %D");
-    mirrorPropAsAssertion("calledOnceWithMatch", "expected %n to be called once and with match %D");
-    mirrorPropAsAssertion("alwaysCalledWithExactly", "expected %n to always be called with exact arguments %D");
-    mirrorPropAsAssertion("neverCalledWith", "expected %n to never be called with arguments %*%C");
-    mirrorPropAsAssertion("neverCalledWithMatch", "expected %n to never be called with match %*%C");
+    mirrorPropAsAssertion(
+      "alwaysCalledWithNew",
+      "expected %n to always be called with new"
+    );
+    mirrorPropAsAssertion(
+      "calledWith",
+      "expected %n to be called with arguments %D"
+    );
+    mirrorPropAsAssertion(
+      "calledWithMatch",
+      "expected %n to be called with match %D"
+    );
+    mirrorPropAsAssertion(
+      "alwaysCalledWith",
+      "expected %n to always be called with arguments %D"
+    );
+    mirrorPropAsAssertion(
+      "alwaysCalledWithMatch",
+      "expected %n to always be called with match %D"
+    );
+    mirrorPropAsAssertion(
+      "calledWithExactly",
+      "expected %n to be called with exact arguments %D"
+    );
+    mirrorPropAsAssertion(
+      "calledOnceWithExactly",
+      "expected %n to be called once and with exact arguments %D"
+    );
+    mirrorPropAsAssertion(
+      "calledOnceWithMatch",
+      "expected %n to be called once and with match %D"
+    );
+    mirrorPropAsAssertion(
+      "alwaysCalledWithExactly",
+      "expected %n to always be called with exact arguments %D"
+    );
+    mirrorPropAsAssertion(
+      "neverCalledWith",
+      "expected %n to never be called with arguments %*%C"
+    );
+    mirrorPropAsAssertion(
+      "neverCalledWithMatch",
+      "expected %n to never be called with match %*%C"
+    );
     mirrorPropAsAssertion("threw", "%n did not throw exception%C");
     mirrorPropAsAssertion("alwaysThrew", "%n did not always throw exception%C");
     return assert;
@@ -6298,9 +5908,15 @@ let sinon;
     if (behavior.callArgAt < 0) {
       var msg;
       if (behavior.callArgProp) {
-        msg = `${functionName(behavior.stub)} expected to yield to '${valueToString(behavior.callArgProp)}', but no object with such a property was passed.`;
+        msg = `${functionName(
+          behavior.stub
+        )} expected to yield to '${valueToString(
+          behavior.callArgProp
+        )}', but no object with such a property was passed.`;
       } else {
-        msg = `${functionName(behavior.stub)} expected to yield, but no callback was passed.`;
+        msg = `${functionName(
+          behavior.stub
+        )} expected to yield, but no callback was passed.`;
       }
       if (args.length > 0) {
         msg += ` Received [${join(args, ", ")}]`;
@@ -6313,7 +5929,9 @@ let sinon;
     var property = name.replace(/sArg/, "ArgAt");
     var index2 = behavior[property];
     if (index2 >= args.length) {
-      throw new TypeError(`${name} failed: ${index2 + 1} arguments required but only ${args.length} present`);
+      throw new TypeError(
+        `${name} failed: ${index2 + 1} arguments required but only ${args.length} present`
+      );
     }
   }
   function callCallback(behavior, args) {
@@ -6325,10 +5943,16 @@ let sinon;
       }
       if (behavior.callbackAsync) {
         nextTick(function() {
-          func.apply(behavior.callbackContext, behavior.callbackArguments);
+          func.apply(
+            behavior.callbackContext,
+            behavior.callbackArguments
+          );
         });
       } else {
-        return func.apply(behavior.callbackContext, behavior.callbackArguments);
+        return func.apply(
+          behavior.callbackContext,
+          behavior.callbackArguments
+        );
       }
     }
     return void 0;
@@ -6368,7 +5992,9 @@ let sinon;
         return this.fakeFn.apply(context, args);
       } else if (typeof this.resolveArgAt === "number") {
         ensureArgs("resolvesArg", this, args);
-        return (this.promiseLibrary || Promise).resolve(args[this.resolveArgAt]);
+        return (this.promiseLibrary || Promise).resolve(
+          args[this.resolveArgAt]
+        );
       } else if (this.resolveThis) {
         return (this.promiseLibrary || Promise).resolve(context);
       } else if (this.resolve) {
@@ -6381,7 +6007,10 @@ let sinon;
       } else if (this.callsThroughWithNew) {
         var WrappedClass = this.effectiveWrappedMethod();
         var argsArray = slice(args);
-        var F = WrappedClass.bind.apply(WrappedClass, concat([null], argsArray));
+        var F = WrappedClass.bind.apply(
+          WrappedClass,
+          concat([null], argsArray)
+        );
         return new F();
       } else if (typeof this.returnValue !== "undefined") {
         return this.returnValue;
@@ -6411,13 +6040,18 @@ let sinon;
       return this.stub.onThirdCall();
     },
     withArgs: function withArgs() {
-      throw new Error('Defining a stub by invoking "stub.onCall(...).withArgs(...)" is not supported. Use "stub.withArgs(...).onCall(...)" to define sequential behavior for calls with certain arguments.');
+      throw new Error(
+        'Defining a stub by invoking "stub.onCall(...).withArgs(...)" is not supported. Use "stub.withArgs(...).onCall(...)" to define sequential behavior for calls with certain arguments.'
+      );
     }
   };
   function createBehavior(behaviorMethod) {
     return function() {
       this.defaultBehavior = this.defaultBehavior || proto.create(this);
-      this.defaultBehavior[behaviorMethod].apply(this.defaultBehavior, arguments);
+      this.defaultBehavior[behaviorMethod].apply(
+        this.defaultBehavior,
+        arguments
+      );
       return this;
     };
   }
@@ -6726,16 +6360,26 @@ let sinon;
       var rootStub = fake.stub || fake;
       Object.defineProperty(rootStub.rootObj, rootStub.propName, {
         get: getterFunction,
-        configurable: isPropertyConfigurable(rootStub.rootObj, rootStub.propName)
+        configurable: isPropertyConfigurable(
+          rootStub.rootObj,
+          rootStub.propName
+        )
       });
       return fake;
     },
     set: function set(fake, setterFunction) {
       var rootStub = fake.stub || fake;
-      Object.defineProperty(rootStub.rootObj, rootStub.propName, {
-        set: setterFunction,
-        configurable: isPropertyConfigurable(rootStub.rootObj, rootStub.propName)
-      });
+      Object.defineProperty(
+        rootStub.rootObj,
+        rootStub.propName,
+        {
+          set: setterFunction,
+          configurable: isPropertyConfigurable(
+            rootStub.rootObj,
+            rootStub.propName
+          )
+        }
+      );
       return fake;
     },
     value: function value(fake, newVal) {
@@ -6950,31 +6594,61 @@ let sinon;
       var expectedArguments = this.expectedArguments;
       if (receivedMaxCalls(this)) {
         this.failed = true;
-        mockExpectation.fail(`${this.method} already called ${timesInWords(this.maxCalls)}`);
+        mockExpectation.fail(
+          `${this.method} already called ${timesInWords(this.maxCalls)}`
+        );
       }
       if ("expectedThis" in this && this.expectedThis !== thisValue) {
-        mockExpectation.fail(`${this.method} called with ${valueToString(thisValue)} as thisValue, expected ${valueToString(this.expectedThis)}`);
+        mockExpectation.fail(
+          `${this.method} called with ${valueToString(
+            thisValue
+          )} as thisValue, expected ${valueToString(this.expectedThis)}`
+        );
       }
       if (!("expectedArguments" in this)) {
         return;
       }
       if (!args) {
-        mockExpectation.fail(`${this.method} received no arguments, expected ${format(expectedArguments)}`);
+        mockExpectation.fail(
+          `${this.method} received no arguments, expected ${format(
+            expectedArguments
+          )}`
+        );
       }
       if (args.length < expectedArguments.length) {
-        mockExpectation.fail(`${this.method} received too few arguments (${format(args)}), expected ${format(expectedArguments)}`);
+        mockExpectation.fail(
+          `${this.method} received too few arguments (${format(
+            args
+          )}), expected ${format(expectedArguments)}`
+        );
       }
       if (this.expectsExactArgCount && args.length !== expectedArguments.length) {
-        mockExpectation.fail(`${this.method} received too many arguments (${format(args)}), expected ${format(expectedArguments)}`);
+        mockExpectation.fail(
+          `${this.method} received too many arguments (${format(
+            args
+          )}), expected ${format(expectedArguments)}`
+        );
       }
-      forEach(expectedArguments, function(expectedArgument, i) {
-        if (!verifyMatcher(expectedArgument, args[i])) {
-          mockExpectation.fail(`${this.method} received wrong arguments ${format(args)}, didn't match ${String(expectedArguments)}`);
-        }
-        if (!deepEqual(args[i], expectedArgument)) {
-          mockExpectation.fail(`${this.method} received wrong arguments ${format(args)}, expected ${format(expectedArguments)}`);
-        }
-      }, this);
+      forEach(
+        expectedArguments,
+        function(expectedArgument, i) {
+          if (!verifyMatcher(expectedArgument, args[i])) {
+            mockExpectation.fail(
+              `${this.method} received wrong arguments ${format(
+                args
+              )}, didn't match ${String(expectedArguments)}`
+            );
+          }
+          if (!deepEqual(args[i], expectedArgument)) {
+            mockExpectation.fail(
+              `${this.method} received wrong arguments ${format(
+                args
+              )}, expected ${format(expectedArguments)}`
+            );
+          }
+        },
+        this
+      );
     },
     allowsCall: function allowsCall(thisValue, args) {
       var expectedArguments = this.expectedArguments;
@@ -7026,7 +6700,10 @@ let sinon;
         proxy: this.method || "anonymous mock expectation",
         args
       });
-      var message = `${callStr.replace(", [...", "[, ...")} ${expectedCallCountInWords(this)}`;
+      var message = `${callStr.replace(
+        ", [...",
+        "[, ..."
+      )} ${expectedCallCountInWords(this)}`;
       if (this.met()) {
         return `Expectation met: ${message}`;
       }
@@ -7153,13 +6830,23 @@ let sinon;
       var expectations = this.expectations && this.expectations[method] ? this.expectations[method] : [];
       var currentArgs = args || [];
       var available;
-      var expectationsWithMatchingArgs = filter(expectations, function(expectation) {
-        var expectedArgs = expectation.expectedArguments || [];
-        return arrayEquals(expectedArgs, currentArgs, expectation.expectsExactArgCount);
-      });
-      var expectationsToApply = filter(expectationsWithMatchingArgs, function(expectation) {
-        return !expectation.met() && expectation.allowsCall(thisValue, args);
-      });
+      var expectationsWithMatchingArgs = filter(
+        expectations,
+        function(expectation) {
+          var expectedArgs = expectation.expectedArguments || [];
+          return arrayEquals(
+            expectedArgs,
+            currentArgs,
+            expectation.expectsExactArgCount
+          );
+        }
+      );
+      var expectationsToApply = filter(
+        expectationsWithMatchingArgs,
+        function(expectation) {
+          return !expectation.met() && expectation.allowsCall(thisValue, args);
+        }
+      );
       if (expectationsToApply.length > 0) {
         return expectationsToApply[0].apply(thisValue, args);
       }
@@ -7178,10 +6865,13 @@ let sinon;
       forEach(expectations, function(expectation) {
         push(messages, `    ${String(expectation)}`);
       });
-      unshift(messages, `Unexpected call: ${proxyCallToString.call({
-        proxy: method,
-        args
-      })}`);
+      unshift(
+        messages,
+        `Unexpected call: ${proxyCallToString.call({
+          proxy: method,
+          args
+        })}`
+      );
       var err = new Error();
       if (!err.stack) {
         try {
@@ -7189,11 +6879,14 @@ let sinon;
         } catch (e) {
         }
       }
-      push(this.failures, `Unexpected call: ${proxyCallToString.call({
-        proxy: method,
-        args,
-        stack: err.stack
-      })}`);
+      push(
+        this.failures,
+        `Unexpected call: ${proxyCallToString.call({
+          proxy: method,
+          args,
+          stack: err.stack
+        })}`
+      );
       mockExpectation.fail(join(messages, "\n"));
     }
   });
@@ -7276,7 +6969,10 @@ let sinon;
       var returnValues = [];
       for (var i = 0, l = this.callCount; i < l; i += 1) {
         currentCall = this.getCall(i);
-        var returnValue = currentCall[actual || method].apply(currentCall, arguments);
+        var returnValue = currentCall[actual || method].apply(
+          currentCall,
+          arguments
+        );
         push(returnValues, returnValue);
         if (returnValue) {
           matches += 1;
@@ -7324,9 +7020,13 @@ let sinon;
       if (calledWithArgs.length > self2.args.length) {
         return false;
       }
-      return reduce(calledWithArgs, function(prev, arg, i) {
-        return prev && deepEqual(self2.args[i], arg);
-      }, true);
+      return reduce(
+        calledWithArgs,
+        function(prev, arg, i) {
+          return prev && deepEqual(self2.args[i], arg);
+        },
+        true
+      );
     },
     calledWithMatch: function calledWithMatch() {
       var self2 = this;
@@ -7334,10 +7034,14 @@ let sinon;
       if (calledWithMatchArgs.length > self2.args.length) {
         return false;
       }
-      return reduce(calledWithMatchArgs, function(prev, expectation, i) {
-        var actual = self2.args[i];
-        return prev && match(expectation).test(actual);
-      }, true);
+      return reduce(
+        calledWithMatchArgs,
+        function(prev, expectation, i) {
+          var actual = self2.args[i];
+          return prev && match(expectation).test(actual);
+        },
+        true
+      );
     },
     calledWithExactly: function calledWithExactly() {
       return arguments.length === this.args.length && this.calledWith.apply(this, arguments);
@@ -7381,7 +7085,10 @@ let sinon;
       return this.args[pos].apply(thisValue);
     },
     callArgWith: function(pos) {
-      return this.callArgOnWith.apply(this, concat([pos, null], slice(arguments, 1)));
+      return this.callArgOnWith.apply(
+        this,
+        concat([pos, null], slice(arguments, 1))
+      );
     },
     callArgOnWith: function(pos, thisValue) {
       this.ensureArgIsAFunction(pos);
@@ -7390,7 +7097,9 @@ let sinon;
     },
     throwArg: function(pos) {
       if (pos > this.args.length) {
-        throw new TypeError(`Not enough arguments: ${pos} required but only ${this.args.length} present`);
+        throw new TypeError(
+          `Not enough arguments: ${pos} required but only ${this.args.length} present`
+        );
       }
       throw this.args[pos];
     },
@@ -7403,12 +7112,19 @@ let sinon;
         return typeof arg === "function";
       })[0];
       if (!yieldFn) {
-        throwYieldError(this.proxy, " cannot yield since no callback was passed.", args);
+        throwYieldError(
+          this.proxy,
+          " cannot yield since no callback was passed.",
+          args
+        );
       }
       return yieldFn.apply(thisValue, slice(arguments, 1));
     },
     yieldTo: function(prop) {
-      return this.yieldToOn.apply(this, concat([prop, null], slice(arguments, 1)));
+      return this.yieldToOn.apply(
+        this,
+        concat([prop, null], slice(arguments, 1))
+      );
     },
     yieldToOn: function(prop, thisValue) {
       var args = slice(this.args);
@@ -7417,7 +7133,13 @@ let sinon;
       })[0];
       var yieldFn = yieldArg && yieldArg[prop];
       if (!yieldFn) {
-        throwYieldError(this.proxy, ` cannot yield to '${valueToString(prop)}' since no callback was passed.`, args);
+        throwYieldError(
+          this.proxy,
+          ` cannot yield to '${valueToString(
+            prop
+          )}' since no callback was passed.`,
+          args
+        );
       }
       return yieldFn.apply(thisValue, slice(arguments, 2));
     },
@@ -7441,13 +7163,18 @@ let sinon;
         }
       }
       if (this.stack) {
-        callStr += (this.stack.split("\n")[3] || "unknown").replace(/^\s*(?:at\s+|@)?/, " at ");
+        callStr += (this.stack.split("\n")[3] || "unknown").replace(
+          /^\s*(?:at\s+|@)?/,
+          " at "
+        );
       }
       return callStr;
     },
     ensureArgIsAFunction: function(pos) {
       if (typeof this.args[pos] !== "function") {
-        throw new TypeError(`Expected argument at position ${pos} to be a Function, but was ${typeof this.args[pos]}`);
+        throw new TypeError(
+          `Expected argument at position ${pos} to be a Function, but was ${typeof this.args[pos]}`
+        );
       }
     }
   };
@@ -7513,7 +7240,10 @@ let sinon;
       this.invoking = true;
       var thisCall = this.getCall(this.callCount - 1);
       if (thisCall.calledWithNew()) {
-        returnValue = new (bind.apply(this.func || func, concat([thisValue], args)))();
+        returnValue = new (bind.apply(
+          this.func || func,
+          concat([thisValue], args)
+        ))();
         if (typeof returnValue !== "object") {
           returnValue = thisValue;
         }
@@ -7582,7 +7312,15 @@ let sinon;
       if (i < 0 || i >= this.callCount) {
         return null;
       }
-      return proxyCall(this, this.thisValues[i], this.args[i], this.returnValues[i], this.exceptions[i], this.callIds[i], this.errorsWithCallStack[i]);
+      return proxyCall(
+        this,
+        this.thisValues[i],
+        this.args[i],
+        this.returnValues[i],
+        this.exceptions[i],
+        this.callIds[i],
+        this.errorsWithCallStack[i]
+      );
     },
     getCalls: function() {
       var calls = [];
@@ -7636,7 +7374,9 @@ let sinon;
     },
     resetHistory: function() {
       if (this.invoking) {
-        var err = new Error("Cannot reset Sinon function while invoking it. Move the call to .resetHistory outside of the callback.");
+        var err = new Error(
+          "Cannot reset Sinon function while invoking it. Move the call to .resetHistory outside of the callback."
+        );
         err.name = "InvalidResetException";
         throw err;
       }
@@ -7670,20 +7410,63 @@ let sinon;
   delegateToCalls(proxyApi, "calledOn", true);
   delegateToCalls(proxyApi, "alwaysCalledOn", false, "calledOn");
   delegateToCalls(proxyApi, "calledWith", true);
-  delegateToCalls(proxyApi, "calledOnceWith", true, "calledWith", false, void 0, 1);
+  delegateToCalls(
+    proxyApi,
+    "calledOnceWith",
+    true,
+    "calledWith",
+    false,
+    void 0,
+    1
+  );
   delegateToCalls(proxyApi, "calledWithMatch", true);
   delegateToCalls(proxyApi, "alwaysCalledWith", false, "calledWith");
   delegateToCalls(proxyApi, "alwaysCalledWithMatch", false, "calledWithMatch");
   delegateToCalls(proxyApi, "calledWithExactly", true);
-  delegateToCalls(proxyApi, "calledOnceWithExactly", true, "calledWithExactly", false, void 0, 1);
-  delegateToCalls(proxyApi, "calledOnceWithMatch", true, "calledWithMatch", false, void 0, 1);
-  delegateToCalls(proxyApi, "alwaysCalledWithExactly", false, "calledWithExactly");
-  delegateToCalls(proxyApi, "neverCalledWith", false, "notCalledWith", false, function() {
-    return true;
-  });
-  delegateToCalls(proxyApi, "neverCalledWithMatch", false, "notCalledWithMatch", false, function() {
-    return true;
-  });
+  delegateToCalls(
+    proxyApi,
+    "calledOnceWithExactly",
+    true,
+    "calledWithExactly",
+    false,
+    void 0,
+    1
+  );
+  delegateToCalls(
+    proxyApi,
+    "calledOnceWithMatch",
+    true,
+    "calledWithMatch",
+    false,
+    void 0,
+    1
+  );
+  delegateToCalls(
+    proxyApi,
+    "alwaysCalledWithExactly",
+    false,
+    "calledWithExactly"
+  );
+  delegateToCalls(
+    proxyApi,
+    "neverCalledWith",
+    false,
+    "notCalledWith",
+    false,
+    function() {
+      return true;
+    }
+  );
+  delegateToCalls(
+    proxyApi,
+    "neverCalledWithMatch",
+    false,
+    "notCalledWithMatch",
+    false,
+    function() {
+      return true;
+    }
+  );
   delegateToCalls(proxyApi, "threw", true);
   delegateToCalls(proxyApi, "alwaysThrew", false, "threw");
   delegateToCalls(proxyApi, "returned", true);
@@ -7851,7 +7634,9 @@ let sinon;
     sandbox.leakThreshold = DEFAULT_LEAK_THRESHOLD;
     function addToCollection(object) {
       if (push(collection, object) > sandbox.leakThreshold && !loggedLeakWarning) {
-        logger.printWarning("Potential memory leak detected; be sure to call restore() to clean up your sandbox. To suppress this warning, modify the leakThreshold property of your sandbox.");
+        logger.printWarning(
+          "Potential memory leak detected; be sure to call restore() to clean up your sandbox. To suppress this warning, modify the leakThreshold property of your sandbox."
+        );
         loggedLeakWarning = true;
       }
     }
@@ -7944,7 +7729,9 @@ let sinon;
     };
     sandbox.restore = function restore() {
       if (arguments.length) {
-        throw new Error("sandbox.restore() does not take any parameters. Perhaps you meant stub.restore()");
+        throw new Error(
+          "sandbox.restore() does not take any parameters. Perhaps you meant stub.restore()"
+        );
       }
       reverse(collection);
       applyOnEach(collection, "restore");
@@ -7982,14 +7769,20 @@ let sinon;
     function verifyNotReplaced(object, property) {
       forEach(fakeRestorers, function(fakeRestorer) {
         if (fakeRestorer.object === object && fakeRestorer.property === property) {
-          throw new TypeError(`Attempted to replace ${property} which is already replaced`);
+          throw new TypeError(
+            `Attempted to replace ${property} which is already replaced`
+          );
         }
       });
     }
     sandbox.replace = function replace(object, property, replacement) {
       var descriptor = getPropertyDescriptor(object, property);
       if (typeof descriptor === "undefined") {
-        throw new TypeError(`Cannot replace non-existent property ${valueToString(property)}`);
+        throw new TypeError(
+          `Cannot replace non-existent property ${valueToString(
+            property
+          )}`
+        );
       }
       if (typeof replacement === "undefined") {
         throw new TypeError("Expected replacement argument to be defined");
@@ -8001,7 +7794,9 @@ let sinon;
         throw new Error("Use sandbox.replaceSetter for replacing setters");
       }
       if (typeof object[property] !== typeof replacement) {
-        throw new TypeError(`Cannot replace ${typeof object[property]} with ${typeof replacement}`);
+        throw new TypeError(
+          `Cannot replace ${typeof object[property]} with ${typeof replacement}`
+        );
       }
       verifyNotReplaced(object, property);
       push(fakeRestorers, getFakeRestorer(object, property));
@@ -8011,10 +7806,16 @@ let sinon;
     sandbox.replaceGetter = function replaceGetter(object, property, replacement) {
       var descriptor = getPropertyDescriptor(object, property);
       if (typeof descriptor === "undefined") {
-        throw new TypeError(`Cannot replace non-existent property ${valueToString(property)}`);
+        throw new TypeError(
+          `Cannot replace non-existent property ${valueToString(
+            property
+          )}`
+        );
       }
       if (typeof replacement !== "function") {
-        throw new TypeError("Expected replacement argument to be a function");
+        throw new TypeError(
+          "Expected replacement argument to be a function"
+        );
       }
       if (typeof descriptor.get !== "function") {
         throw new Error("`object.property` is not a getter");
@@ -8030,10 +7831,16 @@ let sinon;
     sandbox.replaceSetter = function replaceSetter(object, property, replacement) {
       var descriptor = getPropertyDescriptor(object, property);
       if (typeof descriptor === "undefined") {
-        throw new TypeError(`Cannot replace non-existent property ${valueToString(property)}`);
+        throw new TypeError(
+          `Cannot replace non-existent property ${valueToString(
+            property
+          )}`
+        );
       }
       if (typeof replacement !== "function") {
-        throw new TypeError("Expected replacement argument to be a function");
+        throw new TypeError(
+          "Expected replacement argument to be a function"
+        );
       }
       if (typeof descriptor.set !== "function") {
         throw new Error("`object.property` is not a setter");
@@ -8198,10 +8005,17 @@ Call ${i + 1}:`;
           message += "\n";
           var calledArgMessage = j < calledArgs.length ? sinonFormat(calledArg) : "";
           if (match.isMatcher(expectedArg)) {
-            message += colorSinonMatchText(expectedArg, calledArg, calledArgMessage);
+            message += colorSinonMatchText(
+              expectedArg,
+              calledArg,
+              calledArgMessage
+            );
           } else {
             var expectedArgMessage = j < expectedArgs.length ? sinonFormat(expectedArg) : "";
-            var diff = jsDiff.diffJson(calledArgMessage, expectedArgMessage);
+            var diff = jsDiff.diffJson(
+              calledArgMessage,
+              expectedArgMessage
+            );
             message += colorDiffText(diff);
           }
         }
@@ -8229,9 +8043,12 @@ ${join(calls, "\n")}` : "";
       return join(objects, ", ");
     },
     "*": function(spyInstance, args) {
-      return join(map(args, function(arg) {
-        return sinonFormat(arg);
-      }), ", ");
+      return join(
+        map(args, function(arg) {
+          return sinonFormat(arg);
+        }),
+        ", "
+      );
     }
   };
 }, { "./color": 6, "./util/core/format": 26, "./util/core/times-in-words": 35, "@sinonjs/commons": 47, "@sinonjs/samsam": 86, "diff": 93 }], 20: [function(require2, module, exports) {
@@ -8296,29 +8113,54 @@ ${join(calls, "\n")}` : "";
   };
   var delegateToCalls = proxyCallUtil.delegateToCalls;
   delegateToCalls(spyApi, "callArg", false, "callArgWith", true, function() {
-    throw new Error(`${this.toString()} cannot call arg since it was not yet invoked.`);
+    throw new Error(
+      `${this.toString()} cannot call arg since it was not yet invoked.`
+    );
   });
   spyApi.callArgWith = spyApi.callArg;
   delegateToCalls(spyApi, "callArgOn", false, "callArgOnWith", true, function() {
-    throw new Error(`${this.toString()} cannot call arg since it was not yet invoked.`);
+    throw new Error(
+      `${this.toString()} cannot call arg since it was not yet invoked.`
+    );
   });
   spyApi.callArgOnWith = spyApi.callArgOn;
   delegateToCalls(spyApi, "throwArg", false, "throwArg", false, function() {
-    throw new Error(`${this.toString()} cannot throw arg since it was not yet invoked.`);
+    throw new Error(
+      `${this.toString()} cannot throw arg since it was not yet invoked.`
+    );
   });
   delegateToCalls(spyApi, "yield", false, "yield", true, function() {
-    throw new Error(`${this.toString()} cannot yield since it was not yet invoked.`);
+    throw new Error(
+      `${this.toString()} cannot yield since it was not yet invoked.`
+    );
   });
   spyApi.invokeCallback = spyApi.yield;
   delegateToCalls(spyApi, "yieldOn", false, "yieldOn", true, function() {
-    throw new Error(`${this.toString()} cannot yield since it was not yet invoked.`);
+    throw new Error(
+      `${this.toString()} cannot yield since it was not yet invoked.`
+    );
   });
   delegateToCalls(spyApi, "yieldTo", false, "yieldTo", true, function(property) {
-    throw new Error(`${this.toString()} cannot yield to '${valueToString(property)}' since it was not yet invoked.`);
+    throw new Error(
+      `${this.toString()} cannot yield to '${valueToString(
+        property
+      )}' since it was not yet invoked.`
+    );
   });
-  delegateToCalls(spyApi, "yieldToOn", false, "yieldToOn", true, function(property) {
-    throw new Error(`${this.toString()} cannot yield to '${valueToString(property)}' since it was not yet invoked.`);
-  });
+  delegateToCalls(
+    spyApi,
+    "yieldToOn",
+    false,
+    "yieldToOn",
+    true,
+    function(property) {
+      throw new Error(
+        `${this.toString()} cannot yield to '${valueToString(
+          property
+        )}' since it was not yet invoked.`
+      );
+    }
+  );
   function createSpy(func) {
     var name;
     var funk = func;
@@ -8393,9 +8235,11 @@ ${join(calls, "\n")}` : "";
     function functionStub() {
       var args = slice(arguments);
       var matchings = proxy.matchingFakes(args);
-      var fnStub = pop(sort(matchings, function(a, b) {
-        return a.matchingArguments.length - b.matchingArguments.length;
-      })) || proxy;
+      var fnStub = pop(
+        sort(matchings, function(a, b) {
+          return a.matchingArguments.length - b.matchingArguments.length;
+        })
+      ) || proxy;
       return getCurrentBehavior(fnStub).invoke(this, arguments);
     }
     proxy = createProxy(functionStub, originalFunc || functionStub);
@@ -8414,14 +8258,18 @@ ${join(calls, "\n")}` : "";
   }
   function stub(object, property) {
     if (arguments.length > 2) {
-      throw new TypeError("stub(obj, 'meth', fn) has been removed, see documentation");
+      throw new TypeError(
+        "stub(obj, 'meth', fn) has been removed, see documentation"
+      );
     }
     if (isEsModule(object)) {
       throw new TypeError("ES Modules cannot be stubbed");
     }
     throwOnFalsyObject.apply(null, arguments);
     if (isNonExistentProperty(object, property)) {
-      throw new TypeError(`Cannot stub non-existent property ${valueToString(property)}`);
+      throw new TypeError(
+        `Cannot stub non-existent property ${valueToString(property)}`
+      );
     }
     var actualDescriptor = getPropertyDescriptor(object, property);
     assertValidPropertyDescriptor(actualDescriptor, property);
@@ -8465,7 +8313,9 @@ ${join(calls, "\n")}` : "";
           stubbedObject[propertyName].returns(value);
         }
       } else {
-        throw new Error(`Cannot stub ${propertyName}. Property does not exist!`);
+        throw new Error(
+          `Cannot stub ${propertyName}. Property does not exist!`
+        );
       }
     });
     return stubbedObject;
@@ -8475,13 +8325,19 @@ ${join(calls, "\n")}` : "";
       return;
     }
     if (!descriptor.configurable && !descriptor.writable) {
-      throw new TypeError(`Descriptor for property ${property} is non-configurable and non-writable`);
+      throw new TypeError(
+        `Descriptor for property ${property} is non-configurable and non-writable`
+      );
     }
     if ((descriptor.get || descriptor.set) && !descriptor.configurable) {
-      throw new TypeError(`Descriptor for accessor property ${property} is non-configurable`);
+      throw new TypeError(
+        `Descriptor for accessor property ${property} is non-configurable`
+      );
     }
     if (isDataDescriptor(descriptor) && !descriptor.writable) {
-      throw new TypeError(`Descriptor for data property ${property} is non-writable`);
+      throw new TypeError(
+        `Descriptor for data property ${property} is non-writable`
+      );
     }
   }
   function isDataDescriptor(descriptor) {
@@ -8557,7 +8413,9 @@ ${join(calls, "\n")}` : "";
   function throwOnFalsyObject(object, property) {
     if (property && !object) {
       var type = object === null ? "null" : "undefined";
-      throw new Error(`Trying to stub property '${valueToString(property)}' of ${type}`);
+      throw new Error(
+        `Trying to stub property '${valueToString(property)}' of ${type}`
+      );
     }
   }
   module.exports = throwOnFalsyObject;
@@ -8584,16 +8442,20 @@ ${join(calls, "\n")}` : "";
   var arrayProto = require2("@sinonjs/commons").prototypes.array;
   var reduce = arrayProto.reduce;
   module.exports = function exportAsyncBehaviors(behaviorMethods) {
-    return reduce(Object.keys(behaviorMethods), function(acc, method) {
-      if (method.match(/^(callsArg|yields)/) && !method.match(/Async/)) {
-        acc[`${method}Async`] = function() {
-          var result = behaviorMethods[method].apply(this, arguments);
-          this.callbackAsync = true;
-          return result;
-        };
-      }
-      return acc;
-    }, {});
+    return reduce(
+      Object.keys(behaviorMethods),
+      function(acc, method) {
+        if (method.match(/^(callsArg|yields)/) && !method.match(/Async/)) {
+          acc[`${method}Async`] = function() {
+            var result = behaviorMethods[method].apply(this, arguments);
+            this.callbackAsync = true;
+            return result;
+          };
+        }
+        return acc;
+      },
+      {}
+    );
   };
 }, { "@sinonjs/commons": 47 }], 25: [function(require2, module, exports) {
   var arrayProto = require2("@sinonjs/commons").prototypes.array;
@@ -8657,39 +8519,53 @@ ${join(calls, "\n")}` : "";
     return target;
   }
   module.exports = function extend(target, ...sources) {
-    return extendCommon(target, sources, function copyValue(dest, source, prop) {
-      var destOwnPropertyDescriptor = Object.getOwnPropertyDescriptor(dest, prop);
-      var sourceOwnPropertyDescriptor = Object.getOwnPropertyDescriptor(source, prop);
-      if (prop === "name" && !destOwnPropertyDescriptor.writable) {
-        return;
-      }
-      const descriptors = {
-        configurable: sourceOwnPropertyDescriptor.configurable,
-        enumerable: sourceOwnPropertyDescriptor.enumerable
-      };
-      if (hasOwnProperty(sourceOwnPropertyDescriptor, "writable")) {
-        descriptors.writable = sourceOwnPropertyDescriptor.writable;
-        descriptors.value = sourceOwnPropertyDescriptor.value;
-      } else {
-        if (sourceOwnPropertyDescriptor.get) {
-          descriptors.get = sourceOwnPropertyDescriptor.get.bind(dest);
+    return extendCommon(
+      target,
+      sources,
+      function copyValue(dest, source, prop) {
+        var destOwnPropertyDescriptor = Object.getOwnPropertyDescriptor(
+          dest,
+          prop
+        );
+        var sourceOwnPropertyDescriptor = Object.getOwnPropertyDescriptor(
+          source,
+          prop
+        );
+        if (prop === "name" && !destOwnPropertyDescriptor.writable) {
+          return;
         }
-        if (sourceOwnPropertyDescriptor.set) {
-          descriptors.set = sourceOwnPropertyDescriptor.set.bind(dest);
+        const descriptors = {
+          configurable: sourceOwnPropertyDescriptor.configurable,
+          enumerable: sourceOwnPropertyDescriptor.enumerable
+        };
+        if (hasOwnProperty(sourceOwnPropertyDescriptor, "writable")) {
+          descriptors.writable = sourceOwnPropertyDescriptor.writable;
+          descriptors.value = sourceOwnPropertyDescriptor.value;
+        } else {
+          if (sourceOwnPropertyDescriptor.get) {
+            descriptors.get = sourceOwnPropertyDescriptor.get.bind(dest);
+          }
+          if (sourceOwnPropertyDescriptor.set) {
+            descriptors.set = sourceOwnPropertyDescriptor.set.bind(dest);
+          }
         }
+        Object.defineProperty(dest, prop, descriptors);
       }
-      Object.defineProperty(dest, prop, descriptors);
-    });
+    );
   };
   module.exports.nonEnum = function extendNonEnum(target, ...sources) {
-    return extendCommon(target, sources, function copyProperty(dest, source, prop) {
-      Object.defineProperty(dest, prop, {
-        value: source[prop],
-        enumerable: false,
-        configurable: true,
-        writable: true
-      });
-    });
+    return extendCommon(
+      target,
+      sources,
+      function copyProperty(dest, source, prop) {
+        Object.defineProperty(dest, prop, {
+          value: source[prop],
+          enumerable: false,
+          configurable: true,
+          writable: true
+        });
+      }
+    );
   };
 }, { "@sinonjs/commons": 47 }], 26: [function(require2, module, exports) {
   var inspect = require2("util").inspect;
@@ -8743,7 +8619,9 @@ ${join(calls, "\n")}` : "";
   module.exports = function getPropertyDescriptor(object, property) {
     var proto = object;
     var descriptor;
-    var isOwn = Boolean(object && Object.getOwnPropertyDescriptor(object, property));
+    var isOwn = Boolean(
+      object && Object.getOwnPropertyDescriptor(object, property)
+    );
     while (proto && !(descriptor = Object.getOwnPropertyDescriptor(proto, property))) {
       proto = Object.getPrototypeOf(proto);
     }
@@ -8758,7 +8636,9 @@ ${join(calls, "\n")}` : "";
   };
 }, {}], 31: [function(require2, module, exports) {
   function isNonExistentProperty(object, property) {
-    return Boolean(object && typeof property !== "undefined" && !(property in object));
+    return Boolean(
+      object && typeof property !== "undefined" && !(property in object)
+    );
   }
   module.exports = isNonExistentProperty;
 }, {}], 32: [function(require2, module, exports) {
@@ -8805,7 +8685,9 @@ ${join(calls, "\n")}` : "";
     var called = false;
     var name = functionName(predicate);
     if (!object) {
-      throw new Error(`Trying to ${name} object but received ${String(object)}`);
+      throw new Error(
+        `Trying to ${name} object but received ${String(object)}`
+      );
     }
     walk(object, function(prop, propOwner) {
       if (propOwner !== Object.prototype && prop !== "constructor" && typeof getPropertyDescriptor(propOwner, prop).value === "function") {
@@ -8883,17 +8765,31 @@ ${join(calls, "\n")}` : "";
       throw new TypeError("Should wrap property of object");
     }
     if (typeof method !== "function" && typeof method !== "object") {
-      throw new TypeError("Method wrapper should be a function or a property descriptor");
+      throw new TypeError(
+        "Method wrapper should be a function or a property descriptor"
+      );
     }
     function checkWrappedMethod(wrappedMethod2) {
       var error3;
       if (!isFunction2(wrappedMethod2)) {
-        error3 = new TypeError(`Attempted to wrap ${typeof wrappedMethod2} property ${valueToString(property)} as function`);
+        error3 = new TypeError(
+          `Attempted to wrap ${typeof wrappedMethod2} property ${valueToString(
+            property
+          )} as function`
+        );
       } else if (wrappedMethod2.restore && wrappedMethod2.restore.sinon) {
-        error3 = new TypeError(`Attempted to wrap ${valueToString(property)} which is already wrapped`);
+        error3 = new TypeError(
+          `Attempted to wrap ${valueToString(
+            property
+          )} which is already wrapped`
+        );
       } else if (wrappedMethod2.calledBefore) {
         var verb = wrappedMethod2.returns ? "stubbed" : "spied on";
-        error3 = new TypeError(`Attempted to wrap ${valueToString(property)} which is already ${verb}`);
+        error3 = new TypeError(
+          `Attempted to wrap ${valueToString(
+            property
+          )} which is already ${verb}`
+        );
       }
       if (error3) {
         if (wrappedMethod2 && wrappedMethod2.stackTraceError) {
@@ -8917,9 +8813,13 @@ ${wrappedMethod2.stackTraceError.stack}`;
       var methodDesc = typeof method === "function" ? { value: method } : method;
       wrappedMethodDesc = getPropertyDescriptor(object, property);
       if (!wrappedMethodDesc) {
-        error2 = new TypeError(`Attempted to wrap ${typeof wrappedMethod} property ${property} as function`);
+        error2 = new TypeError(
+          `Attempted to wrap ${typeof wrappedMethod} property ${property} as function`
+        );
       } else if (wrappedMethodDesc.restore && wrappedMethodDesc.restore.sinon) {
-        error2 = new TypeError(`Attempted to wrap ${property} which is already wrapped`);
+        error2 = new TypeError(
+          `Attempted to wrap ${property} which is already wrapped`
+        );
       }
       if (error2) {
         if (wrappedMethodDesc && wrappedMethodDesc.stackTraceError) {
@@ -9050,7 +8950,9 @@ ${wrappedMethodDesc.stackTraceError.stack}`;
       delete config.global;
       return createClock(config, globalCtx);
     }
-    throw new TypeError("useFakeTimers expected epoch or config object. See https://github.com/sinonjs/sinon");
+    throw new TypeError(
+      "useFakeTimers expected epoch or config object. See https://github.com/sinonjs/sinon"
+    );
   };
   exports.clock = {
     create: function(now) {
@@ -9300,7 +9202,9 @@ ${wrappedMethodDesc.stackTraceError.stack}`;
       let ms = 0;
       let parsed;
       if (l > 3 || !/^(\d\d:){0,2}\d\d?$/.test(str)) {
-        throw new Error("tick only understands numbers, 'm:s' and 'h:m:s'. Each part must be two digits");
+        throw new Error(
+          "tick only understands numbers, 'm:s' and 'h:m:s'. Each part must be two digits"
+        );
       }
       while (i--) {
         parsed = parseInt(strings[i], 10);
@@ -9333,14 +9237,20 @@ ${wrappedMethodDesc.stackTraceError.stack}`;
       return timer && timer.callAt >= from && timer.callAt <= to;
     }
     function getInfiniteLoopError(clock, job) {
-      const infiniteLoopError = new Error(`Aborting after running ${clock.loopLimit} timers, assuming an infinite loop!`);
+      const infiniteLoopError = new Error(
+        `Aborting after running ${clock.loopLimit} timers, assuming an infinite loop!`
+      );
       if (!job.error) {
         return infiniteLoopError;
       }
       const computedTargetPattern = /target\.*[<|(|[].*?[>|\]|)]\s*/;
-      let clockMethodPattern = new RegExp(String(Object.keys(clock).join("|")));
+      let clockMethodPattern = new RegExp(
+        String(Object.keys(clock).join("|"))
+      );
       if (addTimerReturnsObject) {
-        clockMethodPattern = new RegExp(`\\s+at (Object\\.)?(?:${Object.keys(clock).join("|")})\\s+`);
+        clockMethodPattern = new RegExp(
+          `\\s+at (Object\\.)?(?:${Object.keys(clock).join("|")})\\s+`
+        );
       }
       let matchedLineIndex = -1;
       job.error.stack.split("\n").some(function(line, i) {
@@ -9395,6 +9305,7 @@ ${job.error.stack.split("\n").slice(matchedLineIndex + 1).join("\n")}`;
       target.parse = source.parse;
       target.UTC = source.UTC;
       target.prototype.toUTCString = source.prototype.toUTCString;
+      target.isFake = true;
       return target;
     }
     function createDate() {
@@ -9416,9 +9327,24 @@ ${job.error.stack.split("\n").slice(matchedLineIndex + 1).join("\n")}`;
           case 5:
             return new NativeDate(year, month, date, hour, minute);
           case 6:
-            return new NativeDate(year, month, date, hour, minute, second);
+            return new NativeDate(
+              year,
+              month,
+              date,
+              hour,
+              minute,
+              second
+            );
           default:
-            return new NativeDate(year, month, date, hour, minute, second, ms);
+            return new NativeDate(
+              year,
+              month,
+              date,
+              hour,
+              minute,
+              second,
+              ms
+            );
         }
       }
       return mirrorDateProperties(ClockDate, NativeDate);
@@ -9450,7 +9376,9 @@ ${job.error.stack.split("\n").slice(matchedLineIndex + 1).join("\n")}`;
       }
       if (addTimerReturnsObject) {
         if (typeof timer.func !== "function") {
-          throw new TypeError(`[ERR_INVALID_CALLBACK]: Callback must be a function. Received ${timer.func} of type ${typeof timer.func}`);
+          throw new TypeError(
+            `[ERR_INVALID_CALLBACK]: Callback must be a function. Received ${timer.func} of type ${typeof timer.func}`
+          );
         }
       }
       if (isNearInfiniteLimit) {
@@ -9488,16 +9416,22 @@ ${job.error.stack.split("\n").slice(matchedLineIndex + 1).join("\n")}`;
       clock.timers[timer.id] = timer;
       if (addTimerReturnsObject) {
         const res = {
+          refed: true,
           ref: function() {
+            this.refed = true;
             return res;
           },
           unref: function() {
+            this.refed = false;
             return res;
           },
+          hasRef: function() {
+            return this.refed;
+          },
           refresh: function() {
-            clearTimeout(timer.id);
-            const args = [timer.func, timer.delay].concat(timer.args);
-            return setTimeout.apply(null, args);
+            timer.callAt = clock.now + (parseInt(timer.delay) || (clock.duringTick ? 1 : 0));
+            clock.timers[timer.id] = timer;
+            return res;
           },
           [Symbol.toPrimitive]: function() {
             return timer.id;
@@ -9621,8 +9555,10 @@ ${job.error.stack.split("\n").slice(matchedLineIndex + 1).join("\n")}`;
           const nativeHandler = clock[`_${handlerName}`];
           return typeof nativeHandler === "function" ? nativeHandler(timerId) : void 0;
         }
-        warnOnce(`FakeTimers: ${handlerName} was invoked to clear a native timer instead of one created by this library.
-To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
+        warnOnce(
+          `FakeTimers: ${handlerName} was invoked to clear a native timer instead of one created by this library.
+To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`
+        );
       }
       if (clock.timers.hasOwnProperty(id)) {
         const timer = clock.timers[id];
@@ -9631,7 +9567,9 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
         } else {
           const clear = getClearHandler(ttype);
           const schedule = getScheduleHandler(timer.type);
-          throw new Error(`Cannot clear timer: timer created with ${schedule}() but cleared with ${clear}()`);
+          throw new Error(
+            `Cannot clear timer: timer created with ${schedule}() but cleared with ${clear}()`
+          );
         }
       }
     }
@@ -9646,9 +9584,16 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
         } else if (method === "nextTick" && _global.process) {
           _global.process.nextTick = clock[installedNextTick];
         } else if (method === "performance") {
-          const originalPerfDescriptor = Object.getOwnPropertyDescriptor(clock, `_${method}`);
+          const originalPerfDescriptor = Object.getOwnPropertyDescriptor(
+            clock,
+            `_${method}`
+          );
           if (originalPerfDescriptor && originalPerfDescriptor.get && !originalPerfDescriptor.set) {
-            Object.defineProperty(_global, method, originalPerfDescriptor);
+            Object.defineProperty(
+              _global,
+              method,
+              originalPerfDescriptor
+            );
           } else if (originalPerfDescriptor.configurable) {
             _global[method] = clock[`_${method}`];
           }
@@ -9675,16 +9620,29 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
       });
     }
     function hijackMethod(target, method, clock) {
-      clock[method].hadOwnProperty = Object.prototype.hasOwnProperty.call(target, method);
+      clock[method].hadOwnProperty = Object.prototype.hasOwnProperty.call(
+        target,
+        method
+      );
       clock[`_${method}`] = target[method];
       if (method === "Date") {
         const date = mirrorDateProperties(clock[method], target[method]);
         target[method] = date;
       } else if (method === "performance") {
-        const originalPerfDescriptor = Object.getOwnPropertyDescriptor(target, method);
+        const originalPerfDescriptor = Object.getOwnPropertyDescriptor(
+          target,
+          method
+        );
         if (originalPerfDescriptor && originalPerfDescriptor.get && !originalPerfDescriptor.set) {
-          Object.defineProperty(clock, `_${method}`, originalPerfDescriptor);
-          const perfDescriptor = Object.getOwnPropertyDescriptor(clock, method);
+          Object.defineProperty(
+            clock,
+            `_${method}`,
+            originalPerfDescriptor
+          );
+          const perfDescriptor = Object.getOwnPropertyDescriptor(
+            clock,
+            method
+          );
           Object.defineProperty(target, method, perfDescriptor);
         } else {
           target[method] = clock[method];
@@ -9693,7 +9651,10 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
         target[method] = function() {
           return clock[method].apply(clock, arguments);
         };
-        Object.defineProperties(target[method], Object.getOwnPropertyDescriptors(clock[method]));
+        Object.defineProperties(
+          target[method],
+          Object.getOwnPropertyDescriptors(clock[method])
+        );
       }
       target[method].clock = clock;
     }
@@ -9742,7 +9703,9 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
       let nanos = 0;
       const adjustedSystemTime = [0, 0];
       if (NativeDate === void 0) {
-        throw new Error("The global scope doesn't have a `Date` object (see https://github.com/sinonjs/sinon/issues/1852#issuecomment-419622780)");
+        throw new Error(
+          "The global scope doesn't have a `Date` object (see https://github.com/sinonjs/sinon/issues/1852#issuecomment-419622780)"
+        );
       }
       const clock = {
         now: start2,
@@ -9759,7 +9722,9 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
         const remainderInNanos = (millisSinceStart - secsSinceStart * 1e3) * 1e6 + nanos - adjustedSystemTime[1];
         if (Array.isArray(prev)) {
           if (prev[1] > 1e9) {
-            throw new TypeError("Number of nanoseconds can't exceed a billion");
+            throw new TypeError(
+              "Number of nanoseconds can't exceed a billion"
+            );
           }
           const oldSecs = prev[0];
           let nanoDiff = remainderInNanos - prev[1];
@@ -10158,14 +10123,25 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
     }
     function install(config) {
       if (arguments.length > 1 || config instanceof Date || Array.isArray(config) || typeof config === "number") {
-        throw new TypeError(`FakeTimers.install called with ${String(config)} install requires an object parameter`);
+        throw new TypeError(
+          `FakeTimers.install called with ${String(
+            config
+          )} install requires an object parameter`
+        );
+      }
+      if (_global.Date.isFake === true) {
+        throw new TypeError(
+          "Can't install fake timers twice on the same global object."
+        );
       }
       config = typeof config !== "undefined" ? config : {};
       config.shouldAdvanceTime = config.shouldAdvanceTime || false;
       config.advanceTimeDelta = config.advanceTimeDelta || 20;
       config.shouldClearNativeTimers = config.shouldClearNativeTimers || false;
       if (config.target) {
-        throw new TypeError("config.target is no longer supported. Use `withGlobal(target)` instead.");
+        throw new TypeError(
+          "config.target is no longer supported. Use `withGlobal(target)` instead."
+        );
       }
       let i, l;
       const clock = createClock(config.now, config.loopLimit);
@@ -10180,8 +10156,15 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
         });
       }
       if (config.shouldAdvanceTime === true) {
-        const intervalTick = doIntervalTick.bind(null, clock, config.advanceTimeDelta);
-        const intervalId = _global.setInterval(intervalTick, config.advanceTimeDelta);
+        const intervalTick = doIntervalTick.bind(
+          null,
+          clock,
+          config.advanceTimeDelta
+        );
+        const intervalId = _global.setInterval(
+          intervalTick,
+          config.advanceTimeDelta
+        );
         clock.attachedInterval = intervalId;
       }
       if (clock.methods.includes("performance")) {
@@ -10200,7 +10183,9 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
             }
           });
         } else if ((config.toFake || []).includes("performance")) {
-          throw new ReferenceError("non-existent performance object cannot be faked");
+          throw new ReferenceError(
+            "non-existent performance object cannot be faked"
+          );
         }
       }
       for (i = 0, l = clock.methods.length; i < l; i++) {
@@ -10273,7 +10258,9 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
       throw new TypeError("Message should be a string");
     }
     if (arguments.length > 2) {
-      throw new TypeError(`Expected 1 or 2 arguments, received ${arguments.length}`);
+      throw new TypeError(
+        `Expected 1 or 2 arguments, received ${arguments.length}`
+      );
     }
     if (type in TYPE_MAP) {
       TYPE_MAP[type](m, expectation, message);
@@ -10325,7 +10312,12 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
     if (typeof Symbol === "undefined" || typeof Symbol.hasInstance === "undefined") {
       assertType(type, "function", "type");
     } else {
-      assertMethodExists(type, Symbol.hasInstance, "type", "[Symbol.hasInstance]");
+      assertMethodExists(
+        type,
+        Symbol.hasInstance,
+        "type",
+        "[Symbol.hasInstance]"
+      );
     }
     return createMatcher(function(actual) {
       return actual instanceof type;
@@ -10514,7 +10506,9 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
   function assertType(value, type, name) {
     var actual = typeOf(value);
     if (actual !== type) {
-      throw new TypeError(`Expected type of ${name} to be ${type}, but was ${actual}`);
+      throw new TypeError(
+        `Expected type of ${name} to be ${type}, but was ${actual}`
+      );
     }
   }
   module.exports = assertType;
@@ -10726,7 +10720,10 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
       var actualName = className(actualObj);
       var expectationName = className(expectationObj);
       var expectationSymbols = typeOf(getOwnPropertySymbols) === "function" ? getOwnPropertySymbols(expectationObj) : [];
-      var expectationKeysAndSymbols = concat(expectationKeys, expectationSymbols);
+      var expectationKeysAndSymbols = concat(
+        expectationKeys,
+        expectationSymbols
+      );
       if (isArguments(actualObj) || isArguments(expectationObj)) {
         if (actualObj.length !== expectationObj.length) {
           return false;
@@ -10793,7 +10790,12 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
         if (actualObject && expectationObject) {
           compared[combinedPath] = true;
         }
-        return deepEqual(actualValue, expectationValue, newActualPath, newExpectationPath);
+        return deepEqual(
+          actualValue,
+          expectationValue,
+          newActualPath,
+          newExpectationPath
+        );
       });
     }(actual, expectation, "$1", "$2");
   }
@@ -10978,7 +10980,10 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
         return matcherOrValue(object) === true;
       case "string":
         var notNull = typeof object === "string" || Boolean(object);
-        return notNull && indexOf(valueToString(object).toLowerCase(), matcherOrValue.toLowerCase()) >= 0;
+        return notNull && indexOf(
+          valueToString(object).toLowerCase(),
+          matcherOrValue.toLowerCase()
+        ) >= 0;
       case "null":
         return object === null;
       case "undefined":
@@ -11001,9 +11006,15 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
         return isArrayType(matcherOrValue) && arrayContains(object, matcherOrValue, match);
       case "Map":
         if (!engineCanCompareMaps) {
-          throw new Error("The JavaScript engine does not support Array.from and cannot reliably do value comparison of Map instances");
+          throw new Error(
+            "The JavaScript engine does not support Array.from and cannot reliably do value comparison of Map instances"
+          );
         }
-        return type(object) === "Map" && arrayContains(Array.from(object), Array.from(matcherOrValue), match);
+        return type(object) === "Map" && arrayContains(
+          Array.from(object),
+          Array.from(matcherOrValue),
+          match
+        );
     }
     switch (type(object)) {
       case "null":
@@ -11165,7 +11176,10 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
           s += String.fromCharCode(cp);
         } else {
           cp -= 65536;
-          s += String.fromCharCode((cp >> 10) + 55296, (cp & 1023) + 56320);
+          s += String.fromCharCode(
+            (cp >> 10) + 55296,
+            (cp & 1023) + 56320
+          );
         }
       }
       return s;
@@ -11813,7 +11827,11 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
       if (typeof input === "object" && input instanceof ArrayBuffer) {
         bytes = new Uint8Array(input);
       } else if (typeof input === "object" && "buffer" in input && input.buffer instanceof ArrayBuffer) {
-        bytes = new Uint8Array(input.buffer, input.byteOffset, input.byteLength);
+        bytes = new Uint8Array(
+          input.buffer,
+          input.byteOffset,
+          input.byteLength
+        );
       } else {
         bytes = new Uint8Array(0);
       }
@@ -12095,7 +12113,9 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
         if (gb18030_third !== 0) {
           code_point = null;
           if (inRange(bite, 48, 57)) {
-            code_point = indexGB18030RangesCodePointFor((((gb18030_first - 129) * 10 + gb18030_second - 48) * 126 + gb18030_third - 129) * 10 + bite - 48);
+            code_point = indexGB18030RangesCodePointFor(
+              (((gb18030_first - 129) * 10 + gb18030_second - 48) * 126 + gb18030_third - 129) * 10 + bite - 48
+            );
           }
           var buffer = [gb18030_second, gb18030_third, bite];
           gb18030_first = 0;
@@ -12278,7 +12298,10 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
           eucjp_lead = 0;
           var code_point = null;
           if (inRange(lead, 161, 254) && inRange(bite, 161, 254)) {
-            code_point = indexCodePointFor((lead - 161) * 94 + (bite - 161), index2(!eucjp_jis0212_flag ? "jis0208" : "jis0212"));
+            code_point = indexCodePointFor(
+              (lead - 161) * 94 + (bite - 161),
+              index2(!eucjp_jis0212_flag ? "jis0208" : "jis0212")
+            );
           }
           eucjp_jis0212_flag = false;
           if (!inRange(bite, 161, 254))
@@ -12696,8 +12719,14 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
           return finished;
         if (inRange(code_point, 0, 65535))
           return convertCodeUnitToBytes(code_point, utf16_be);
-        var lead = convertCodeUnitToBytes((code_point - 65536 >> 10) + 55296, utf16_be);
-        var trail = convertCodeUnitToBytes((code_point - 65536 & 1023) + 56320, utf16_be);
+        var lead = convertCodeUnitToBytes(
+          (code_point - 65536 >> 10) + 55296,
+          utf16_be
+        );
+        var trail = convertCodeUnitToBytes(
+          (code_point - 65536 & 1023) + 56320,
+          utf16_be
+        );
         return lead.concat(trail);
       };
     }
@@ -12831,9 +12860,9 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
     if (process.noDeprecation === true) {
       return fn;
     }
-    var warned = false;
+    var warned2 = false;
     function deprecated() {
-      if (!warned) {
+      if (!warned2) {
         if (process.throwDeprecation) {
           throw new Error(msg);
         } else if (process.traceDeprecation) {
@@ -12841,7 +12870,7 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
         } else {
           console.error(msg);
         }
-        warned = true;
+        warned2 = true;
       }
       return fn.apply(this, arguments);
     }
@@ -13033,14 +13062,28 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
     var output = [];
     for (var i = 0, l = value.length; i < l; ++i) {
       if (hasOwnProperty(value, String(i))) {
-        output.push(formatProperty(ctx, value, recurseTimes, visibleKeys, String(i), true));
+        output.push(formatProperty(
+          ctx,
+          value,
+          recurseTimes,
+          visibleKeys,
+          String(i),
+          true
+        ));
       } else {
         output.push("");
       }
     }
     keys.forEach(function(key) {
       if (!key.match(/^\d+$/)) {
-        output.push(formatProperty(ctx, value, recurseTimes, visibleKeys, key, true));
+        output.push(formatProperty(
+          ctx,
+          value,
+          recurseTimes,
+          visibleKeys,
+          key,
+          true
+        ));
       }
     });
     return output;
@@ -13569,7 +13612,7 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
         }
       }
       var canonicalizedObj;
-      if (objectPrototypeToString.call(obj) === "[object Array]") {
+      if ("[object Array]" === objectPrototypeToString.call(obj)) {
         stack.push(obj);
         canonicalizedObj = new Array(obj.length);
         replacementStack.push(canonicalizedObj);
@@ -14370,7 +14413,11 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
           var value = extender[key];
           if (deep && isCloneable(value)) {
             var base = Array.isArray(value) ? [] : {};
-            result[key] = extend(true, Object.prototype.hasOwnProperty.call(result, key) && !isUnextendable(result[key]) ? result[key] : base, value);
+            result[key] = extend(
+              true,
+              Object.prototype.hasOwnProperty.call(result, key) && !isUnextendable(result[key]) ? result[key] : base,
+              value
+            );
           } else {
             result[key] = value;
           }
@@ -14419,7 +14466,9 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
   var funcToString = funcProto.toString;
   var hasOwnProperty = objectProto.hasOwnProperty;
   var objectToString = objectProto.toString;
-  var reIsNative = RegExp("^" + funcToString.call(hasOwnProperty).replace(reRegExpChar, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$");
+  var reIsNative = RegExp(
+    "^" + funcToString.call(hasOwnProperty).replace(reRegExpChar, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"
+  );
   var Symbol2 = root.Symbol, splice = arrayProto.splice;
   var Map2 = getNative(root, "Map"), nativeCreate = getNative(Object, "create");
   var symbolProto = Symbol2 ? Symbol2.prototype : void 0, symbolToString = symbolProto ? symbolProto.toString : void 0;
@@ -14752,7 +14801,9 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
       }
       this.eventListeners = this.eventListeners || {};
       this.eventListeners[event2] = this.eventListeners[event2] || [];
-      if (!this.eventListeners[event2].some(hasListenerFilter(listener, options.capture))) {
+      if (!this.eventListeners[event2].some(
+        hasListenerFilter(listener, options.capture)
+      )) {
         this.eventListeners[event2].push({
           listener,
           capture: options.capture,
@@ -14765,7 +14816,9 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
         return;
       }
       var options = flattenOptions(providedOptions);
-      this.eventListeners[event2] = this.eventListeners[event2].filter(not(hasListenerFilter(listener, options.capture)));
+      this.eventListeners[event2] = this.eventListeners[event2].filter(
+        not(hasListenerFilter(listener, options.capture))
+      );
     },
     dispatchEvent: function dispatchEvent(event2) {
       if (!this.eventListeners || !this.eventListeners[event2.type]) {
@@ -14846,11 +14899,17 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
         var clockSetInterval = this.clock.setInterval;
         var server = this;
         this.clock.setTimeout = function(fn, timeout) {
-          server.longestTimeout = Math.max(timeout, server.longestTimeout || 0);
+          server.longestTimeout = Math.max(
+            timeout,
+            server.longestTimeout || 0
+          );
           return clockSetTimeout.apply(this, arguments);
         };
         this.clock.setInterval = function(fn, timeout) {
-          server.longestTimeout = Math.max(timeout, server.longestTimeout || 0);
+          server.longestTimeout = Math.max(
+            timeout,
+            server.longestTimeout || 0
+          );
           return clockSetInterval.apply(this, arguments);
         };
       }
@@ -14890,9 +14949,13 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
     }
     if (typeof response[2] !== "string") {
       if (!supportsArrayBuffer) {
-        throw new TypeError(`Fake server response body should be a string, but was ${typeof response[2]}`);
+        throw new TypeError(
+          `Fake server response body should be a string, but was ${typeof response[2]}`
+        );
       } else if (!(response[2] instanceof ArrayBuffer)) {
-        throw new TypeError(`Fake server response body should be a string or ArrayBuffer, but was ${typeof response[2]}`);
+        throw new TypeError(
+          `Fake server response body should be a string or ArrayBuffer, but was ${typeof response[2]}`
+        );
       }
     }
     return response;
@@ -14935,7 +14998,9 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
     if (matchOne(response, this.getHTTPMethod(request), requestUrl)) {
       if (typeof response.response === "function") {
         var ru = response.url;
-        var args = [request].concat(ru && typeof ru.exec === "function" ? ru.exec(requestUrl).slice(1) : []);
+        var args = [request].concat(
+          ru && typeof ru.exec === "function" ? ru.exec(requestUrl).slice(1) : []
+        );
         return response.response.apply(response, args);
       }
       return true;
@@ -15007,7 +15072,9 @@ To automatically clean-up native timers, use \`shouldClearNativeTimers\`.`);
     },
     getHTTPMethod: function getHTTPMethod(request) {
       if (this.fakeHTTPMethods && /post/i.test(request.method)) {
-        var matches = (request.requestBody || "").match(/_method=([^\b;]+)/);
+        var matches = (request.requestBody || "").match(
+          /_method=([^\b;]+)/
+        );
         return matches ? matches[1] : request.method;
       }
       return request.method;
@@ -15222,16 +15289,22 @@ ${inspect(response)}
     var isString2 = typeof body === "string";
     if (responseType === "arraybuffer") {
       if (!isString2 && !(body instanceof ArrayBuffer)) {
-        error2 = new Error(`Attempted to respond to fake XMLHttpRequest with ${body}, which is not a string or ArrayBuffer.`);
+        error2 = new Error(
+          `Attempted to respond to fake XMLHttpRequest with ${body}, which is not a string or ArrayBuffer.`
+        );
         error2.name = "InvalidBodyException";
       }
     } else if (responseType === "blob") {
       if (!isString2 && !(body instanceof ArrayBuffer) && supportsBlob && !(body instanceof Blob)) {
-        error2 = new Error(`Attempted to respond to fake XMLHttpRequest with ${body}, which is not a string, ArrayBuffer, or Blob.`);
+        error2 = new Error(
+          `Attempted to respond to fake XMLHttpRequest with ${body}, which is not a string, ArrayBuffer, or Blob.`
+        );
         error2.name = "InvalidBodyException";
       }
     } else if (!isString2) {
-      error2 = new Error(`Attempted to respond to fake XMLHttpRequest with ${body}, which is not a string.`);
+      error2 = new Error(
+        `Attempted to respond to fake XMLHttpRequest with ${body}, which is not a string.`
+      );
       error2.name = "InvalidBodyException";
     }
     if (error2) {
@@ -15459,7 +15532,10 @@ ${inspect(response)}
             } catch (err) {
               return null;
             }
-            return result.getElementsByTagNameNS(parsererrorNS, "parsererror").length ? null : result;
+            return result.getElementsByTagNameNS(
+              parsererrorNS,
+              "parsererror"
+            ).length ? null : result;
           }
           var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
           xmlDoc.async = "false";
@@ -15539,7 +15615,12 @@ ${inspect(response)}
       },
       readyStateChange: function readyStateChange(state) {
         this.readyState = state;
-        var readyStateChangeEvent = new sinonEvent.Event("readystatechange", false, false, this);
+        var readyStateChangeEvent = new sinonEvent.Event(
+          "readystatechange",
+          false,
+          false,
+          this
+        );
         if (typeof this.onreadystatechange === "function") {
           try {
             this.onreadystatechange(readyStateChangeEvent);
@@ -15559,19 +15640,33 @@ ${inspect(response)}
             event2 = "load";
           }
           if (supportsProgress) {
-            this.upload.dispatchEvent(new sinonEvent.ProgressEvent("progress", progress, this));
-            this.upload.dispatchEvent(new sinonEvent.ProgressEvent(event2, progress, this));
-            this.upload.dispatchEvent(new sinonEvent.ProgressEvent("loadend", progress, this));
+            this.upload.dispatchEvent(
+              new sinonEvent.ProgressEvent("progress", progress, this)
+            );
+            this.upload.dispatchEvent(
+              new sinonEvent.ProgressEvent(event2, progress, this)
+            );
+            this.upload.dispatchEvent(
+              new sinonEvent.ProgressEvent("loadend", progress, this)
+            );
           }
-          this.dispatchEvent(new sinonEvent.ProgressEvent("progress", progress, this));
-          this.dispatchEvent(new sinonEvent.ProgressEvent(event2, progress, this));
+          this.dispatchEvent(
+            new sinonEvent.ProgressEvent("progress", progress, this)
+          );
+          this.dispatchEvent(
+            new sinonEvent.ProgressEvent(event2, progress, this)
+          );
           this.dispatchEvent(readyStateChangeEvent);
-          this.dispatchEvent(new sinonEvent.ProgressEvent("loadend", progress, this));
+          this.dispatchEvent(
+            new sinonEvent.ProgressEvent("loadend", progress, this)
+          );
         }
       },
       setRequestHeader: function setRequestHeader(header, value) {
         if (typeof value !== "string") {
-          throw new TypeError(`By RFC7230, section 3.2.4, header values should be strings. Got ${typeof value}`);
+          throw new TypeError(
+            `By RFC7230, section 3.2.4, header values should be strings. Got ${typeof value}`
+          );
         }
         verifyState(this);
         var checkUnsafeHeaders = true;
@@ -15579,7 +15674,9 @@ ${inspect(response)}
           checkUnsafeHeaders = this.unsafeHeadersEnabled();
         }
         if (checkUnsafeHeaders && (getHeader(unsafeHeaders, header) !== null || /^(Sec-|Proxy-)/i.test(header))) {
-          throw new Error(`Refused to set unsafe header "${header}"`);
+          throw new Error(
+            `Refused to set unsafe header "${header}"`
+          );
         }
         value = normalizeHeaderValue(value);
         var existingHeader = getHeader(this.requestHeaders, header);
@@ -15610,7 +15707,10 @@ ${inspect(response)}
       send: function send2(data) {
         verifyState(this);
         if (!/^(head)$/i.test(this.method)) {
-          var contentType = getHeader(this.requestHeaders, "Content-Type");
+          var contentType = getHeader(
+            this.requestHeaders,
+            "Content-Type"
+          );
           if (this.requestHeaders[contentType]) {
             var value = this.requestHeaders[contentType].split(";");
             this.requestHeaders[contentType] = `${value[0]};charset=utf-8`;
@@ -15639,7 +15739,9 @@ ${inspect(response)}
             }
           }, 1);
         }
-        this.dispatchEvent(new sinonEvent.Event("loadstart", false, false, this));
+        this.dispatchEvent(
+          new sinonEvent.Event("loadstart", false, false, this)
+        );
       },
       abort: function abort() {
         this.aborted = true;
@@ -15694,19 +15796,28 @@ ${inspect(response)}
           do {
             this.readyStateChange(FakeXMLHttpRequest.LOADING);
             if (isTextResponse) {
-              this.responseText = this.response += body.substring(index2, index2 + chunkSize);
+              this.responseText = this.response += body.substring(
+                index2,
+                index2 + chunkSize
+              );
             }
             index2 += chunkSize;
           } while (index2 < body.length);
         }
-        this.response = convertResponseBody(this.responseType, contentType, body);
+        this.response = convertResponseBody(
+          this.responseType,
+          contentType,
+          body
+        );
         if (isTextResponse) {
           this.responseText = this.response;
         }
         if (this.responseType === "document") {
           this.responseXML = this.response;
         } else if (this.responseType === "" && isXmlContentType(contentType)) {
-          this.responseXML = FakeXMLHttpRequest.parseXML(this.responseText);
+          this.responseXML = FakeXMLHttpRequest.parseXML(
+            this.responseText
+          );
         }
         this.readyStateChange(FakeXMLHttpRequest.DONE);
       },
@@ -15718,17 +15829,31 @@ ${inspect(response)}
       },
       uploadProgress: function uploadProgress(progressEventRaw) {
         if (supportsProgress) {
-          this.upload.dispatchEvent(new sinonEvent.ProgressEvent("progress", progressEventRaw, this.upload));
+          this.upload.dispatchEvent(
+            new sinonEvent.ProgressEvent(
+              "progress",
+              progressEventRaw,
+              this.upload
+            )
+          );
         }
       },
       downloadProgress: function downloadProgress(progressEventRaw) {
         if (supportsProgress) {
-          this.dispatchEvent(new sinonEvent.ProgressEvent("progress", progressEventRaw, this));
+          this.dispatchEvent(
+            new sinonEvent.ProgressEvent(
+              "progress",
+              progressEventRaw,
+              this
+            )
+          );
         }
       },
       uploadError: function uploadError(error2) {
         if (supportsCustomEvent) {
-          this.upload.dispatchEvent(new sinonEvent.CustomEvent("error", { detail: error2 }));
+          this.upload.dispatchEvent(
+            new sinonEvent.CustomEvent("error", { detail: error2 })
+          );
         }
       },
       overrideMimeType: function overrideMimeType(type) {
@@ -16630,9 +16755,6 @@ function updateHistoryValue(hist, stateValue) {
   };
 }
 function updateContext(context, _event, assignActions, state) {
-  if (!IS_PRODUCTION) {
-    warn(!!context, "Attempting to update undefined context");
-  }
   var updatedContext = context ? assignActions.reduce(function(acc, assignAction) {
     var e_7, _a2;
     var assignment = assignAction.assignment;
@@ -16819,16 +16941,14 @@ function toInvokeSource$1(src) {
   return src;
 }
 function toObserver(nextHandler, errorHandler, completionHandler) {
-  if (typeof nextHandler === "object") {
-    return nextHandler;
-  }
   var noop = function() {
-    return void 0;
   };
+  var isObserver = typeof nextHandler === "object";
+  var self2 = isObserver ? nextHandler : null;
   return {
-    next: nextHandler,
-    error: errorHandler || noop,
-    complete: completionHandler || noop
+    next: ((isObserver ? nextHandler.next : nextHandler) || noop).bind(self2),
+    error: ((isObserver ? nextHandler.error : errorHandler) || noop).bind(self2),
+    complete: ((isObserver ? nextHandler.complete : completionHandler) || noop).bind(self2)
   };
 }
 function createInvokeId(stateNodeId, index2) {
@@ -17072,6 +17192,20 @@ function pure(getActions) {
   };
 }
 function forwardTo$1(target, options) {
+  if (!IS_PRODUCTION && (!target || typeof target === "function")) {
+    var originalTarget_1 = target;
+    target = function() {
+      var args = [];
+      for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i] = arguments[_i];
+      }
+      var resolvedTarget = typeof originalTarget_1 === "function" ? originalTarget_1.apply(void 0, __spreadArray$1([], __read$1(args), false)) : originalTarget_1;
+      if (!resolvedTarget) {
+        throw new Error("Attempted to forward event to undefined actor. This risks an infinite loop in the sender.");
+      }
+      return resolvedTarget;
+    };
+  }
   return send$1(function(_, event2) {
     return event2;
   }, __assign$2(__assign$2({}, options), {
@@ -17094,38 +17228,72 @@ function choose(conds) {
     conds
   };
 }
-function resolveActions(machine, currentState, currentContext, _event, actions2, preserveActionOrder) {
+var pluckAssigns = function(actionBlocks) {
+  var e_1, _a2;
+  var assignActions = [];
+  try {
+    for (var actionBlocks_1 = __values$2(actionBlocks), actionBlocks_1_1 = actionBlocks_1.next(); !actionBlocks_1_1.done; actionBlocks_1_1 = actionBlocks_1.next()) {
+      var block = actionBlocks_1_1.value;
+      var i = 0;
+      while (i < block.length) {
+        if (block[i].type === assign$2) {
+          assignActions.push(block[i]);
+          block.splice(i, 1);
+          continue;
+        }
+        i++;
+      }
+    }
+  } catch (e_1_1) {
+    e_1 = {
+      error: e_1_1
+    };
+  } finally {
+    try {
+      if (actionBlocks_1_1 && !actionBlocks_1_1.done && (_a2 = actionBlocks_1.return))
+        _a2.call(actionBlocks_1);
+    } finally {
+      if (e_1)
+        throw e_1.error;
+    }
+  }
+  return assignActions;
+};
+function resolveActions(machine, currentState, currentContext, _event, actionBlocks, predictableExec, preserveActionOrder) {
   if (preserveActionOrder === void 0) {
     preserveActionOrder = false;
   }
-  var _a2 = __read$1(preserveActionOrder ? [[], actions2] : partition(actions2, function(action) {
-    return action.type === assign$2;
-  }), 2), assignActions = _a2[0], otherActions = _a2[1];
+  var assignActions = preserveActionOrder ? [] : pluckAssigns(actionBlocks);
   var updatedContext = assignActions.length ? updateContext(currentContext, _event, assignActions, currentState) : currentContext;
   var preservedContexts = preserveActionOrder ? [currentContext] : void 0;
-  var resolvedActions = flatten$1(otherActions.map(function(actionObject) {
-    var _a3;
+  var deferredToBlockEnd = [];
+  function handleAction(actionObject) {
+    var _a2;
     switch (actionObject.type) {
-      case raise$1:
+      case raise$1: {
         return resolveRaise(actionObject);
+      }
       case send$2:
         var sendAction = resolveSend(actionObject, updatedContext, _event, machine.options.delays);
-        if (!IS_PRODUCTION) {
-          warn(!isString(actionObject.delay) || typeof sendAction.delay === "number", "No delay reference for delay expression '".concat(actionObject.delay, "' was found on machine '").concat(machine.id, "'"));
+        if (predictableExec && sendAction.to !== SpecialTargets.Internal) {
+          deferredToBlockEnd.push(sendAction);
         }
         return sendAction;
-      case log$1:
-        return resolveLog(actionObject, updatedContext, _event);
+      case log$1: {
+        var resolved = resolveLog(actionObject, updatedContext, _event);
+        predictableExec === null || predictableExec === void 0 ? void 0 : predictableExec(resolved, updatedContext, _event);
+        return resolved;
+      }
       case choose$1: {
         var chooseAction = actionObject;
-        var matchedActions = (_a3 = chooseAction.conds.find(function(condition) {
+        var matchedActions = (_a2 = chooseAction.conds.find(function(condition) {
           var guard = toGuard(condition.cond, machine.options.guards);
-          return !guard || evaluateGuard(machine, guard, updatedContext, _event, currentState);
-        })) === null || _a3 === void 0 ? void 0 : _a3.actions;
+          return !guard || evaluateGuard(machine, guard, updatedContext, _event, !predictableExec ? currentState : void 0);
+        })) === null || _a2 === void 0 ? void 0 : _a2.actions;
         if (!matchedActions) {
           return [];
         }
-        var _b = __read$1(resolveActions(machine, currentState, updatedContext, _event, toActionObjects(toArray(matchedActions), machine.options.actions), preserveActionOrder), 2), resolvedActionsFromChoose = _b[0], resolvedContextFromChoose = _b[1];
+        var _b = __read$1(resolveActions(machine, currentState, updatedContext, _event, [toActionObjects(toArray(matchedActions), machine.options.actions)], predictableExec, preserveActionOrder), 2), resolvedActionsFromChoose = _b[0], resolvedContextFromChoose = _b[1];
         updatedContext = resolvedContextFromChoose;
         preservedContexts === null || preservedContexts === void 0 ? void 0 : preservedContexts.push(updatedContext);
         return resolvedActionsFromChoose;
@@ -17135,23 +17303,27 @@ function resolveActions(machine, currentState, currentContext, _event, actions2,
         if (!matchedActions) {
           return [];
         }
-        var _c = __read$1(resolveActions(machine, currentState, updatedContext, _event, toActionObjects(toArray(matchedActions), machine.options.actions), preserveActionOrder), 2), resolvedActionsFromPure = _c[0], resolvedContext = _c[1];
+        var _c = __read$1(resolveActions(machine, currentState, updatedContext, _event, [toActionObjects(toArray(matchedActions), machine.options.actions)], predictableExec, preserveActionOrder), 2), resolvedActionsFromPure = _c[0], resolvedContext = _c[1];
         updatedContext = resolvedContext;
         preservedContexts === null || preservedContexts === void 0 ? void 0 : preservedContexts.push(updatedContext);
         return resolvedActionsFromPure;
       }
       case stop$1: {
-        return resolveStop(actionObject, updatedContext, _event);
+        var resolved = resolveStop(actionObject, updatedContext, _event);
+        predictableExec === null || predictableExec === void 0 ? void 0 : predictableExec(resolved, currentContext, _event);
+        return resolved;
       }
       case assign$2: {
-        updatedContext = updateContext(updatedContext, _event, [actionObject], currentState);
+        updatedContext = updateContext(updatedContext, _event, [actionObject], !predictableExec ? currentState : void 0);
         preservedContexts === null || preservedContexts === void 0 ? void 0 : preservedContexts.push(updatedContext);
         break;
       }
       default:
         var resolvedActionObject = toActionObject(actionObject, machine.options.actions);
         var exec_1 = resolvedActionObject.exec;
-        if (exec_1 && preservedContexts) {
+        if (predictableExec) {
+          predictableExec(resolvedActionObject, updatedContext, _event);
+        } else if (exec_1 && preservedContexts) {
           var contextIndex_1 = preservedContexts.length - 1;
           resolvedActionObject = __assign$2(__assign$2({}, resolvedActionObject), {
             exec: function(_ctx) {
@@ -17165,9 +17337,38 @@ function resolveActions(machine, currentState, currentContext, _event, actions2,
         }
         return resolvedActionObject;
     }
-  }).filter(function(a) {
-    return !!a;
-  }));
+  }
+  function processBlock(block) {
+    var e_2, _a2;
+    var resolvedActions2 = [];
+    try {
+      for (var block_1 = __values$2(block), block_1_1 = block_1.next(); !block_1_1.done; block_1_1 = block_1.next()) {
+        var action = block_1_1.value;
+        var resolved = handleAction(action);
+        if (resolved) {
+          resolvedActions2 = resolvedActions2.concat(resolved);
+        }
+      }
+    } catch (e_2_1) {
+      e_2 = {
+        error: e_2_1
+      };
+    } finally {
+      try {
+        if (block_1_1 && !block_1_1.done && (_a2 = block_1.return))
+          _a2.call(block_1);
+      } finally {
+        if (e_2)
+          throw e_2.error;
+      }
+    }
+    deferredToBlockEnd.forEach(function(action2) {
+      predictableExec(action2, updatedContext, _event);
+    });
+    deferredToBlockEnd.length = 0;
+    return resolvedActions2;
+  }
+  var resolvedActions = flatten$1(actionBlocks.map(processBlock));
   return [resolvedActions, updatedContext];
 }
 var actions = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
@@ -17293,9 +17494,14 @@ function toActorRef(actorRefLike) {
 var isLeafNode = function(stateNode) {
   return stateNode.type === "atomic" || stateNode.type === "final";
 };
-function getChildren(stateNode) {
+function getAllChildren(stateNode) {
   return Object.keys(stateNode.states).map(function(key) {
     return stateNode.states[key];
+  });
+}
+function getChildren(stateNode) {
+  return getAllChildren(stateNode).filter(function(sn) {
+    return sn.type !== "history";
   });
 }
 function getAllStateNodes(stateNode) {
@@ -17351,9 +17557,6 @@ function getConfiguration(prevStateNodes, stateNodes) {
           try {
             for (var _e = (e_3 = void 0, __values$2(getChildren(s))), _f = _e.next(); !_f.done; _f = _e.next()) {
               var child = _f.value;
-              if (child.type === "history") {
-                continue;
-              }
               if (!configuration.has(child)) {
                 configuration.add(child);
                 if (prevAdjList.get(child)) {
@@ -17866,12 +18069,11 @@ var InterpreterStatus;
 })(InterpreterStatus || (InterpreterStatus = {}));
 var Interpreter = /* @__PURE__ */ function() {
   function Interpreter2(machine, options) {
-    var _this = this;
     if (options === void 0) {
       options = Interpreter2.defaultOptions;
     }
+    var _this = this;
     this.machine = machine;
-    this.scheduler = new Scheduler();
     this.delayedEventsMap = {};
     this.listeners = /* @__PURE__ */ new Set();
     this.contextListeners = /* @__PURE__ */ new Set();
@@ -17883,6 +18085,7 @@ var Interpreter = /* @__PURE__ */ function() {
     this.status = InterpreterStatus.NotStarted;
     this.children = /* @__PURE__ */ new Map();
     this.forwardTo = /* @__PURE__ */ new Set();
+    this._outgoingQueue = [];
     this.init = this.start;
     this.send = function(event2, payload) {
       if (isArray(event2)) {
@@ -17894,16 +18097,19 @@ var Interpreter = /* @__PURE__ */ function() {
         return _this.state;
       }
       if (_this.status !== InterpreterStatus.Running && !_this.options.deferEvents) {
-        throw new Error('Event "'.concat(_event.name, '" was sent to uninitialized service "').concat(_this.machine.id, '". Make sure .start() is called for this service, or set { deferEvents: true } in the service options.\nEvent: ').concat(JSON.stringify(_event.data)));
+        throw new Error('Event "'.concat(_event.name, '" was sent to uninitialized service "').concat(
+          _this.machine.id,
+          '". Make sure .start() is called for this service, or set { deferEvents: true } in the service options.\nEvent: '
+        ).concat(JSON.stringify(_event.data)));
       }
       _this.scheduler.schedule(function() {
         _this.forward(_event);
-        var nextState = _this.nextState(_event);
+        var nextState = _this._nextState(_event);
         _this.update(nextState, _event);
       });
       return _this._state;
     };
-    this.sendTo = function(event2, to) {
+    this.sendTo = function(event2, to, immediate) {
       var isParent = _this.parent && (to === SpecialTargets.Parent || _this.parent.id === to);
       var target = isParent ? _this.parent : isString(to) ? _this.children.get(to) || registry.get(to) : isActor$1(to) ? to : void 0;
       if (!target) {
@@ -17913,12 +18119,121 @@ var Interpreter = /* @__PURE__ */ function() {
         return;
       }
       if ("machine" in target) {
-        target.send(__assign$2(__assign$2({}, event2), {
-          name: event2.name === error$1 ? "".concat(error(_this.id)) : event2.name,
-          origin: _this.sessionId
-        }));
+        if (_this.status !== InterpreterStatus.Stopped || _this.parent !== target || _this.state.done) {
+          var scxmlEvent = __assign$2(__assign$2({}, event2), {
+            name: event2.name === error$1 ? "".concat(error(_this.id)) : event2.name,
+            origin: _this.sessionId
+          });
+          if (!immediate && _this.machine.config.predictableActionArguments) {
+            _this._outgoingQueue.push([target, scxmlEvent]);
+          } else {
+            target.send(scxmlEvent);
+          }
+        }
       } else {
-        target.send(event2.data);
+        if (!immediate && _this.machine.config.predictableActionArguments) {
+          _this._outgoingQueue.push([target, event2.data]);
+        } else {
+          target.send(event2.data);
+        }
+      }
+    };
+    this._exec = function(action, context, _event, actionFunctionMap) {
+      if (actionFunctionMap === void 0) {
+        actionFunctionMap = _this.machine.options.actions;
+      }
+      var actionOrExec = action.exec || getActionFunction(action.type, actionFunctionMap);
+      var exec = isFunction(actionOrExec) ? actionOrExec : actionOrExec ? actionOrExec.exec : action.exec;
+      if (exec) {
+        try {
+          return exec(context, _event.data, !_this.machine.config.predictableActionArguments ? {
+            action,
+            state: _this.state,
+            _event
+          } : {
+            action,
+            _event
+          });
+        } catch (err) {
+          if (_this.parent) {
+            _this.parent.send({
+              type: "xstate.error",
+              data: err
+            });
+          }
+          throw err;
+        }
+      }
+      switch (action.type) {
+        case send$2:
+          var sendAction = action;
+          if (typeof sendAction.delay === "number") {
+            _this.defer(sendAction);
+            return;
+          } else {
+            if (sendAction.to) {
+              _this.sendTo(sendAction._event, sendAction.to, _event === initEvent);
+            } else {
+              _this.send(sendAction._event);
+            }
+          }
+          break;
+        case cancel$1:
+          _this.cancel(action.sendId);
+          break;
+        case start$1: {
+          if (_this.status !== InterpreterStatus.Running) {
+            return;
+          }
+          var activity = action.activity;
+          if (!_this.machine.config.predictableActionArguments && !_this.state.activities[activity.id || activity.type]) {
+            break;
+          }
+          if (activity.type === ActionTypes.Invoke) {
+            var invokeSource = toInvokeSource$1(activity.src);
+            var serviceCreator = _this.machine.options.services ? _this.machine.options.services[invokeSource.type] : void 0;
+            var id2 = activity.id, data = activity.data;
+            var autoForward = "autoForward" in activity ? activity.autoForward : !!activity.forward;
+            if (!serviceCreator) {
+              return;
+            }
+            var resolvedData = data ? mapContext(data, context, _event) : void 0;
+            if (typeof serviceCreator === "string") {
+              return;
+            }
+            var source = isFunction(serviceCreator) ? serviceCreator(context, _event.data, {
+              data: resolvedData,
+              src: invokeSource,
+              meta: activity.meta
+            }) : serviceCreator;
+            if (!source) {
+              return;
+            }
+            var options2 = void 0;
+            if (isMachine(source)) {
+              source = resolvedData ? source.withContext(resolvedData) : source;
+              options2 = {
+                autoForward
+              };
+            }
+            _this.spawn(source, id2, options2);
+          } else {
+            _this.spawnActivity(activity);
+          }
+          break;
+        }
+        case stop$1: {
+          _this.stopChild(action.activity.id);
+          break;
+        }
+        case log$1:
+          var label = action.label, value = action.value;
+          if (label) {
+            _this.logger(label, value);
+          } else {
+            _this.logger(value);
+          }
+          break;
       }
     };
     var resolvedOptions = __assign$2(__assign$2({}, Interpreter2.defaultOptions), options);
@@ -17984,8 +18299,13 @@ var Interpreter = /* @__PURE__ */ function() {
     var _this = this;
     state._sessionid = this.sessionId;
     this._state = state;
-    if (this.options.execute) {
+    if ((!this.machine.config.predictableActionArguments || _event === initEvent) && this.options.execute) {
       this.execute(this.state);
+    } else {
+      var item = void 0;
+      while (item = this._outgoingQueue.shift()) {
+        item[0].send(item[1]);
+      }
     }
     this.children.forEach(function(child) {
       _this.state.children[child.id] = child;
@@ -18049,8 +18369,7 @@ var Interpreter = /* @__PURE__ */ function() {
           throw e_4.error;
       }
     }
-    var isDone = isInFinalState(state.configuration || [], this.machine);
-    if (this.state.configuration && isDone) {
+    if (this.state.done) {
       var finalChildStateNode = state.configuration.find(function(sn) {
         return sn.type === "final" && sn.parent === _this.machine;
       });
@@ -18073,7 +18392,8 @@ var Interpreter = /* @__PURE__ */ function() {
             throw e_5.error;
         }
       }
-      this.stop();
+      this._stop();
+      this._stopChildren();
     }
   };
   Interpreter2.prototype.onTransition = function(listener) {
@@ -18085,32 +18405,27 @@ var Interpreter = /* @__PURE__ */ function() {
   };
   Interpreter2.prototype.subscribe = function(nextListenerOrObserver, _, completeListener) {
     var _this = this;
-    if (!nextListenerOrObserver) {
-      return {
-        unsubscribe: function() {
-          return void 0;
-        }
-      };
+    var observer = toObserver(nextListenerOrObserver, _, completeListener);
+    this.listeners.add(observer.next);
+    if (this.status !== InterpreterStatus.NotStarted) {
+      observer.next(this.state);
     }
-    var listener;
-    var resolvedCompleteListener = completeListener;
-    if (typeof nextListenerOrObserver === "function") {
-      listener = nextListenerOrObserver;
+    var completeOnce = function() {
+      _this.doneListeners.delete(completeOnce);
+      _this.stopListeners.delete(completeOnce);
+      observer.complete();
+    };
+    if (this.status === InterpreterStatus.Stopped) {
+      observer.complete();
     } else {
-      listener = nextListenerOrObserver.next.bind(nextListenerOrObserver);
-      resolvedCompleteListener = nextListenerOrObserver.complete.bind(nextListenerOrObserver);
-    }
-    this.listeners.add(listener);
-    if (this.status === InterpreterStatus.Running) {
-      listener(this.state);
-    }
-    if (resolvedCompleteListener) {
-      this.onDone(resolvedCompleteListener);
+      this.onDone(completeOnce);
+      this.onStop(completeOnce);
     }
     return {
       unsubscribe: function() {
-        listener && _this.listeners.delete(listener);
-        resolvedCompleteListener && _this.doneListeners.delete(resolvedCompleteListener);
+        _this.listeners.delete(observer.next);
+        _this.doneListeners.delete(completeOnce);
+        _this.stopListeners.delete(completeOnce);
       }
     };
   };
@@ -18163,9 +18478,16 @@ var Interpreter = /* @__PURE__ */ function() {
     });
     return this;
   };
-  Interpreter2.prototype.stop = function() {
+  Interpreter2.prototype._stopChildren = function() {
+    this.children.forEach(function(child) {
+      if (isFunction(child.stop)) {
+        child.stop();
+      }
+    });
+    this.children.clear();
+  };
+  Interpreter2.prototype._stop = function() {
     var e_6, _a2, e_7, _b, e_8, _c, e_9, _d, e_10, _e;
-    var _this = this;
     try {
       for (var _f = __values$2(this.listeners), _g = _f.next(); !_g.done; _g = _f.next()) {
         var listener = _g.value;
@@ -18242,34 +18564,9 @@ var Interpreter = /* @__PURE__ */ function() {
     if (!this.initialized) {
       return this;
     }
-    __spreadArray$1([], __read$1(this.state.configuration), false).sort(function(a, b) {
-      return b.order - a.order;
-    }).forEach(function(stateNode) {
-      var e_11, _a3;
-      try {
-        for (var _b2 = __values$2(stateNode.definition.exit), _c2 = _b2.next(); !_c2.done; _c2 = _b2.next()) {
-          var action = _c2.value;
-          _this.exec(action, _this.state);
-        }
-      } catch (e_11_1) {
-        e_11 = {
-          error: e_11_1
-        };
-      } finally {
-        try {
-          if (_c2 && !_c2.done && (_a3 = _b2.return))
-            _a3.call(_b2);
-        } finally {
-          if (e_11)
-            throw e_11.error;
-        }
-      }
-    });
-    this.children.forEach(function(child) {
-      if (isFunction(child.stop)) {
-        child.stop();
-      }
-    });
+    this.initialized = false;
+    this.status = InterpreterStatus.Stopped;
+    this._initialState = void 0;
     try {
       for (var _p = __values$2(Object.keys(this.delayedEventsMap)), _q = _p.next(); !_q.done; _q = _p.next()) {
         var key = _q.value;
@@ -18289,9 +18586,51 @@ var Interpreter = /* @__PURE__ */ function() {
       }
     }
     this.scheduler.clear();
-    this.initialized = false;
-    this.status = InterpreterStatus.Stopped;
-    registry.free(this.sessionId);
+    this.scheduler = new Scheduler({
+      deferEvents: this.options.deferEvents
+    });
+  };
+  Interpreter2.prototype.stop = function() {
+    var _this = this;
+    var scheduler = this.scheduler;
+    this._stop();
+    scheduler.schedule(function() {
+      var _event = toSCXMLEvent({
+        type: "xstate.stop"
+      });
+      var nextState = provide(_this, function() {
+        var exitActions = flatten$1(__spreadArray$1([], __read$1(_this.state.configuration), false).sort(function(a, b) {
+          return b.order - a.order;
+        }).map(function(stateNode) {
+          return toActionObjects(stateNode.onExit, _this.machine.options.actions);
+        }));
+        var _a2 = __read$1(resolveActions(_this.machine, _this.state, _this.state.context, _event, [exitActions], _this.machine.config.predictableActionArguments ? _this._exec : void 0, _this.machine.config.predictableActionArguments || _this.machine.config.preserveActionOrder), 2), resolvedActions = _a2[0], updatedContext = _a2[1];
+        var newState = new State({
+          value: _this.state.value,
+          context: updatedContext,
+          _event,
+          _sessionid: _this.sessionId,
+          historyValue: void 0,
+          history: _this.state,
+          actions: resolvedActions.filter(function(action) {
+            return action.type !== raise$1 && (action.type !== send$2 || !!action.to && action.to !== SpecialTargets.Internal);
+          }),
+          activities: {},
+          events: [],
+          configuration: [],
+          transitions: [],
+          children: {},
+          done: _this.state.done,
+          tags: _this.state.tags,
+          machine: _this.machine
+        });
+        newState.changed = true;
+        return newState;
+      });
+      _this.update(nextState, _event);
+      _this._stopChildren();
+      registry.free(_this.sessionId);
+    });
     return this;
   };
   Interpreter2.prototype.batch = function(events) {
@@ -18301,10 +18640,16 @@ var Interpreter = /* @__PURE__ */ function() {
         warn(false, "".concat(events.length, ' event(s) were sent to uninitialized service "').concat(this.machine.id, '" and are deferred. Make sure .start() is called for this service.\nEvent: ').concat(JSON.stringify(event)));
       }
     } else if (this.status !== InterpreterStatus.Running) {
-      throw new Error("".concat(events.length, ' event(s) were sent to uninitialized service "').concat(this.machine.id, '". Make sure .start() is called for this service, or set { deferEvents: true } in the service options.'));
+      throw new Error(
+        "".concat(events.length, ' event(s) were sent to uninitialized service "').concat(this.machine.id, '". Make sure .start() is called for this service, or set { deferEvents: true } in the service options.')
+      );
     }
+    if (!events.length) {
+      return;
+    }
+    var exec = !!this.machine.config.predictableActionArguments && this._exec;
     this.scheduler.schedule(function() {
-      var e_12, _a2;
+      var e_11, _a2;
       var nextState = _this.state;
       var batchChanged = false;
       var batchedActions = [];
@@ -18312,9 +18657,9 @@ var Interpreter = /* @__PURE__ */ function() {
         var _event = toSCXMLEvent(event_12);
         _this.forward(_event);
         nextState = provide(_this, function() {
-          return _this.machine.transition(nextState, _event);
+          return _this.machine.transition(nextState, _event, void 0, exec || void 0);
         });
-        batchedActions.push.apply(batchedActions, __spreadArray$1([], __read$1(nextState.actions.map(function(a) {
+        batchedActions.push.apply(batchedActions, __spreadArray$1([], __read$1(_this.machine.config.predictableActionArguments ? nextState.actions : nextState.actions.map(function(a) {
           return bindActionToState(a, nextState);
         })), false));
         batchChanged = batchChanged || !!nextState.changed;
@@ -18324,17 +18669,17 @@ var Interpreter = /* @__PURE__ */ function() {
           var event_1 = events_1_1.value;
           _loop_1(event_1);
         }
-      } catch (e_12_1) {
-        e_12 = {
-          error: e_12_1
+      } catch (e_11_1) {
+        e_11 = {
+          error: e_11_1
         };
       } finally {
         try {
           if (events_1_1 && !events_1_1.done && (_a2 = events_1.return))
             _a2.call(events_1);
         } finally {
-          if (e_12)
-            throw e_12.error;
+          if (e_11)
+            throw e_11.error;
         }
       }
       nextState.changed = batchChanged;
@@ -18345,8 +18690,11 @@ var Interpreter = /* @__PURE__ */ function() {
   Interpreter2.prototype.sender = function(event2) {
     return this.send.bind(this, event2);
   };
-  Interpreter2.prototype.nextState = function(event2) {
+  Interpreter2.prototype._nextState = function(event2, exec) {
     var _this = this;
+    if (exec === void 0) {
+      exec = !!this.machine.config.predictableActionArguments && this._exec;
+    }
     var _event = toSCXMLEvent(event2);
     if (_event.name.indexOf(errorPlatform) === 0 && !this.state.nextEvents.some(function(nextEvent) {
       return nextEvent.indexOf(errorPlatform) === 0;
@@ -18354,12 +18702,15 @@ var Interpreter = /* @__PURE__ */ function() {
       throw _event.data.data;
     }
     var nextState = provide(this, function() {
-      return _this.machine.transition(_this.state, _event);
+      return _this.machine.transition(_this.state, _event, void 0, exec || void 0);
     });
     return nextState;
   };
+  Interpreter2.prototype.nextState = function(event2) {
+    return this._nextState(event2, false);
+  };
   Interpreter2.prototype.forward = function(event2) {
-    var e_13, _a2;
+    var e_12, _a2;
     try {
       for (var _b = __values$2(this.forwardTo), _c = _b.next(); !_c.done; _c = _b.next()) {
         var id = _c.value;
@@ -18369,17 +18720,17 @@ var Interpreter = /* @__PURE__ */ function() {
         }
         child.send(event2);
       }
-    } catch (e_13_1) {
-      e_13 = {
-        error: e_13_1
+    } catch (e_12_1) {
+      e_12 = {
+        error: e_12_1
       };
     } finally {
       try {
         if (_c && !_c.done && (_a2 = _b.return))
           _a2.call(_b);
       } finally {
-        if (e_13)
-          throw e_13.error;
+        if (e_12)
+          throw e_12.error;
       }
     }
   };
@@ -18387,7 +18738,7 @@ var Interpreter = /* @__PURE__ */ function() {
     var _this = this;
     this.delayedEventsMap[sendAction.id] = this.clock.setTimeout(function() {
       if (sendAction.to) {
-        _this.sendTo(sendAction._event, sendAction.to);
+        _this.sendTo(sendAction._event, sendAction.to, true);
       } else {
         _this.send(sendAction._event);
       }
@@ -18401,109 +18752,7 @@ var Interpreter = /* @__PURE__ */ function() {
     if (actionFunctionMap === void 0) {
       actionFunctionMap = this.machine.options.actions;
     }
-    var context = state.context, _event = state._event;
-    var actionOrExec = action.exec || getActionFunction(action.type, actionFunctionMap);
-    var exec = isFunction(actionOrExec) ? actionOrExec : actionOrExec ? actionOrExec.exec : action.exec;
-    if (exec) {
-      try {
-        return exec(context, _event.data, {
-          action,
-          state: this.state,
-          _event
-        });
-      } catch (err) {
-        if (this.parent) {
-          this.parent.send({
-            type: "xstate.error",
-            data: err
-          });
-        }
-        throw err;
-      }
-    }
-    switch (action.type) {
-      case send$2:
-        var sendAction = action;
-        if (typeof sendAction.delay === "number") {
-          this.defer(sendAction);
-          return;
-        } else {
-          if (sendAction.to) {
-            this.sendTo(sendAction._event, sendAction.to);
-          } else {
-            this.send(sendAction._event);
-          }
-        }
-        break;
-      case cancel$1:
-        this.cancel(action.sendId);
-        break;
-      case start$1: {
-        if (this.status !== InterpreterStatus.Running) {
-          return;
-        }
-        var activity = action.activity;
-        if (!this.state.activities[activity.id || activity.type]) {
-          break;
-        }
-        if (activity.type === ActionTypes.Invoke) {
-          var invokeSource = toInvokeSource$1(activity.src);
-          var serviceCreator = this.machine.options.services ? this.machine.options.services[invokeSource.type] : void 0;
-          var id = activity.id, data = activity.data;
-          if (!IS_PRODUCTION) {
-            warn(!("forward" in activity), "`forward` property is deprecated (found in invocation of '".concat(activity.src, "' in in machine '").concat(this.machine.id, "'). ") + "Please use `autoForward` instead.");
-          }
-          var autoForward = "autoForward" in activity ? activity.autoForward : !!activity.forward;
-          if (!serviceCreator) {
-            if (!IS_PRODUCTION) {
-              warn(false, "No service found for invocation '".concat(activity.src, "' in machine '").concat(this.machine.id, "'."));
-            }
-            return;
-          }
-          var resolvedData = data ? mapContext(data, context, _event) : void 0;
-          if (typeof serviceCreator === "string") {
-            return;
-          }
-          var source = isFunction(serviceCreator) ? serviceCreator(context, _event.data, {
-            data: resolvedData,
-            src: invokeSource,
-            meta: activity.meta
-          }) : serviceCreator;
-          if (!source) {
-            return;
-          }
-          var options = void 0;
-          if (isMachine(source)) {
-            source = resolvedData ? source.withContext(resolvedData) : source;
-            options = {
-              autoForward
-            };
-          }
-          this.spawn(source, id, options);
-        } else {
-          this.spawnActivity(activity);
-        }
-        break;
-      }
-      case stop$1: {
-        this.stopChild(action.activity.id);
-        break;
-      }
-      case log$1:
-        var label = action.label, value = action.value;
-        if (label) {
-          this.logger(label, value);
-        } else {
-          this.logger(value);
-        }
-        break;
-      default:
-        if (!IS_PRODUCTION) {
-          warn(false, "No implementation found for action type '".concat(action.type, "'"));
-        }
-        break;
-    }
-    return void 0;
+    this._exec(action, state.context, state._event, actionFunctionMap);
   };
   Interpreter2.prototype.removeChild = function(childId) {
     var _a2;
@@ -18522,6 +18771,9 @@ var Interpreter = /* @__PURE__ */ function() {
     }
   };
   Interpreter2.prototype.spawn = function(entity, name, options) {
+    if (this.status !== InterpreterStatus.Running) {
+      return createDeferredActor(entity, name);
+    }
     if (isPromiseLike(entity)) {
       return this.spawnPromise(Promise.resolve(entity), name);
     } else if (isFunction(entity)) {
@@ -18880,10 +19132,6 @@ var resolveSpawnOptions = function(nameOrOptions) {
 function spawn(entity, nameOrOptions) {
   var resolvedOptions = resolveSpawnOptions(nameOrOptions);
   return consume(function(service) {
-    if (!IS_PRODUCTION) {
-      var isLazyEntity = isMachine(entity) || isFunction(entity);
-      warn(!!service || isLazyEntity, 'Attempted to spawn an Actor (ID: "'.concat(isMachine(entity) ? entity.id : "undefined", '") outside of a service. This will have no effect.'));
-    }
     if (service) {
       return service.spawn(entity, resolvedOptions.name, resolvedOptions);
     } else {
@@ -18947,10 +19195,10 @@ var validateArrayifiedTransitions = function(stateNode, event2, transitions) {
 };
 var StateNode = /* @__PURE__ */ function() {
   function StateNode2(config, options, _context, _stateInfo) {
-    var _this = this;
     if (_context === void 0) {
       _context = "context" in config ? config.context : void 0;
     }
+    var _this = this;
     var _a2;
     this.config = config;
     this._context = _context;
@@ -18994,7 +19242,7 @@ var StateNode = /* @__PURE__ */ function() {
       var e_1, _a3;
       stateNode.order = order++;
       try {
-        for (var _b = __values$2(getChildren(stateNode)), _c = _b.next(); !_c.done; _c = _b.next()) {
+        for (var _b = __values$2(getAllChildren(stateNode)), _c = _b.next(); !_c.done; _c = _b.next()) {
           var child = _c.value;
           dfs(child);
         }
@@ -19387,9 +19635,12 @@ var StateNode = /* @__PURE__ */ function() {
       return _this.getRelativeStateNodes(stateNode, state.historyValue);
     }));
     var isInternal = !!selectedTransition.internal;
-    var reentryNodes = isInternal ? [] : flatten$1(allNextStateNodes.map(function(n) {
-      return _this.nodesFromChild(n);
-    }));
+    var reentryNodes = [];
+    if (!isInternal) {
+      nextStateNodes.forEach(function(targetNode) {
+        reentryNodes.push.apply(reentryNodes, __spreadArray$1([], __read$1(_this.getExternalReentryNodes(targetNode)), false));
+      });
+    }
     return {
       transitions: [selectedTransition],
       entrySet: reentryNodes,
@@ -19399,40 +19650,27 @@ var StateNode = /* @__PURE__ */ function() {
       actions: actions2
     };
   };
-  StateNode2.prototype.nodesFromChild = function(childStateNode) {
-    if (childStateNode.escapes(this)) {
-      return [];
-    }
+  StateNode2.prototype.getExternalReentryNodes = function(targetNode) {
     var nodes = [];
-    var marker = childStateNode;
-    while (marker && marker !== this) {
+    var _a2 = __read$1(targetNode.order > this.order ? [targetNode, this] : [this, targetNode], 2), marker = _a2[0], possibleAncestor = _a2[1];
+    while (marker && marker !== possibleAncestor) {
       nodes.push(marker);
       marker = marker.parent;
     }
-    nodes.push(this);
+    if (marker !== possibleAncestor) {
+      return [];
+    }
+    nodes.push(possibleAncestor);
     return nodes;
   };
-  StateNode2.prototype.escapes = function(stateNode) {
-    if (this === stateNode) {
-      return false;
-    }
-    var parent = this.parent;
-    while (parent) {
-      if (parent === stateNode) {
-        return false;
-      }
-      parent = parent.parent;
-    }
-    return true;
-  };
-  StateNode2.prototype.getActions = function(transition, currentContext, _event, prevState) {
+  StateNode2.prototype.getActions = function(resolvedConfig, isDone, transition, currentContext, _event, prevState, predictableExec) {
     var e_4, _a2, e_5, _b;
+    var _this = this;
     var prevConfig = getConfiguration([], prevState ? this.getStateNodes(prevState.value) : [this]);
-    var resolvedConfig = transition.configuration.length ? getConfiguration(prevConfig, transition.configuration) : prevConfig;
     try {
       for (var resolvedConfig_1 = __values$2(resolvedConfig), resolvedConfig_1_1 = resolvedConfig_1.next(); !resolvedConfig_1_1.done; resolvedConfig_1_1 = resolvedConfig_1.next()) {
         var sn = resolvedConfig_1_1.value;
-        if (!has(prevConfig, sn)) {
+        if (!has(prevConfig, sn) || has(transition.entrySet, sn.parent)) {
           transition.entrySet.push(sn);
         }
       }
@@ -19478,7 +19716,10 @@ var StateNode = /* @__PURE__ */ function() {
       if (!parent.parent) {
         return events;
       }
-      events.push(done(sn2.id, sn2.doneData), done(parent.id, sn2.doneData ? mapContext(sn2.doneData, currentContext, _event) : void 0));
+      events.push(
+        done(sn2.id, sn2.doneData),
+        done(parent.id, sn2.doneData ? mapContext(sn2.doneData, currentContext, _event) : void 0)
+      );
       var grandparent = parent.parent;
       if (grandparent.type === "parallel") {
         if (getChildren(grandparent).every(function(parentNode) {
@@ -19497,19 +19738,32 @@ var StateNode = /* @__PURE__ */ function() {
     });
     var entryStates = new Set(transition.entrySet);
     var exitStates = new Set(transition.exitSet);
-    var _c = __read$1([flatten$1(Array.from(entryStates).map(function(stateNode) {
-      return __spreadArray$1(__spreadArray$1([], __read$1(stateNode.activities.map(function(activity) {
+    var entryActions = Array.from(entryStates).map(function(stateNode) {
+      var entryActions2 = stateNode.onEntry;
+      var invokeActions = stateNode.activities.map(function(activity) {
         return start(activity);
-      })), false), __read$1(stateNode.onEntry), false);
-    })).concat(doneEvents.map(raise)), flatten$1(Array.from(exitStates).map(function(stateNode) {
-      return __spreadArray$1(__spreadArray$1([], __read$1(stateNode.onExit), false), __read$1(stateNode.activities.map(function(activity) {
+      });
+      return toActionObjects(predictableExec ? __spreadArray$1(__spreadArray$1([], __read$1(entryActions2), false), __read$1(invokeActions), false) : __spreadArray$1(__spreadArray$1([], __read$1(invokeActions), false), __read$1(entryActions2), false), _this.machine.options.actions);
+    }).concat([doneEvents.map(raise)]);
+    var exitActions = Array.from(exitStates).map(function(stateNode) {
+      return toActionObjects(__spreadArray$1(__spreadArray$1([], __read$1(stateNode.onExit), false), __read$1(stateNode.activities.map(function(activity) {
         return stop(activity);
-      })), false);
-    }))], 2), entryActions = _c[0], exitActions = _c[1];
-    var actions2 = toActionObjects(exitActions.concat(transition.actions).concat(entryActions), this.machine.options.actions);
+      })), false), _this.machine.options.actions);
+    });
+    var actions2 = exitActions.concat([toActionObjects(transition.actions, this.machine.options.actions)]).concat(entryActions);
+    if (isDone) {
+      var stopActions = toActionObjects(flatten$1(__spreadArray$1([], __read$1(resolvedConfig), false).sort(function(a, b) {
+        return b.order - a.order;
+      }).map(function(stateNode) {
+        return stateNode.onExit;
+      })), this.machine.options.actions).filter(function(action) {
+        return action.type !== raise$1 && (action.type !== send$2 || !!action.to && action.to !== SpecialTargets.Internal);
+      });
+      return actions2.concat([stopActions]);
+    }
     return actions2;
   };
-  StateNode2.prototype.transition = function(state, event2, context) {
+  StateNode2.prototype.transition = function(state, event2, context, exec) {
     if (state === void 0) {
       state = this.initialState;
     }
@@ -19541,36 +19795,55 @@ var StateNode = /* @__PURE__ */ function() {
     var prevConfig = getConfiguration([], this.getStateNodes(currentState.value));
     var resolvedConfig = stateTransition.configuration.length ? getConfiguration(prevConfig, stateTransition.configuration) : prevConfig;
     stateTransition.configuration = __spreadArray$1([], __read$1(resolvedConfig), false);
-    return this.resolveTransition(stateTransition, currentState, currentState.context, _event);
+    return this.resolveTransition(stateTransition, currentState, currentState.context, exec, _event);
   };
-  StateNode2.prototype.resolveRaisedTransition = function(state, _event, originalEvent) {
+  StateNode2.prototype.resolveRaisedTransition = function(state, _event, originalEvent, predictableExec) {
     var _a2;
     var currentActions = state.actions;
-    state = this.transition(state, _event);
+    state = this.transition(state, _event, void 0, predictableExec);
     state._event = originalEvent;
     state.event = originalEvent.data;
     (_a2 = state.actions).unshift.apply(_a2, __spreadArray$1([], __read$1(currentActions), false));
     return state;
   };
-  StateNode2.prototype.resolveTransition = function(stateTransition, currentState, context, _event) {
-    var e_6, _a2;
+  StateNode2.prototype.resolveTransition = function(stateTransition, currentState, context, predictableExec, _event) {
+    var e_6, _a2, e_7, _b;
     var _this = this;
     if (_event === void 0) {
       _event = initEvent;
     }
     var configuration = stateTransition.configuration;
     var willTransition = !currentState || stateTransition.transitions.length > 0;
+    var resolvedConfiguration = willTransition ? stateTransition.configuration : currentState ? currentState.configuration : [];
+    var isDone = isInFinalState(resolvedConfiguration, this);
     var resolvedStateValue = willTransition ? getValue(this.machine, configuration) : void 0;
     var historyValue = currentState ? currentState.historyValue ? currentState.historyValue : stateTransition.source ? this.machine.historyValue(currentState.value) : void 0 : void 0;
-    var actions2 = this.getActions(stateTransition, context, _event, currentState);
+    var actionBlocks = this.getActions(new Set(resolvedConfiguration), isDone, stateTransition, context, _event, currentState, predictableExec);
     var activities = currentState ? __assign$2({}, currentState.activities) : {};
     try {
-      for (var actions_1 = __values$2(actions2), actions_1_1 = actions_1.next(); !actions_1_1.done; actions_1_1 = actions_1.next()) {
-        var action = actions_1_1.value;
-        if (action.type === start$1) {
-          activities[action.activity.id || action.activity.type] = action;
-        } else if (action.type === stop$1) {
-          activities[action.activity.id || action.activity.type] = false;
+      for (var actionBlocks_1 = __values$2(actionBlocks), actionBlocks_1_1 = actionBlocks_1.next(); !actionBlocks_1_1.done; actionBlocks_1_1 = actionBlocks_1.next()) {
+        var block = actionBlocks_1_1.value;
+        try {
+          for (var block_1 = (e_7 = void 0, __values$2(block)), block_1_1 = block_1.next(); !block_1_1.done; block_1_1 = block_1.next()) {
+            var action = block_1_1.value;
+            if (action.type === start$1) {
+              activities[action.activity.id || action.activity.type] = action;
+            } else if (action.type === stop$1) {
+              activities[action.activity.id || action.activity.type] = false;
+            }
+          }
+        } catch (e_7_1) {
+          e_7 = {
+            error: e_7_1
+          };
+        } finally {
+          try {
+            if (block_1_1 && !block_1_1.done && (_b = block_1.return))
+              _b.call(block_1);
+          } finally {
+            if (e_7)
+              throw e_7.error;
+          }
         }
       }
     } catch (e_6_1) {
@@ -19579,17 +19852,17 @@ var StateNode = /* @__PURE__ */ function() {
       };
     } finally {
       try {
-        if (actions_1_1 && !actions_1_1.done && (_a2 = actions_1.return))
-          _a2.call(actions_1);
+        if (actionBlocks_1_1 && !actionBlocks_1_1.done && (_a2 = actionBlocks_1.return))
+          _a2.call(actionBlocks_1);
       } finally {
         if (e_6)
           throw e_6.error;
       }
     }
-    var _b = __read$1(resolveActions(this, currentState, context, _event, actions2, this.machine.config.preserveActionOrder), 2), resolvedActions = _b[0], updatedContext = _b[1];
-    var _c = __read$1(partition(resolvedActions, function(action2) {
+    var _c = __read$1(resolveActions(this, currentState, context, _event, actionBlocks, predictableExec, this.machine.config.predictableActionArguments || this.machine.config.preserveActionOrder), 2), resolvedActions = _c[0], updatedContext = _c[1];
+    var _d = __read$1(partition(resolvedActions, function(action2) {
       return action2.type === raise$1 || action2.type === send$2 && action2.to === SpecialTargets.Internal;
-    }), 2), raisedEvents = _c[0], nonRaisedActions = _c[1];
+    }), 2), raisedEvents = _d[0], nonRaisedActions = _d[1];
     var invokeActions = resolvedActions.filter(function(action2) {
       var _a3;
       return action2.type === start$1 && ((_a3 = action2.activity) === null || _a3 === void 0 ? void 0 : _a3.type) === invoke;
@@ -19598,8 +19871,6 @@ var StateNode = /* @__PURE__ */ function() {
       acc[action2.activity.id] = createInvocableActor(action2.activity, _this.machine, updatedContext, _event);
       return acc;
     }, currentState ? __assign$2({}, currentState.children) : {});
-    var resolvedConfiguration = willTransition ? stateTransition.configuration : currentState ? currentState.configuration : [];
-    var isDone = isInFinalState(resolvedConfiguration, this);
     var nextState = new State({
       value: resolvedStateValue || currentState.value,
       context: updatedContext,
@@ -19614,7 +19885,7 @@ var StateNode = /* @__PURE__ */ function() {
       transitions: stateTransition.transitions,
       children: children2,
       done: isDone,
-      tags: currentState === null || currentState === void 0 ? void 0 : currentState.tags,
+      tags: getTagsFromConfiguration(resolvedConfiguration),
       machine: this
     });
     var didUpdateContext = context !== updatedContext;
@@ -19623,28 +19894,27 @@ var StateNode = /* @__PURE__ */ function() {
     if (history) {
       delete history.history;
     }
-    var isTransient = !isDone && (this._transient || configuration.some(function(stateNode) {
+    var hasAlwaysTransitions = !isDone && (this._transient || configuration.some(function(stateNode) {
       return stateNode._transient;
     }));
-    if (!willTransition && (!isTransient || _event.name === NULL_EVENT)) {
+    if (!willTransition && (!hasAlwaysTransitions || _event.name === NULL_EVENT)) {
       return nextState;
     }
     var maybeNextState = nextState;
     if (!isDone) {
-      if (isTransient) {
+      if (hasAlwaysTransitions) {
         maybeNextState = this.resolveRaisedTransition(maybeNextState, {
           type: nullEvent
-        }, _event);
+        }, _event, predictableExec);
       }
       while (raisedEvents.length) {
         var raisedEvent = raisedEvents.shift();
-        maybeNextState = this.resolveRaisedTransition(maybeNextState, raisedEvent._event, _event);
+        maybeNextState = this.resolveRaisedTransition(maybeNextState, raisedEvent._event, _event, predictableExec);
       }
     }
     var changed = maybeNextState.changed || (history ? !!maybeNextState.actions.length || didUpdateContext || typeof history.value !== typeof maybeNextState.value || !stateValuesEqual(maybeNextState.value, history.value) : void 0);
     maybeNextState.changed = changed;
     maybeNextState.history = history;
-    maybeNextState.tags = getTagsFromConfiguration(maybeNextState.configuration);
     return maybeNextState;
   };
   StateNode2.prototype.getStateNode = function(stateKey) {
@@ -19760,7 +20030,7 @@ var StateNode = /* @__PURE__ */ function() {
     var configuration = this.getStateNodes(stateValue);
     return this.resolveTransition({
       configuration,
-      entrySet: configuration,
+      entrySet: __spreadArray$1([], __read$1(configuration), false),
       exitSet: [],
       transitions: [],
       source: void 0,
@@ -19887,7 +20157,7 @@ var StateNode = /* @__PURE__ */ function() {
   });
   Object.defineProperty(StateNode2.prototype, "events", {
     get: function() {
-      var e_7, _a2, e_8, _b;
+      var e_8, _a2, e_9, _b;
       if (this.__cache.events) {
         return this.__cache.events;
       }
@@ -19900,36 +20170,36 @@ var StateNode = /* @__PURE__ */ function() {
             var state = states[stateId];
             if (state.states) {
               try {
-                for (var _e = (e_8 = void 0, __values$2(state.events)), _f = _e.next(); !_f.done; _f = _e.next()) {
+                for (var _e = (e_9 = void 0, __values$2(state.events)), _f = _e.next(); !_f.done; _f = _e.next()) {
                   var event_1 = _f.value;
                   events.add("".concat(event_1));
                 }
-              } catch (e_8_1) {
-                e_8 = {
-                  error: e_8_1
+              } catch (e_9_1) {
+                e_9 = {
+                  error: e_9_1
                 };
               } finally {
                 try {
                   if (_f && !_f.done && (_b = _e.return))
                     _b.call(_e);
                 } finally {
-                  if (e_8)
-                    throw e_8.error;
+                  if (e_9)
+                    throw e_9.error;
                 }
               }
             }
           }
-        } catch (e_7_1) {
-          e_7 = {
-            error: e_7_1
+        } catch (e_8_1) {
+          e_8 = {
+            error: e_8_1
           };
         } finally {
           try {
             if (_d && !_d.done && (_a2 = _c.return))
               _a2.call(_c);
           } finally {
-            if (e_7)
-              throw e_7.error;
+            if (e_8)
+              throw e_8.error;
           }
         }
       }
@@ -20003,7 +20273,7 @@ var StateNode = /* @__PURE__ */ function() {
     return transition;
   };
   StateNode2.prototype.formatTransitions = function() {
-    var e_9, _a2;
+    var e_10, _a2;
     var _this = this;
     var onConfig;
     if (!this.config.on) {
@@ -20049,23 +20319,24 @@ var StateNode = /* @__PURE__ */ function() {
         var delayedTransition = delayedTransitions_1_1.value;
         formattedTransitions.push(delayedTransition);
       }
-    } catch (e_9_1) {
-      e_9 = {
-        error: e_9_1
+    } catch (e_10_1) {
+      e_10 = {
+        error: e_10_1
       };
     } finally {
       try {
         if (delayedTransitions_1_1 && !delayedTransitions_1_1.done && (_a2 = delayedTransitions_1.return))
           _a2.call(delayedTransitions_1);
       } finally {
-        if (e_9)
-          throw e_9.error;
+        if (e_10)
+          throw e_10.error;
       }
     }
     return formattedTransitions;
   };
   return StateNode2;
 }();
+var warned = false;
 function Machine(config, options, initialContext) {
   if (initialContext === void 0) {
     initialContext = config.context;
@@ -20073,6 +20344,10 @@ function Machine(config, options, initialContext) {
   return new StateNode(config, options, initialContext);
 }
 function createMachine(config, options) {
+  if (!IS_PRODUCTION && !config.predictableActionArguments && !warned) {
+    warned = true;
+    console.warn("It is highly recommended to set `predictableActionArguments` to `true` when using `createMachine`. https://xstate.js.org/docs/guides/actions.html");
+  }
   return new StateNode(config, options);
 }
 function mapState(stateMap, stateId) {
@@ -21108,12 +21383,15 @@ var index = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty(
 }, Symbol.toStringTag, { value: "Module" }));
 function testWrapper(testFn) {
   return function(testContext, state) {
-    QUnit.assert.ok(true, `\xA7 Testing state ${JSON.stringify(state.value)} \u2190 event ${JSON.stringify(state.event)}`);
+    QUnit.assert.ok(
+      true,
+      `\xA7 Testing state ${JSON.stringify(state.value)} \u2190 event ${JSON.stringify(state.event)}`
+    );
     return testFn(testContext, state);
   };
 }
-sinon$1.assert.pass = (assertion) => QUnit.ok(true, assertion);
-sinon$1.assert.fail = (assertion) => QUnit.ok(false, assertion);
+sinon$1.assert.pass = (assertion) => QUnit.assert.ok(true, assertion);
+sinon$1.assert.fail = (assertion) => QUnit.assert.ok(false, assertion);
 sinon$1.assert.expose(QUnit.assert, { prefix: "" });
 QUnit.testDone(() => sinon$1.restore());
 function setupDOM({ id, content = "", tag = "div" }) {

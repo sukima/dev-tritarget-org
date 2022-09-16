@@ -10,7 +10,7 @@
  *
  * ====[ Sinon ]====
  *   import { sinon } from './testing.js';
- *   
+ *
  *   module('…', function () {
  *     test('…', function (assert) {
  *       assert.calledWith(mySpy);
@@ -26,7 +26,7 @@
  *   const { module, test } = QUnit;
  *   const { createMachine } = xstate;
  *   const { createModel } = xstateTest;
- *   
+ *
  *   const testMachine = createMachine({
  *     initial: 'firstRender',
  *     states: {
@@ -41,7 +41,7 @@
  *   });
  *   const testModel = createModel(testMachine).withEvents({});
  *   const testPlans = testModel.getSimplePathPlans();
- *   
+ *
  *   testPlans.forEach(function (plan) {
  *     module(plan.description, function () {
  *       plan.paths.forEach(function (path) {
