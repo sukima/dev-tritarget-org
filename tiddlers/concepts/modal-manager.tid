@@ -1,0 +1,21 @@
+created: 20221102013258000
+creator: Sukima
+modified: 20221102013258000
+modifier: Sukima
+tags: Concepts Coding Tips JavaScript
+title: ModalManager
+type: text/vnd.tiddlywiki
+
+\define oop() <abbr title="Object Orientated Programming">OOP</abbr>
+
+I coined this term an <<oop>> design pattern. The idea is that it covers the behavior of opening and closing a modal dialog by means of an `.open()` method which returns a promise that resolves to a Tuple that informs how the modal was dismissed. It also offers some methods for dismissing the modal which the dialog code can use as the manager can be passed to the dialog code.
+
+The simplest version of this might look like:
+
+{{modal-manager.js}}
+
+For a production ready version I have a micro-lib:
+
+* [[ES6 module|https://tritarget.org/cdn/modal-manager.js]]
+* [[Tests|https://tritarget.org/cdn/tests/]]
+* [[Live DEMO|https://tritarget.org/fiddles/?fiddle=modal-manager.html]]

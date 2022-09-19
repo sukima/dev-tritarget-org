@@ -2,129 +2,57 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>ModalManager Example</title>
+<title>ModalManager Demo</title>
 
 <script type="module">
   /* ==== JavaScript ==== */
-  class ModalManager {
-    #isOpen = false;
-    #openModal = () => {};
-    #closeModal = () => {};
-    #resolve = () => {};
 
-    get isOpen() { return this.#isOpen; }
+  // simple-dom is a convinience micro-lib for grabbing DOM elements.
+  import $ from 'https://tritarget.org/cdn/simple-dom.js';
 
-    open() {
-      return new Promise((resolve) => {
-        this.#resolve = resolve;
-        this.#openModal();
-        this.#isOpen = true;
-      }).finally(() => {
-        this.#closeModal();
-        this.#isOpen = false;
-      });
-    }
+  // modal-manager tests are at https://tritarget.org/cdn/tests/
+  import ModalManager from 'https://tritarget.org/cdn/modal-manager.js';
 
-    cancel() {
-      this.#resolve({ reason: 'cancelled' });
-    }
+  // Just to make output easier. Demo use only
+  FormData.prototype.toString = function() {
+    return [...this].map(([a, b]) => `${a} => ${b}`).join(' | ');
+  };
 
-    confirm(value) {
-      this.#resolve({ reason: 'confirmed', value });
-    }
-
-    delegateTo(controller) {
-      this.#openModal = () => controller.open();
-      this.#closeModal = () => controller.close();
-    }
-
-    static for(
-      element,
-      delegateFactory = (element, manager) =>
-        new ModalController(element, manager),
-    ) {
-      let manager = new ModalManager();
-      manager.delegateTo(delegateFactory(element, manager));
-      return manager;
-    }
-  }
-
-  class ModalController {
-    #cancel = () => this.manager.cancel();
-    #confirm = (value) => this.manager.confirm(value);
-    #handleAction = (event) => {
-      if (this.element === event.target) return this.#cancel();
-      switch (event.target.dataset.action) {
-        case 'cancel': return this.#cancel();
-        case 'confirm': return this.#confirm(event.target.dataset.value);
-        default: // no-op
-      }
-    };
-
-    constructor(element, manager) {
-      this.element = element;
-      this.manager = manager;
-    }
-
-    open() {
-      this.element.addEventListener('click', this.#handleAction);
-      this.element.addEventListener('cancel', this.#cancel);
-      this.element.showModal();
-    }
-
-    close() {
-      this.element.removeEventListener('click', this.#handleAction);
-      this.element.removeEventListener('cancel', this.#cancel);
-      this.element.close();
-    }
-  }
-
-  let openButton = document.getElementById('open-modal');
-  let dialogElement = document.getElementById('modal-dialog');
-  let modal = ModalManager.for(dialogElement);
-  openButton.addEventListener('click', async () => {
-    let { reason, value } = await modal.open();
-    console.log(reason, value);
+  // Open modals and do things (DEMO)
+  $['open-buttons'].on.click(async ({ target }) => {
+    let manager = ModalManager.for($[target.dataset.modal].element);
+    let { reason, value } = await manager.open();
+    $['last-reason'].value = reason;
+    $['last-value'].value = reason === 'cancelled' ? '--' : value;
+    $['example-form'].reset();
   });
 </script>
 
-<style>
-  /* ==== CSS ==== */
-  dialog {
-    border: thick solid black;
-    border-radius: 12px;
-    box-shadow: 6px 6px 6px;
-  }
-
-  dialog header,
-  dialog footer {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    padding: 0;
-  }
-
-  dialog::backdrop {
-    background-color: darkgray;
-  }
-
-  button {
-    border: thin solid black;
-    background-color: gainsboro;
-  }
-  button.primary {
-    background-color: lightblue;
-  }
-</style>
-
 </head>
 <body>
-  <!-- ==== HTML ==== -->
-  <button id="open-modal" type="button">
-    Open modal dialog
-  </button>
+  <h1>ModalManager DEMO</h1>
 
-  <dialog id="modal-dialog">
+  <!-- ==== HTML ==== -->
+  <dl>
+    <dt>Reason:</dt>
+    <dd><output id="last-reason">--</output></dd>
+    <dt>Value:</dt>
+    <dd><output id="last-value">--</output></dd>
+  </dl>
+
+  <div id="open-buttons" class="button-group">
+    <button type="button" data-modal="simple-example">
+      Open simple example
+    </button>
+    <button type="button" data-modal="confirm-example">
+      Open yes/no example
+    </button>
+    <button type="button" data-modal="form-example">
+      Open form based example
+    </button>
+  </div>
+
+  <dialog id="simple-example">
     <!-- Having a container div allows us to listen for the dialog
     click which the ::backdrop will produce without triggering the
     same when clicked inside the container div. -->
@@ -153,5 +81,124 @@
       </footer>
     </div>
   </dialog>
+
+  <dialog id="confirm-example">
+    <div>
+      <header>
+        <h1>Example Yes/No Dialog</h1>
+        <button type="button" data-action="cancel">&cross;</button>
+      </header>
+
+      <article>
+        <p>Do you like <strong>pancakes</strong>?</p>
+      </article>
+
+      <footer>
+        <button
+          class="danger"
+          type="button"
+          data-action="reject"
+          data-value="I do not like pancakes."
+        >No</button>
+        <button
+          class="primary"
+          type="button"
+          data-action="confirm"
+          data-value="I love pancakes."
+          autofocus
+        >Yes</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <dialog id="form-example">
+    <div>
+      <header>
+        <h1>Example Form Modal Dialog</h1>
+        <button type="button" data-action="cancel">&cross;</button>
+      </header>
+
+      <article>
+        <form id="example-form" method="dialog">
+          <label for="example-form-first">First name:</label>
+          <input id="example-form-first" name="first-name" required autofocus>
+          <label for="example-form-last">Last name:</label>
+          <input id="example-form-last" name="last-name" required>
+        </form>
+
+        <p><em>Data is client side only.</em></p>
+      </article>
+
+      <footer>
+        <button
+          type="button"
+          data-action="cancel"
+        >Cancel</button>
+        <button
+          class="primary"
+          type="submit"
+          form="example-form"
+        >Confirm</button>
+      </footer>
+    </div>
+  </dialog>
+
+<style>
+  /* ==== CSS ==== */
+  output {
+    font-family: monospace;
+  }
+
+  dl {
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    gap: 0 1rem;
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  dialog {
+    border: thick solid black;
+    border-radius: 12px;
+    box-shadow: 6px 6px 6px;
+  }
+
+  dialog header,
+  dialog footer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0;
+  }
+
+  dialog header > * {
+    margin-top: 0;
+  }
+
+  dialog::backdrop {
+    opacity: 0.6;
+    background-color: black;
+  }
+
+  button {
+    border: thin solid black;
+    background-color: gainsboro;
+  }
+  button.primary {
+    background-color: lightblue;
+  }
+  button.danger {
+    background-color: salmon;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 1rem;
+  }
+</style>
+
 </body>
 </html>

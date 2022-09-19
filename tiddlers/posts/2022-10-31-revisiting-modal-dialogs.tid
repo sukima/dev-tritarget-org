@@ -1,0 +1,54 @@
+created: 20221101031750000
+creator: Sukima
+modified: 20221101031750000
+modifier: Sukima
+tags: Article Coding JavaScript Ember
+title: Revisiting modal dialogs
+type: text/vnd.tiddlywiki
+
+<aside style="float: right; border: thin solid black; border-radius: 8px; padding: 0 1rem; margin: 0 0 1rem 1rem;">
+
+!!! Sources
+* [[Create a modal using the dialog element|https://mejlak.com/posts/creating-a-modal-using-dialog/]]
+* [[MDN: <dialog>: The Dialog element|https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog]]
+* [[MDN: HTMLDialogElement.showModal()|https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal]]
+
+</aside>
+
+A while back I wrote pretty heavily about modal dialog boxes in my post “[[Modals: the answer no one wants to a problem everyone has]]” were I attempted to highlight some of the tensions we have between markup and code logic and I offered a solution via means of the NPM module [[confirmed|https://www.npmjs.com/package/confirmed]] that I wrote. I also dove into styling with my simplistic [[CSS Modal Dialogs]] solution. This culminated with a [[modal dialogs guide|https://sukima.github.io/modal-dialogs-guide/]] that I wrote for [[Ember]] to experiment with this solution.
+
+Recently in my post “[[Easy dirty change confirmations in Ember]]” I wrote a [[demo|https://sukima.github.io/ember-dirty-change-example]] which had need of one of those now infamous modal dialog boxes. This demo written in a much newer version of [[Ember]] took a similar approach but much simpler and easier to implement and use compared to previous solutions. This is thanks to the wonderful patterns that emerge when using [[@tracked|https://www.pzuraq.com/how-autotracking-works/]] but then the same pattern can be used without the autotracking stuff.
+
+I call this new modal dialog pattern: The ModalManager pattern. I think it is worth diving into it and //revisit modal dialog boxes//.
+
+Since this pattern can be implemented in many different environments I'd like to cover some common ground. What are the requirements for this pattern? More specifically what do we want from our code when it comes to managing modal dialogs? To answer that we need to look at how the typical dialog functions.
+
+A dialog has two base concepts. The code that interacts with it (input/output) and the presentation (the actual box, focus traps, etc.) and the glue between them is usually done through events. Focusing on the code logic the act of prompting (input) and receiving a result (output) is by definition asychronous as it needs to perform a round trip via user interaction. In essence the user themselves becomes like a remote server where the dialog being presented is the ''request'' and the user clicking a button to dismiss is the ''response''. However most frameworks and also the Spec DOM API for `<dialog>` only offer hooks and not an actual asynchronous API (like a promise). The ModalManager pattern I will describe is that glue that converts the many hooks into a ''Promise'' with a //result//.
+
+The pattern should…
+
+# trigger the opening of a modal dialog
+# provide a promise to be awaited on
+# trigger closing the dialog on completion
+# resolve the promise to a result of the interaction
+
+And here is a simplified usage example:
+
+```javascript
+let { reason } = await modalManager.open();
+switch (reason) {
+  case 'cancelled': …;
+  case 'confirmed': …;
+  case 'rejected': …;
+}
+```
+
+`modalManager.open()` will show the dialog to the user and hook up any triggers needed to know when the dialog is //done//. The caller waits for the result. The promise resolves with a reason which the caller can use to perform some control flow.
+
+A simplified implementation might look like this:
+
+{{modal-manager.js}}
+
+In this example the `isOpen` flag is the trigger but as we will get into the trigger can be a lot of things. In the following tacks we will show you how the presentation layer taps into the ModalManager pattern.
+
+<<tabs "[[Revisiting modal dialogs: Vanilla]] [[Revisiting modal dialogs: Ember]]" "Revisiting modal dialogs: Vanilla">>
