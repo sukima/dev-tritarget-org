@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ModalManager Example</title>
+
+<script type="module">
+  /* ==== JavaScript ==== */
+  class ModalManager {
+    #isOpen = false;
+    #openModal = () => {};
+    #closeModal = () => {};
+    #resolve = () => {};
+
+    get isOpen() { return this.#isOpen; }
+
+    open() {
+      return new Promise((resolve) => {
+        this.#resolve = resolve;
+        this.#openModal();
+        this.#isOpen = true;
+      }).finally(() => {
+        this.#closeModal();
+        this.#isOpen = false;
+      });
+    }
+
+    cancel() {
+      this.#resolve({ reason: 'cancelled' });
+    }
+
+    confirm(value) {
+      this.#resolve({ reason: 'confirmed', value });
+    }
+
+    delegateTo(controller) {
+      this.#openModal = () => controller.open();
+      this.#closeModal = () => controller.close();
+    }
+
+    static for(
+      element,
+      delegateFactory = (element, manager) =>
+        new ModalController(element, manager),
+    ) {
+      let manager = new ModalManager();
+      manager.delegateTo(delegateFactory(element, manager));
+      return manager;
+    }
+  }
+
+  class ModalController {
+    #cancel = () => this.manager.cancel();
+    #confirm = (value) => this.manager.confirm(value);
+    #handleAction = (event) => {
+      if (this.element === event.target) return this.#cancel();
+      switch (event.target.dataset.action) {
+        case 'cancel': return this.#cancel();
+        case 'confirm': return this.#confirm(event.target.dataset.value);
+        default: // no-op
+      }
+    };
+
+    constructor(element, manager) {
+      this.element = element;
+      this.manager = manager;
+    }
+
+    open() {
+      this.element.addEventListener('click', this.#handleAction);
+      this.element.addEventListener('cancel', this.#cancel);
+      this.element.showModal();
+    }
+
+    close() {
+      this.element.removeEventListener('click', this.#handleAction);
+      this.element.removeEventListener('cancel', this.#cancel);
+      this.element.close();
+    }
+  }
+
+  let openButton = document.getElementById('open-modal');
+  let dialogElement = document.getElementById('modal-dialog');
+  let modal = ModalManager.for(dialogElement);
+  openButton.addEventListener('click', async () => {
+    let { reason, value } = await modal.open();
+    console.log(reason, value);
+  });
+</script>
+
+<style>
+  /* ==== CSS ==== */
+  dialog {
+    border: thick solid black;
+    border-radius: 12px;
+    box-shadow: 6px 6px 6px;
+  }
+
+  dialog header,
+  dialog footer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 0;
+  }
+
+  dialog::backdrop {
+    background-color: darkgray;
+  }
+
+  button {
+    border: thin solid black;
+    background-color: gainsboro;
+  }
+  button.primary {
+    background-color: lightblue;
+  }
+</style>
+
+</head>
+<body>
+  <!-- ==== HTML ==== -->
+  <button id="open-modal" type="button">
+    Open modal dialog
+  </button>
+
+  <dialog id="modal-dialog">
+    <!-- Having a container div allows us to listen for the dialog
+    click which the ::backdrop will produce without triggering the
+    same when clicked inside the container div. -->
+    <div>
+      <header>
+        <h1>Example Modal Dialog</h1>
+        <button type="button" data-action="cancel">&cross;</button>
+      </header>
+
+      <article>
+        <p>This is an example modal dialog box.</p>
+      </article>
+
+      <footer>
+        <button
+          type="button"
+          data-action="cancel"
+          autofocus
+        >Cancel</button>
+        <button
+          class="primary"
+          type="button"
+          data-action="confirm"
+          data-value="foobar"
+        >Confirm</button>
+      </footer>
+    </div>
+  </dialog>
+</body>
+</html>
