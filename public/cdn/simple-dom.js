@@ -132,7 +132,7 @@ function domAll(element) {
 }
 
 function elementCreaterFor(tag) {
-  return function createEleemnt(configs = {}) {
+  return function createElement(configs = {}) {
     let element = document.createElement(tag);
     for (let [key, value] of Object.entries(configs)) {
       switch (key) {
