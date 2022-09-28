@@ -2,6 +2,7 @@ import $ from 'https://tritarget.org/cdn/simple-dom.js';
 import { createMachine, interpret } from 'https://unpkg.com/xstate@4/dist/xstate.web.js';
 
 const BASE_TITLE = $.element.title;
+let suggestedFileName = 'new-fiddle.html';
 
 const applicationMachine = createMachine({ // {{{1
   id: 'applicationMachine',
@@ -103,7 +104,7 @@ const applicationMachine = createMachine({ // {{{1
 });
 
 class Application { // {{{1
-  savedFilename = 'index.html';
+  savedFilename = null;
   machine = interpret(applicationMachine.withConfig({
     actions: {
       openMenu: () => this.menu.open(),
@@ -129,7 +130,10 @@ class Application { // {{{1
       activateManualPreviewConfig: () => this.buttons.manualPreview.activate(),
       deactivateManualPreviewConfig: () => this.buttons.manualPreview.deactivate(),
       saveEditorContents: async () => {
-        this.savedFilename = prompt('Save As: Enter a file name', this.savedFilename);
+        this.savedFilename = prompt(
+          'Save As: Enter a file name',
+          this.savedFilename || suggestedFileName,
+        );
         let saver = FileSaver.create(this.savedFilename);
         saver.onDone(() => this.trigger('SAVED'));
         await this.editor.save(saver);
@@ -425,6 +429,7 @@ function updatePreview(content) { // {{{1
   preview.close();
 
   let subtitle = preview.title || fiddleParam() || 'New Fiddle';
+  suggestedFileName = `${dasherize(subtitle)}.html`;
   $.element.title = `${BASE_TITLE} — ${subtitle}`;
 }
 
@@ -434,6 +439,10 @@ function debounce(fn, delay = 10) { // {{{1
     clearTimeout(timer);
     timer = setTimeout(() => fn(...args), delay);
   };
+}
+
+function dasherize(input) { // {{{1
+  return input.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 }
 
 const cm = CodeMirror.fromTextArea($['#editor'].element, { // {{{1
