@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Monotonic Dynamic Form</title>
+
+<script type="module">
+  /* ==== JavaScript ==== */
+  class MonotonicList {
+    #counter = 0;
+    #indexes = new Set();
+    get size() {
+      return this.#indexes.size;
+    }
+    constructor(size) {
+      this.reset(size);
+    }
+    has(index) {
+      return this.#indexes.has(index);
+    }
+    add() {
+      this.#indexes.add(++this.#counter);
+    }
+    remove(index) {
+      this.#indexes.delete(index);
+    }
+    reset(length = 0) {
+      this.#indexes = new Set(Array.from({ length }, () => ++this.#counter));
+    }
+    [Symbol.iterator]() {
+      return this.#indexes.values();
+    }
+  }
+
+  function addFruit() {
+    fruitList.add();
+    renderFruits();
+  }
+
+  function removeFruit(index) {
+    if (fruitList.size <= 1) return;
+    fruitList.remove(index);
+    renderFruits();
+  }
+
+  function createFruitField(index) {
+    let id = `fruits-input-${index}`;
+    let fruitNode = document.querySelector('#fruit-fields').content.cloneNode(true);
+    fruitNode.querySelector('[data-action=remove-fruit]').dataset.index = index;
+    fruitNode.querySelector('fieldset').dataset.index = index;
+    fruitNode.querySelector('label').setAttribute('for', id);
+    fruitNode.querySelector('input').setAttribute('id', id);
+    return fruitNode;
+  }
+
+  function renderFruits() {
+    let skipIndexes = new Set();
+    let fruits = document.querySelector('form .fruits');
+    for (let node of fruits.querySelectorAll('fieldset')) {
+      let index = Number(node.dataset.index);
+      if (fruitList.has(index)) {
+        skipIndexes.add(index);
+      } else {
+        node.remove();
+      }
+    }
+    for (let index of fruitList) {
+      if (skipIndexes.has(index)) continue;
+      fruits.appendChild(createFruitField(index));
+    }
+  }
+
+  const fruitList = new MonotonicList(1);
+  const form = document.querySelector('form')
+
+  form.addEventListener('submit', (event) => {
+    let formater = new Intl.ListFormat();
+    let fruits = new FormData(form).getAll('fruits');
+    event.preventDefault();
+    alert(`The entered fruits are ${formater.format(fruits)}.`);
+    form.reset();
+  });
+
+  form.addEventListener('reset', () => {
+    fruitList.reset(1);
+    renderFruits();
+  });
+
+  form.addEventListener('click', ({ target }) => {
+    switch (target.dataset.action) {
+      case 'add-fruit': return addFruit();
+      case 'remove-fruit': return removeFruit(Number(target.dataset.index));
+      default: // no-op
+    }
+  });
+
+  renderFruits();
+</script>
+
+<style>
+  /* ==== CSS ==== */
+  form .fruits > :first-child [data-action=remove-fruit] {
+    display: none;
+  }
+</style>
+
+</head>
+<body>
+  <!-- ==== HTML ==== -->
+  <form>
+    <div class="fruits"></div>
+    <button type="button" data-action="add-fruit">Add another fruit</button>
+    <button type="reset">Reset</button>
+    <button type="submit">Save</button>
+  </form>
+
+  <template id="fruit-fields">
+    <fieldset>
+      <label>Enter a type of fruit:</label>
+      <input name="fruits" type="text" autocomplete="off" spellcheck required>
+      <button
+        type="button"
+        data-action="remove-fruit"
+        aria-label="Remove fruit input"
+      >&cross;</button>
+    </fieldset>
+  </template>
+</body>
+</html>
