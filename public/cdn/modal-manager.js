@@ -1,3 +1,5 @@
+import { confineTabbing, releaseTabbing } from 'https://tritarget.org/cdn/tabbing.js';
+
 /**
  * A convenient and promise-based manager of modals. It couples opening and
  * closing of a dialog to a promise result. This allows any dialog controller
@@ -70,8 +72,7 @@ export default class ModalManager {
 
   static for(
     element,
-    delegateFactory = (element, manager) =>
-      new ModalDialogController(element, manager),
+    delegateFactory = ModalDialogController.factory,
   ) {
     let manager = new ModalManager();
     manager.delegateTo(delegateFactory(element, manager));
@@ -101,8 +102,8 @@ export class ModalDialogController {
   }
 
   open() {
-    this.setupEvents();
     this.showElement();
+    this.setupEvents();
   }
 
   close() {
@@ -130,5 +131,47 @@ export class ModalDialogController {
 
   hideElement() {
     this.element.close();
+  }
+
+  static factory(element, manager) {
+    return Reflect.has(element, 'showModal')
+      ? new ModalDialogController(element, manager)
+      : new LegacyModalDialogController(element, manager);
+  }
+}
+
+export class NonModalDialogController extends ModalDialogController {
+  showElement() {
+    this.element.show();
+  }
+
+  static factory(element, manager) {
+    return new NonModalDialogController(element, manager);
+  }
+}
+
+export class LegacyModalDialogController extends ModalDialogController {
+  #handleEsacpe = (event) => {
+    if (event.key !== 'Escape') return;
+    event.preventDefault();
+    this.element.dispatchEvent(new CustomEvent('cancel', { bubbles: true }));
+  };
+
+  showElement() {
+    this.element.show();
+    this.element.classList.add('legacy-dialog');
+    this.element.addEventListener('keyup', this.#handleEsacpe);
+    confineTabbing(this.element);
+  }
+
+  hideElement() {
+    this.element.close();
+    this.element.classList.remove('legacy-dialog');
+    this.element.removeEventListener('keyup', this.#handleEsacpe);
+    releaseTabbing();
+  }
+
+  static factory(element, manager) {
+    return new LegacyModalDialogController(element, manager);
   }
 }
