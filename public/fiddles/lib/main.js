@@ -366,8 +366,8 @@ class FragmentSaver extends FileSaver { // {{{2
     let url = new URL(window.location);
     url.search = '';
     url.hash = LZString.compressToEncodedURIComponent(await blob.text());
-    if (Navigator.clipboard) {
-      Navigator.clipboard.writeText(url.toString());
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url.toString());
     }
     if (history.replaceState) {
       history.replaceState({}, '', url);
