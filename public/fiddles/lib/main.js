@@ -10,6 +10,7 @@ const applicationMachine = createMachine({ // {{{1
   on: {
     BROWSE_FILES: { actions: 'openFileBrowser' },
     SAVE: { actions: 'saveEditorContents' },
+    SHARE: { actions: 'shareEditorContents' },
     SAVED: 'menu.closed',
     LOAD: { actions: 'loadEditorContents' },
     LOADED: 'menu.closed',
@@ -135,6 +136,11 @@ class Application { // {{{1
           this.savedFilename || suggestedFileName,
         );
         let saver = FileSaver.create(this.savedFilename);
+        saver.onDone(() => this.trigger('SAVED'));
+        await this.editor.save(saver);
+      },
+      shareEditorContents: async () => {
+        let saver = new FragmentSaver();
         saver.onDone(() => this.trigger('SAVED'));
         await this.editor.save(saver);
       },
@@ -290,7 +296,9 @@ class Editor { // {{{1
   async save(saver) {
     let { currentValue } = this;
     let blob = new Blob([currentValue], { type: 'text/html' });
-    saver.save(blob);
+    await saver.save(blob);
+    this.initialValue = this.currentValue;
+    this.handleChangeEvent();
   }
 
   async load(loader) {
@@ -352,10 +360,30 @@ class CancelledSaver { // {{{2
   save() {}
 }
 
+class FragmentSaver extends FileSaver { // {{{2
+  async save(blob) {
+    let { LZString } = await import('./lz-string.js');
+    let url = new URL(window.location);
+    url.search = '';
+    url.hash = LZString.compressToEncodedURIComponent(await blob.text());
+    if (Navigator.clipboard) {
+      Navigator.clipboard.writeText(url.toString());
+    }
+    if (history.replaceState) {
+      history.replaceState({}, '', url);
+    } else {
+      window.location.href = url;
+    }
+    this._onDoneCallback();
+    flash('URL updated and link saved to clipboard');
+  }
+}
+
 class MsBlobSaver extends FileSaver { // {{{2
   save(blob) {
     window.navigator.msSaveBlob(blob, this.filename);
     this._onDoneCallback();
+    flash('Saved to file');
   }
 }
 
@@ -369,6 +397,7 @@ class LinkHrefSaver extends FileSaver { /// {{{2
     $.body.removeChild(elem);
     URL.revokeObjectURL(blob);
     this._onDoneCallback();
+    flash('Saved to file');
   }
 }
 
@@ -382,7 +411,24 @@ class FileLoader { // {{{1
       let reader = new FileReader();
       reader.onload = () => resolve(reader.result);
       reader.readAsText(this.file);
+    }).finally(() => {
+      flash('Loaded from file');
     });
+  }
+}
+
+class FragmentLoader { // {{{1
+  constructor(hash) {
+    this.hash = hash.slice(1);
+  }
+
+  async load() {
+    let { LZString } = await import('./lz-string.js');
+    try {
+      return LZString.decompressFromEncodedURIComponent(this.hash);
+    } finally {
+      flash('Loaded contents from URL');
+    }
   }
 }
 
@@ -394,7 +440,11 @@ class UrlLoader { // {{{1
   async load() {
     let res = await fetch(this.url);
     let content = res.ok ? await res.text() : this.errorContent(res);
-    return content.trim();
+    try {
+      return content.trim();
+    } finally {
+      flash(`Loaded contents from ${this.url}`);
+    }
   }
 
   errorContent({ status, statusText }) {
@@ -483,6 +533,7 @@ $['#menu-open'].on.click(() => app.trigger('OPEN_MENU'));
 $['#menu-close'].on.click(() => app.trigger('CLOSE_MENU'));
 $['#menu-open-file'].on.click(() => app.trigger('BROWSE_FILES'));
 $['#menu-save-file'].on.click(() => app.trigger('SAVE'));
+$['#menu-share'].on.click(() => app.trigger('SHARE'));
 $['#menu-show-editor'].on.click(() => app.trigger('TOGGLE_EDITOR'));
 $['#menu-show-preview'].on.click(() => app.trigger('TOGGLE_PREVIEW'));
 $['#menu-word-wrap'].on.click(() => app.trigger('TOGGLE_WORDWRAP'));
@@ -498,6 +549,7 @@ $.on.keyup(event => {
   switch (event.key) {
     case 'O': return trigger('BROWSE_FILES');
     case 'S': return trigger('SAVE');
+    case 'L': return trigger('SHARE');
     case 'B': return trigger('TOGGLE_WORDWRAP');
     case 'E': return trigger('TOGGLE_EDITOR');
     case 'W': return trigger('TOGGLE_PREVIEW');
@@ -508,13 +560,33 @@ $.on.keyup(event => {
 });
 
 // }}}1
+// Flash messages {{{1
+const flash = (function () {
+  let flashTimeout;
+
+  $.flash['button'].on.click(() => $.flash.close());
+  $.flash.on.keyup(({ key }) => {
+    if (key === 'Escape') $.flash.close();
+  });
+
+  return function flash(message) {
+    clearTimeout(flashTimeout);
+    $.flash['.content'].textContent = message;
+    $.flash.show();
+    setTimeout(() => $.flash.close(), 8_000);
+  }
+})();
 
 function preloadRelativeContent() {
   let currentUrl = new URL(window.location);
   let { searchParams } = currentUrl;
-  let event = searchParams.has('fiddle') ? 'LOAD' : 'NOOP';
-  let fiddleUrl = new URL(searchParams.get('fiddle'), currentUrl.href);
-  app.trigger(event, { loader: new UrlLoader(fiddleUrl) });
+
+  if (searchParams.has('fiddle')) {
+    let fiddleUrl = new URL(searchParams.get('fiddle'), currentUrl.href);
+    app.trigger('LOAD', { loader: new UrlLoader(fiddleUrl) });
+  } else if (window.location.hash) {
+    app.trigger('LOAD', { loader: new FragmentLoader(window.location.hash) });
+  }
 }
 
 preloadRelativeContent();

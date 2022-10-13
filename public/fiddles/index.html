@@ -52,6 +52,12 @@
       </button>
     </li>
     <li>
+      <button type="button" id="menu-share">
+        <span class="label">Share Link&hellip;</span>
+        <span class="sublabel"><kbd>Ctrl+Shift+L</kbd></span>
+      </button>
+    </li>
+    <li>
       <button type="button" id="menu-word-wrap">
         <span class="label">Word Wrap</span>
         <span class="sublabel"><kbd>Ctrl+Shift+B</kbd></span>
@@ -120,5 +126,11 @@
 
 <!-- HIDDEN INPUT FILE -->
 <input type="file" id="file-open-input" accept=".html,.htm,.txt" class="hide">
+
+<!-- FLASH MESSAGE -->
+<dialog id="flash" class="flash">
+  <button type="button" aria-label="Dismiss dialog">&cross;</button>
+  <p class="content"></p>
+</dialog>
 </body>
 </html>
