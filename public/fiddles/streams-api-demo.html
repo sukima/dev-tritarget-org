@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Streams API Demo</title>
+
+<script type="module">
+  /* ==== JavaScript ==== */
+class LineChunks {
+  buffer = '';
+  flushBuffer(controller) {
+    if (this.buffer === '') return;
+    controller.enqueue(this.buffer);
+  }
+  processChunk(chunk, controller) {
+    this.buffer += chunk;
+    let lines = this.buffer.split('\n');
+    while (lines.length > 1)
+      controller.enqueue(lines.shift());
+    this.buffer = lines[0];
+  }
+  stream() {
+    return new TransformStream({
+      transform: (chunk, controller) =>
+        this.processChunk(chunk, controller),
+      flush: (controller) => this.flushBuffer(controller),
+    });
+  }
+}
+  
+class LineGuardError extends Error {
+  name = 'LineGuardError';
+  constructor(lines) {
+    super(`Exceeded max lines of ${lines}`);
+  }
+}
+  
+class LineGuard {
+  lineCount = 0;
+  constructor(columns, lines) {
+    this.columns = columns;
+    this.lines = lines;
+  }
+  processLine(line, controller) {
+    this.lineCount++;
+    if (this.lineCount > this.lines)
+      throw new LineGuardError(this.lines);
+    controller.enqueue(line.slice(0, this.columns));
+  }
+  stream() {
+    return new TransformStream({
+      transform: (chunk, controller) =>
+        this.processLine(chunk, controller),
+    });
+  }
+}
+  
+class LineRenderer {
+  buffer = [];
+  constructor({ batchSize = 1 } = {}) {
+    this.batchSize = batchSize;
+  }
+  queueLine(line) {
+    this.buffer.push(line);
+    if (this.buffer.length < this.batchSize) return;
+    renderLines(this.buffer);
+    this.buffer = [];
+    return new Promise(resolve => setTimeout(resolve, 100));
+  }
+  flushLines() {
+    if (this.buffer.length === 0) return;
+    renderLines(this.buffer);
+  }
+  stream() {
+    return new WritableStream({
+      write: (chunk) => this.queueLine(chunk),
+      close: () => this.flushLines(),
+    });
+  }
+}
+  
+function renderLines(lines) {
+  let output = document.getElementById('output');
+  for (let line of lines) {
+    let li = document.createElement('li');
+    li.textContent = line;
+    output.append(li);
+  }
+}
+
+document.getElementById('upload')
+  .addEventListener('change', (event) => {
+    let [file] = event.target.files;
+    if (!file) return;
+    file.stream()
+      .pipeThrough(new TextDecoderStream())
+      .pipeThrough(new LineChunks().stream())
+      .pipeThrough(new LineGuard(80, 500).stream())
+      .pipeTo(new LineRenderer({ batchSize: 100 }).stream());
+  });
+</script>
+
+<style>
+  /* ==== CSS ==== */
+  
+</style>
+
+</head>
+<body>
+  <!-- ==== HTML ==== -->
+  <input type="file" id="upload" accept="text/*">
+  <ol id="output"></ol>
+</body>
+</html>
