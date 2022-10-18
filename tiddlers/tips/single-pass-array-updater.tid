@@ -1,0 +1,30 @@
+created: 20221018180013000
+creator: suki
+modified: 20221018180013000
+modifier: suki
+tags: Tips Coding JavaScript
+title: Single pass array updater
+type: text/vnd.tiddlywiki
+
+```javascript
+let elementIterator =
+  Array.from(listElement.children).values();
+
+for (let itemData of itemsList) {
+  let { done, value: element } = elementIterator.next();
+
+  if (done) {
+    listElement.append(createListItemElement(itemData));
+  } else if (isDataHasChanged(element, itemData)) {
+    updateListItemElement(element, itemData);
+  }
+}
+
+for (
+  let result = elementIterator.next();
+  !result.done;
+  result = elementIterator.next()
+) {
+  result.value.remove();
+}
+```
