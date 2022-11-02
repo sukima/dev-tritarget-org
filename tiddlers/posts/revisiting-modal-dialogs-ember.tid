@@ -61,7 +61,7 @@ export default class FooBar extends Component {
 
 And in our template:
 
-```hbs
+```handlebars
 <button
   type="button"
   {{on "click" this.openModal}}
@@ -80,7 +80,7 @@ The typical Data Down Actions Up is also bundled into the simple interface of th
 
 Each modal can use the ModalManager to control when and how to close itself.
 
-```hbs
+```handlebars
 <Modal {{on "cancel" @manager.cancel}}>
   <header>
     <button
@@ -114,7 +114,7 @@ In the example I wired up the manager to the different buttons in the modal cont
 
 We could also expand this idea in Ember to use a ''helper'' thus showing a modal could be done completely template only without any backing class boilerplate. We can define the helper to accept a list of callbacks one per type of resolution.
 
-```hbs
+```handlebars
 {{#let
   (modal-manager onDone=this.useModalResult)
   as |manager|
