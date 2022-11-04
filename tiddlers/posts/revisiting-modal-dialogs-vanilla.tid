@@ -12,7 +12,7 @@ type: text/vnd.tiddlywiki
 * [[Tests|https://tritarget.org/cdn/tests/]]
 \end
 
-<aside style="float: right; border: thin solid black; border-radius: 8px; padding: 0 1.5rem 0 0; margin: 0 0 1rem 1rem;">
+<aside class="float-right no-item-padding">
 
 <<sourceLinks>>
 

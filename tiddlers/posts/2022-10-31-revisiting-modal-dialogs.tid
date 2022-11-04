@@ -6,7 +6,7 @@ tags: Article Coding JavaScript Ember
 title: Revisiting modal dialogs
 type: text/vnd.tiddlywiki
 
-<aside style="float: right; border: thin solid black; border-radius: 8px; padding: 0 1rem; margin: 0 0 1rem 1rem;">
+<aside class="float-right">
 
 !!! Sources
 * [[Create a modal using the dialog element|https://mejlak.com/posts/creating-a-modal-using-dialog/]]

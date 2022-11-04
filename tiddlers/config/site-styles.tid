@@ -24,6 +24,27 @@ figure > * + * {
   margin-top: 15px;
 }
 
+aside {
+  border: thin solid black;
+  border-radius: 8px;
+  padding: 0 1.5rem;
+}
+
+.float-right {
+  float: right;
+  margin: 0 0 1rem 1rem;
+}
+
+.float-left {
+  float: left;
+  margin: 0 1rem 1rem;
+}
+
+.no-item-padding ul,
+.no-item-padding ol {
+  padding: 0;
+}
+
 .top-nav-bar {
   height: 40px;
 }

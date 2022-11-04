@@ -6,7 +6,7 @@ tags: Article Coding Ember JavaScript
 title: Easy dirty change confirmations in Ember
 type: text/vnd.tiddlywiki
 
-<aside style="float: right; border: thin solid black; border-radius: 8px; padding: 0 1.5rem 0 0; margin: 0 0 1rem 1rem;">
+<aside class="float-right no-item-padding">
 
 * [[Live DEMO|https://sukima.github.io/ember-dirty-change-example]]
 * [[Source code|https://github.com/sukima/ember-dirty-change-example]]
