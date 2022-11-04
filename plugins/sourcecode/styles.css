@@ -57,7 +57,7 @@ CSS styles for text/prs.sourcecode generated output
   color: var(--rebase00);
   background-color: var(--rebase3);
   padding: 0.1rem 0.4rem;
-  font-family: 'mononoki', monospace;
+  font-family: mononoki, monospace;
 }
 
 .vimCodeElement,
