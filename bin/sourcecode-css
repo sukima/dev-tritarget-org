@@ -1,0 +1,131 @@
+#!/usr/bin/env node
+/*eslint-env node:true es6:true */
+const { Transform } = require('node:stream');
+
+const colorTransforms = new Map([
+  ['#000000', 'var(--rebase02)'],
+  ['#c00000', 'var(--red)'],
+  ['#008000', 'var(--green)'],
+  ['#804000', 'var(--yellow)'],
+  ['#0000c0', 'var(--blue)'],
+  ['#c000c0', 'var(--magenta)'],
+  ['#008080', 'var(--cyan)'],
+  ['#c0c0c0', 'var(--rebase2)'],
+  ['#808080', 'var(--rebase03)'],
+  ['#ff6060', 'var(--orange)'],
+  ['#00ff00', 'var(--rebase01)'],
+  ['#ffff00', 'var(--rebase00)'],
+  ['#8080ff', 'var(--rebase0)'],
+  ['#ff40ff', 'var(--violet)'],
+  ['#00ffff', 'var(--rebase1)'],
+  ['#ffffff', 'var(--rebase3)'],
+]);
+
+function splitByLines() {
+  let buffer = '';
+  return new Transform({
+    objectMode: true,
+    transform(chunk, _, done) {
+      for (let char of chunk.toString()) {
+        if (char === '\r') continue;
+        if (char === '\n') {
+          this.push(buffer);
+          buffer = '';
+          continue;
+        }
+        buffer += char;
+      }
+      done();
+    },
+    flush(done) {
+      if (buffer !== '') this.push(buffer);
+      done();
+    },
+  });
+}
+
+function filterCssRules() {
+  let isStyle = false;
+  return new Transform({
+    objectMode: true,
+    transform(line, _, done) {
+      if (line.startsWith('<style>')) {
+        isStyle = true;
+      } else if (line.startsWith('</style>')) {
+        isStyle = false;
+      } else if (isStyle && line.startsWith('.')) {
+        this.push(line);
+      }
+      done();
+    },
+  });
+}
+
+function uniqueLines() {
+  let lines = new Set();
+  return new Transform({
+    objectMode: true,
+    transform(line, _, done) {
+      lines.add(line);
+      done();
+    },
+    flush(done) {
+      lines.forEach((line) => this.push(line));
+      done();
+    },
+  });
+}
+
+function prepareCssRule() {
+  return new Transform({
+    objectMode: true,
+    transform(line, _, done) {
+      for (let [colorMatcher, replacement] of colorTransforms) {
+        line = line.replace(colorMatcher, replacement);
+      }
+      this.push(`.vimCodeElement ${line}`);
+      done();
+    },
+  });
+}
+
+function prependPreambleLines() {
+  let sentPreamble = false;
+  return new Transform({
+    objectMode: true,
+    transform(line, _, done) {
+      if (!sentPreamble) {
+        sentPreamble = true;
+        this.push('/*\\');
+        this.push('title: $:/site/sourcecode/styles.css');
+        this.push('tags: $:/tags/Stylesheet');
+        this.push('type: text/css');
+        this.push('');
+        this.push('Sourcecode CSS styles for text/prs.sourcecode generated output');
+        this.push('');
+        this.push('\\*/');
+      }
+      this.push(line);
+      done();
+    },
+  });
+}
+
+function joinLines() {
+  return new Transform({
+    objectMode: true,
+    transform(line, _, done) {
+      this.push(`${line}\n`);
+      done();
+    },
+  });
+}
+
+process.stdin
+  .pipe(splitByLines())
+  .pipe(filterCssRules())
+  .pipe(uniqueLines())
+  .pipe(prepareCssRule())
+  .pipe(prependPreambleLines())
+  .pipe(joinLines())
+  .pipe(process.stdout);

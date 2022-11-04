@@ -5,6 +5,9 @@ deploy_path := ktohg@tritarget.org:tritarget.org
 plugins_src := $(shell find plugins -type f)
 plugins_out := $(patsubst plugins/%,wiki/plugins/%,$(plugins_src))
 asset_files := $(patsubst public/%,wiki/output/%,$(shell find public -type f))
+sourcecode_src := $(shell find sourcecode -type f)
+sourcecode_html := $(patsubst sourcecode/%,wiki/sourcecode/%.html,$(sourcecode_src))
+sourcecode_tid := $(patsubst sourcecode/%,tiddlers/sourcecode/%.tid,$(sourcecode_src))
 
 modified_date = $(shell date +%Y%m%d%H%M%S000)
 pgp_fingerprint = FA9F14008BA5A847B0977C06EBD99C92DE767C8A
@@ -51,7 +54,7 @@ devcerts:
 	openssl x509 -req -days 9999 -in $@/csr.pem -signkey $@/key.pem -out $@/cert.pem
 	rm $@/csr.pem
 
-generated: tiddlers/generated/PGPKeyFile.tid tiddlers/generated/PGPKeyInfo.tid
+generated: tiddlers/generated/PGPKeyFile.tid tiddlers/generated/PGPKeyInfo.tid tiddlers/generated/sourcecode.css $(sourcecode_tid)
 
 deploy: build
 	rsync -rlvz --delete --exclude-from ./config/rsync-exclude wiki/output/ $(deploy_path)
@@ -70,19 +73,29 @@ wiki/themes:
 	ln -s ../themes $@
 
 wiki/tiddlywiki.info: config/tiddlywiki.info config/includes.json
-	@mkdir -p $(dir $@)
+	@mkdir -p $(@D)
 	$(merge_json) config/tiddlywiki.info config/includes.json > $@ || rm $@
 
 wiki/plugins/%: plugins/%
-	@mkdir -p $(dir $@)
+	@mkdir -p $(@D)
 	cp $< $@
 
 wiki/output/key.info: wiki/output/key
 	gpg -v $< > $@
 
 wiki/output/%: public/%
-	@mkdir -p $(dir $@)
+	@mkdir -p $(@D)
 	cp $< $@
+
+wiki/sourcecode/%.html: sourcecode/%
+	@mkdir -p $(@D)
+	TARGET_FILE="$@" SOURCE_FILE="$(<F)" vim -N -E -s -c "source scripts/sourcecode-to-html.vim" $< >/dev/null
+
+tiddlers/sourcecode/%.tid: wiki/sourcecode/%.html
+	TARGET_FILE="$@" SOURCE_FILE="$(basename $(<F))" ./bin/sourcecode-html < $< > $@
+
+tiddlers/generated/sourcecode.css: $(sourcecode_html)
+	cat $^ | ./bin/sourcecode-css > $@
 
 updatekey:
 	gpg --armor --export-options export-minimal --export $(pgp_fingerprint) > public/key

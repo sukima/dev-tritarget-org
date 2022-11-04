@@ -1,0 +1,95 @@
+#!/usr/bin/env node
+/*eslint-env node:true es6:true */
+const { Transform } = require('node:stream');
+
+function splitByLines() {
+  let buffer = '';
+  return new Transform({
+    objectMode: true,
+    transform(chunk, _, done) {
+      for (let char of chunk.toString()) {
+        if (char === '\r') continue;
+        if (char === '\n') {
+          this.push(buffer);
+          buffer = '';
+          continue;
+        }
+        buffer += char;
+      }
+      done();
+    },
+    flush(done) {
+      if (buffer !== '') this.push(buffer);
+      done();
+    },
+  });
+}
+
+function filterHtmlBody() {
+  let isBody = false;
+  return new Transform({
+    objectMode: true,
+    transform(line, _, done) {
+      if (line.startsWith('<body')) {
+        isBody = true;
+      } else if (line.startsWith('</body>')) {
+        isBody = false;
+      } else if (isBody) {
+        this.push(line);
+      }
+      done();
+    },
+  });
+}
+
+function convertIdsToClassNames() {
+  const idMatcher = /id=['"]([^'"]*)['"]/g;
+  let firstLine = true;
+  return new Transform({
+    objectMode: true,
+    transform(line, _, done) {
+      if (firstLine) {
+        firstLine = false;
+        this.push(line.replace(idMatcher, 'class="$1"'));
+      } else {
+        this.push(line);
+      }
+      done();
+    }
+  });
+}
+
+function prependPreambleLines() {
+  let sentPreamble = false;
+  return new Transform({
+    objectMode: true,
+    transform(line, _, done) {
+      if (!sentPreamble) {
+        sentPreamble = true;
+        this.push(`title: sourcecode/${process.env.SOURCE_FILE}`);
+        this.push('type: text/prs.sourcecode');
+        this.push('');
+      }
+      this.push(line);
+      done();
+    },
+  });
+}
+
+function joinLines() {
+  return new Transform({
+    objectMode: true,
+    transform(line, _, done) {
+      this.push(`${line}\n`);
+      done();
+    },
+  });
+}
+
+process.stdin
+  .pipe(splitByLines())
+  .pipe(filterHtmlBody())
+  .pipe(convertIdsToClassNames())
+  .pipe(prependPreambleLines())
+  .pipe(joinLines())
+  .pipe(process.stdout);
