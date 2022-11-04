@@ -1,0 +1,13 @@
+created: 20221104134906000
+creator: Sukima
+modified: 20221104134906000
+modifier: Sukima
+tags: JavaScript Coding snippets
+title: Split by line stream
+type: text/vnd.tiddlywiki
+
+Every time I try to use streams in Node to do text processing it is almost always line based and Node's built in readline module breaks the usual stream pipeline in its API use. That is why there are many NPM modules to tackle this task. However, I think the task is simple enough and useful enough that it should be something built-in or copy/paste-able as a micro-lib and avoid yet another module dependency.
+
+Here is my personal implementation that works and can be copy/paste-ed.
+
+<<tabs "split-by-line-stream-tab1 split-by-line-stream-tab2" "split-by-line-stream-tab1">>

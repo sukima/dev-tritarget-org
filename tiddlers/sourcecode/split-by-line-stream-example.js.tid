@@ -1,0 +1,28 @@
+title: sourcecode/split-by-line-stream-example.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">const</span> { Transform } <span class="Statement">=</span> <span class="Constant">require</span>(<span class="Constant">'node:stream'</span>);
+
+<span class="Type">function</span> <span class="Identifier">splitByLines</span>() { … }
+
+<span class="Type">function</span> <span class="Identifier">exampleTally</span>() {
+  <span class="Type">let</span> lineCount <span class="Statement">=</span> <span class="Constant">0</span>;
+  <span class="Statement">return</span> <span class="Statement">new</span> <span class="Identifier">Transform</span>({
+    objectMode: <span class="Constant">true</span>,
+    <span class="Identifier">transform</span>(line, _, done) {
+      lineCount<span class="Statement">++</span>;
+      <span class="Identifier">done</span>();
+    },
+    <span class="Identifier">flush</span>(done) {
+      <span class="Special">this</span>.<span class="Identifier">push</span>(<span class="Constant">`Line count: </span>${lineCount}<span class="Special">\n</span><span class="Constant">`</span>);
+      <span class="Identifier">done</span>();
+    },
+  });
+}
+
+<span class="Constant">process</span>.stdin
+  .<span class="Identifier">pipe</span>(<span class="Identifier">splitByLines</span>())
+  .<span class="Identifier">pipe</span>(<span class="Identifier">exampleTally</span>())
+  .<span class="Identifier">pipe</span>(process.stdout);
+</pre>

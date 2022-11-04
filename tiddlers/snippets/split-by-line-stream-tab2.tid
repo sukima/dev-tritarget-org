@@ -1,0 +1,9 @@
+created: 20221104135422000
+creator: Sukima
+modified: 20221104135422000
+modifier: Sukima
+title: split-by-line-stream-tab2
+type: text/vnd.tiddlywiki
+caption: Usage
+
+{{sourcecode/split-by-line-stream-example.js}}

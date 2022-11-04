@@ -1,0 +1,13 @@
+/*\
+title: $:/site/sourcecode/styles.css
+tags: $:/tags/Stylesheet
+type: text/css
+
+Sourcecode CSS styles for text/prs.sourcecode generated output
+
+\*/
+.vimCodeElement .Identifier { color: var(--blue); }
+.vimCodeElement .Special { color: var(--red); }
+.vimCodeElement .Statement { color: var(--green); }
+.vimCodeElement .Constant { color: var(--cyan); }
+.vimCodeElement .Type { color: var(--yellow); }
