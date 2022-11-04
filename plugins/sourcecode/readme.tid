@@ -1,0 +1,5 @@
+title: $:/plugins/sukima/sourcecode/readme
+
+A parser that can write raw HTML that is not WikiText compatible directly into the main DOM. This is in contrast to the iFrame or code blocks.
+
+The intended use is to allow Vim to output raw HTML and TiddlyWiki to pull that in as a tiddler that can be transcluded directly into a tiddler DOM.

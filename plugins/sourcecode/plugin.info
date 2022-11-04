@@ -1,0 +1,8 @@
+{
+	"title": "$:/plugins/sukima/sourcecode",
+  "version": "0.0.1",
+	"description": "TriTarget.org Vim SourceCode Parser",
+	"author": "Sukima",
+	"core-version": ">=5.0.0",
+	"list": "readme"
+}
