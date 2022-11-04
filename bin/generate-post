@@ -5,13 +5,14 @@ if [[ $1 == "-o" ]]; then
   shift
 fi
 
-FILE="tiddlers/posts/$(date +%Y-%m-%d)-$(echo "$*" | tr -s ' ' -).tid"
+FILE="tiddlers/posts/$(date +%Y-%m-%d)-$(echo "$*" | tr -s ' [:upper:]' '-[:lower:]').tid"
 DATE="$(date +%Y%m%d%H%M%S000)"
 
 cat <<EOF >"$FILE"
-creator: Sukima
 created: ${DATE}
+creator: Sukima
 modified: ${DATE}
+modifier: Sukima
 tags: Article
 title: $*
 type: text/vnd.tiddlywiki
