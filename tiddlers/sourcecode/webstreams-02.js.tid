@@ -1,0 +1,8 @@
+title: sourcecode/webstreams-02.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">let</span> reader <span class="Statement">=</span> file
+  .<span class="Identifier">stream</span>()
+  .<span class="Identifier">pipeThrough</span>(<span class="Statement">new</span> <span class="Identifier">TextDecoderStream</span>());
+</pre>

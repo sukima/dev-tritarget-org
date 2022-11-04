@@ -1,0 +1,25 @@
+<Modal {{on "cancel" @manager.cancel}}>
+  <header>
+    <button
+      type="button"
+      aria-label="Dismiss modal"
+      {{on "click" @manager.cancel}}
+    >&cross;</button>
+    <h1>Foo Bar modal example</h1>
+  </header>
+
+  <article>
+    <p>This is a Foo Bar modal.</p>
+  </article>
+
+  <footer>
+    <button
+      type="button"
+      {{on "click" @manager.cancel}}
+    >Cancel</button>
+    <button
+      type="button"
+      {{on "click" @manager.confirm}}
+    >Confirm</button>
+  </footer>
+</Modal>

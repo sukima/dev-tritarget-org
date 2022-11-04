@@ -1,0 +1,14 @@
+title: sourcecode/nano-fsm.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">function</span> <span class="Identifier">transitionMachine</span>(
+  machine,
+  state = machine.initial,
+  event
+) {
+  <span class="Statement">return</span> machine.states[state].on<span class="Statement">?.</span>[event]
+    <span class="Statement">??</span> machine.on<span class="Statement">?.</span>[event]
+    <span class="Statement">??</span> state;
+}
+</pre>

@@ -1,0 +1,15 @@
+{{#let
+  (modal-manager onDone=this.useModalResult)
+  as |manager|
+}}
+  <button
+    type="button"
+    {{on "click" manager.open}}
+  >
+    Open modal
+  </button>
+
+  {{#if manager.isOpen}}
+    <FooBarModal @manager={{manager}} />
+  {{/if}}
+{{/let}}

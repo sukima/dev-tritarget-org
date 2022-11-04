@@ -1,0 +1,26 @@
+title: sourcecode/easy-dirty-change-confirmations-in-ember-04.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">let</span> beforeUnloadEnabled <span class="Statement">=</span> <span class="Constant">true</span>;
+
+<span class="PreProc">export</span> <span class="Type">function</span> <span class="Identifier">disableBeforeunload</span>() {
+  beforeUnloadEnabled <span class="Statement">=</span> <span class="Constant">false</span>;
+}
+
+<span class="PreProc">export</span> enableBeforeunload() {
+  beforeUnloadEnabled <span class="Statement">=</span> <span class="Constant">true</span>;
+}
+
+…
+<span class="Special">  @</span><span class="Identifier">action</span>
+  <span class="Identifier">registerChanges</span>() {
+    <span class="Statement">if</span> (beforeUnloadEnabled) {
+      <span class="Constant">window</span>.<span class="Identifier">addEventListener</span>(
+        <span class="Constant">'beforeunload'</span>,
+        <span class="Special">this</span>.beforeunload
+      );
+    }
+    <span class="Special">this</span>.hasChanges <span class="Statement">=</span> <span class="Constant">true</span>;
+  }
+</pre>

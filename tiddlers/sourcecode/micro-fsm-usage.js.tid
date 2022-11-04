@@ -1,0 +1,46 @@
+title: sourcecode/micro-fsm-usage.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">const</span> MACHINE <span class="Statement">=</span> {
+  initial: <span class="Constant">'off'</span>,
+  on: {
+    TURN_OFF: { target: <span class="Constant">'off'</span>, actions: <span class="Constant">'turnOffDevice'</span> }
+  },
+  states: {
+    off: {
+      exit: <span class="Constant">'turnOnDevice'</span>,
+      on: { TURN_ON: <span class="Constant">'red'</span> }
+    },
+    red: {
+      entry: [<span class="Constant">'setColorRed'</span>, <span class="Constant">'soundWarningAlarm'</span>],
+      on: { NEXT: <span class="Constant">'green'</span> }
+    },
+    yellow: {
+      entry: <span class="Constant">'setColorYellow'</span>,
+      on: { NEXT: <span class="Constant">'red'</span> }
+    },
+    green: {
+      entry: <span class="Constant">'setColorGreen'</span>,
+      on: { NEXT: <span class="Constant">'yellow'</span> }
+    }
+  }
+};
+
+<span class="Type">let</span> trafficService <span class="Statement">=</span> <span class="Identifier">interpret</span>(MACHINE, {
+  turnOffDevice: <span class="Type">()</span> <span class="Type">=&gt;</span> …,
+  turnOnDevice: <span class="Type">()</span> <span class="Type">=&gt;</span> …,
+  setColorRed: <span class="Type">()</span> <span class="Type">=&gt;</span> …,
+  setColorYellow: <span class="Type">()</span> <span class="Type">=&gt;</span> …,
+  setColorGreen: <span class="Type">()</span> <span class="Type">=&gt;</span> …,
+  soundWarningAlarm: <span class="Type">()</span> <span class="Type">=&gt;</span> …
+})
+  .<span class="Identifier">onTransition</span>(({ value }) <span class="Type">=&gt;</span> <span class="Constant">console</span>.<span class="Identifier">log</span>(value))
+  .<span class="Identifier">start</span>();
+
+trafficService.<span class="Identifier">send</span>(<span class="Constant">'TURN_ON'</span>);  <span class="Comment">// =&gt; 'red'</span>
+trafficService.<span class="Identifier">send</span>(<span class="Constant">'NEXT'</span>);     <span class="Comment">// =&gt; 'green'</span>
+trafficService.<span class="Identifier">send</span>(<span class="Constant">'NEXT'</span>);     <span class="Comment">// =&gt; 'yellow'</span>
+trafficService.<span class="Identifier">send</span>(<span class="Constant">'NEXT'</span>);     <span class="Comment">// =&gt; 'red'</span>
+trafficService.<span class="Identifier">send</span>(<span class="Constant">'TURN_OFF'</span>); <span class="Comment">// =&gt; 'off'</span>
+</pre>

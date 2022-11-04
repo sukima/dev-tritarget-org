@@ -1,0 +1,22 @@
+title: sourcecode/webstreams-07.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> LineRenderer </span>{
+  buffer <span class="Statement">=</span> [];
+  <span class="Identifier">constructor</span>({ batchSize <span class="Statement">=</span> <span class="Constant">1</span> } = {}) { … }
+  <span class="Identifier">queueLine</span>(line) {
+    <span class="Special">this</span>.buffer.<span class="Identifier">push</span>(line);
+    <span class="Statement">if</span> (<span class="Special">this</span>.buffer.length <span class="Statement">&lt;</span> <span class="Special">this</span>.batchSize) <span class="Statement">return</span>;
+    <span class="Identifier">renderLines</span>(<span class="Special">this</span>.buffer);
+    <span class="Special">this</span>.buffer <span class="Statement">=</span> [];
+    <span class="Statement">return</span> <span class="Statement">new</span> <span class="Constant">Promise</span>(
+      resolve <span class="Type">=&gt;</span> <span class="Identifier">setTimeout</span>(resolve, <span class="Constant">100</span>),
+    );
+  }
+  <span class="Identifier">flushLines</span>() { … }
+  <span class="Identifier">stream</span>() {
+    <span class="Statement">return</span> <span class="Statement">new</span> <span class="Identifier">WritableStream</span>({ … });
+  }
+}
+</pre>

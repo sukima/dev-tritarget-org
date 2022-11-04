@@ -1,0 +1,27 @@
+title: sourcecode/easy-dirty-change-confirmations-in-ember-06.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> ModalManager </span>{
+  #resolve <span class="Statement">=</span> <span class="Type">()</span> <span class="Type">=&gt;</span> {};
+<span class="Special">  @</span><span class="Identifier">tracked</span> isOpen <span class="Statement">=</span> <span class="Constant">false</span>;
+
+<span class="Special">  @</span><span class="Identifier">action</span>
+  <span class="Identifier">open</span>() {
+    <span class="Statement">return</span> <span class="Statement">new</span> <span class="Constant">Promise</span>((resolve) <span class="Type">=&gt;</span> {
+      <span class="Special">this</span>.#resolve <span class="Statement">=</span> resolve;
+      <span class="Special">this</span>.isOpen <span class="Statement">=</span> <span class="Constant">true</span>;
+    }).<span class="Identifier">finally</span>(<span class="Type">()</span> <span class="Type">=&gt;</span> <span class="Special">this</span>.isOpen <span class="Statement">=</span> <span class="Constant">false</span>);
+  }
+
+<span class="Special">  @</span><span class="Identifier">action</span>
+  <span class="Identifier">confirm</span>(value) {
+    <span class="Special">this</span>.#<span class="Identifier">resolve</span>({ reason: <span class="Constant">'confirmed'</span>, value });
+  }
+
+<span class="Special">  @</span><span class="Identifier">action</span>
+  <span class="Identifier">cancel</span>(value) {
+    <span class="Special">this</span>.#<span class="Identifier">resolve</span>({ reason: <span class="Constant">'cancelled'</span>, value });
+  }
+}
+</pre>

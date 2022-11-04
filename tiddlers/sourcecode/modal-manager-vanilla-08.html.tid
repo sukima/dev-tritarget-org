@@ -1,0 +1,10 @@
+title: sourcecode/modal-manager-vanilla-08.html
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="htmlTag">&lt;</span><span class="htmlTagName">dialog</span><span class="htmlTag">&gt;</span>
+  <span class="htmlTag">&lt;</span><span class="htmlTagName">div</span><span class="htmlTag">&gt;</span>
+    …
+  <span class="htmlEndTag">&lt;/</span><span class="htmlTagName">div</span><span class="htmlEndTag">&gt;</span>
+<span class="htmlEndTag">&lt;/</span><span class="htmlTagName">dialog</span><span class="htmlEndTag">&gt;</span>
+</pre>

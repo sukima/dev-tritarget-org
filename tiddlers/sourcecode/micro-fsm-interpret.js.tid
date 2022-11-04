@@ -1,0 +1,45 @@
+title: sourcecode/micro-fsm-interpret.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">function</span> <span class="Identifier">interpret</span>(machine, actions = {}) {
+  <span class="Type">const</span> STOPPED <span class="Statement">=</span> <span class="Constant">Symbol</span>(<span class="Constant">'stopped'</span>);
+  <span class="Type">let</span> listeners <span class="Statement">=</span> <span class="Statement">new</span> <span class="Constant">Set</span>();
+  <span class="Type">let</span> service <span class="Statement">=</span> {
+    state: STOPPED,
+    <span class="Identifier">send</span>(evt, extra = {}) {
+      <span class="Statement">if</span> (service.state <span class="Statement">===</span> STOPPED) { <span class="Statement">return</span> service; }
+      <span class="Type">let</span> event <span class="Statement">=</span> {
+        <span class="Statement">...</span>extra,
+        <span class="Statement">...</span>(evt.type <span class="Statement">?</span> evt <span class="Statement">:</span> { type: evt }),
+      };
+      service.state <span class="Statement">=</span>
+        <span class="Identifier">transitionMachine</span>(machine, service.state, event);
+      service.state.actions.<span class="Identifier">forEach</span>(
+        action <span class="Type">=&gt;</span> actions[action]<span class="Statement">?.</span>(event),
+      );
+      listeners.<span class="Identifier">forEach</span>(
+        listener <span class="Type">=&gt;</span> <span class="Identifier">listener</span>(service.state, event),
+      );
+      <span class="Statement">return</span> service;
+    },
+    <span class="Identifier">onTransition</span>(cb) {
+      listeners.<span class="Identifier">add</span>(cb);
+      <span class="Statement">return</span> service;
+    },
+    <span class="Identifier">start</span>() {
+      <span class="Statement">if</span> (service.state <span class="Statement">===</span> STOPPED) {
+        service.state <span class="Statement">=</span> <span class="Type">undefined</span>;
+        service.<span class="Identifier">send</span>(<span class="Constant">'#init'</span>);
+      }
+      <span class="Statement">return</span> service;
+    },
+    <span class="Identifier">stop</span>() {
+      service.state <span class="Statement">=</span> STOPPED;
+      listeners.<span class="Identifier">clear</span>();
+      <span class="Statement">return</span> service;
+    }
+  };
+  <span class="Statement">return</span> service;
+}
+</pre>

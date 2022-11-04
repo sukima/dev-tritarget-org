@@ -1,0 +1,18 @@
+title: sourcecode/easy-dirty-change-confirmations-in-ember-09.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="PreProc">export</span> <span class="Type">default</span> MyRoute extends Route {
+  <span class="Statement">async</span> <span class="Identifier">model</span>() { … }
+
+  @action
+  <span class="Statement">async</span> <span class="Identifier">willTransition</span>(transition) {
+    <span class="Type">let</span> { unloader } <span class="Statement">=</span> <span class="Special">this</span>.<span class="Identifier">modelFor</span>(<span class="Special">this</span>.routeName);
+
+    <span class="Statement">if</span> (<span class="Statement">!</span>unloader.hasChanges) <span class="Statement">return</span>;
+    transition.<span class="Identifier">abort</span>();
+    <span class="Type">let</span> { reason } <span class="Statement">=</span> <span class="Statement">await</span> unloader.<span class="Identifier">confirmAbandonChanges</span>();
+    <span class="Statement">if</span> (reason <span class="Statement">===</span> <span class="Constant">'confirmed'</span>) transition.<span class="Identifier">retry</span>();
+  }
+}
+</pre>

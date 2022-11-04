@@ -1,0 +1,21 @@
+title: sourcecode/modal-manager-vanilla-01.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> ModalDialogController </span>{
+  <span class="Identifier">constructor</span>(element, manager) {
+    <span class="Special">this</span>.element <span class="Statement">=</span> element;
+    <span class="Special">this</span>.manager <span class="Statement">=</span> manager;
+  }
+
+  <span class="Identifier">open</span>() {
+    <span class="Comment">// … attach event listeners here …</span>
+    <span class="Special">this</span>.element.<span class="Identifier">showModal</span>();
+  }
+
+  <span class="Identifier">close</span>() {
+    <span class="Comment">// … remove event listeners here …</span>
+    <span class="Special">this</span>.element.<span class="Identifier">close</span>();
+  }
+}
+</pre>

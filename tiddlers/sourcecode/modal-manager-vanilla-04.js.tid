@@ -1,0 +1,11 @@
+title: sourcecode/modal-manager-vanilla-04.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> ModalDialogController </span>{
+  #cancel <span class="Statement">=</span> <span class="Type">()</span> <span class="Type">=&gt;</span> <span class="Special">this</span>.manager.<span class="Identifier">cancel</span>();
+  #confirm <span class="Statement">=</span> (value) <span class="Type">=&gt;</span> <span class="Special">this</span>.manager.<span class="Identifier">confirm</span>(value);
+  #reject <span class="Statement">=</span> (value) <span class="Type">=&gt;</span> <span class="Special">this</span>.manager.<span class="Identifier">reject</span>(value);
+  …
+}
+</pre>

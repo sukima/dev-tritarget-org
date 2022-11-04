@@ -1,0 +1,10 @@
+title: sourcecode/unique-id.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">const</span> uniqueID <span class="Statement">=</span> (i <span class="Type">=&gt;</span> <span class="Type">()</span> <span class="Type">=&gt;</span> <span class="Statement">++</span>i)(<span class="Constant">0</span>);
+
+<span class="Identifier">uniqueID</span>(); <span class="Comment">// =&gt; 1</span>
+<span class="Identifier">uniqueID</span>(); <span class="Comment">// =&gt; 2</span>
+<span class="Identifier">uniqueID</span>(); <span class="Comment">// =&gt; 3</span>
+</pre>

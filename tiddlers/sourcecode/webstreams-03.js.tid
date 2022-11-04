@@ -1,0 +1,19 @@
+title: sourcecode/webstreams-03.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> CustomConsoleWriter </span>{
+  counter <span class="Statement">=</span> <span class="Constant">0</span>;
+  <span class="Identifier">stream</span>() {
+    <span class="Statement">return</span> <span class="Statement">new</span> <span class="Identifier">WriteableStream</span>({
+      write: (data) <span class="Type">=&gt;</span>
+        <span class="Constant">console</span>.<span class="Identifier">log</span>(<span class="Special">this</span>.counter, data),
+    });
+  }
+}
+
+file
+  .<span class="Identifier">stream</span>()
+  .<span class="Identifier">pipeThrough</span>(<span class="Statement">new</span> <span class="Identifier">TextDecoderStream</span>())
+  .<span class="Identifier">pipeTo</span>(<span class="Statement">new</span> <span class="Identifier">CustomConsoleWriter</span>().<span class="Identifier">stream</span>());
+</pre>

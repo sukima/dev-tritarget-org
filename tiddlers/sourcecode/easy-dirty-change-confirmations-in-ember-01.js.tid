@@ -1,0 +1,12 @@
+title: sourcecode/easy-dirty-change-confirmations-in-ember-01.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="PreProc">export</span> <span class="Type">default</span> MyRoute extends Route {
+  <span class="Statement">async</span> <span class="Identifier">model</span>() {
+    <span class="Type">let</span> data <span class="Statement">=</span> <span class="Statement">await</span> <span class="Identifier">loadMyData</span>();
+    <span class="Type">let</span> unloader <span class="Statement">=</span> <span class="Statement">new</span> UnloadManager;
+    <span class="Statement">return</span> { data, unloader };
+  }
+}
+</pre>

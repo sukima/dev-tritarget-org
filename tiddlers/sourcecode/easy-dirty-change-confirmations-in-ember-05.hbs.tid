@@ -1,0 +1,8 @@
+title: sourcecode/easy-dirty-change-confirmations-in-ember-05.hbs
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="PreProc">{{#</span><span class="Identifier">if</span> <span class="Identifier">this</span>.<span class="Identifier">showConfirmation</span><span class="PreProc">}}</span>
+  <span class="PreProc">&lt;Modals::AbandonChangesConfirmation</span> <span class="PreProc">/&gt;</span>
+<span class="PreProc">{{/</span><span class="Identifier">if</span><span class="PreProc">}}</span>
+</pre>

@@ -1,0 +1,15 @@
+title: sourcecode/modal-manager-ember-02.hbs
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="PreProc">&lt;button</span>
+  <span class="Type">type</span><span class="Statement">=</span><span class="Constant">&quot;button&quot;</span>
+  <span class="PreProc">{{</span><span class="Identifier">on</span> <span class="Constant">&quot;click&quot;</span> <span class="Identifier">this</span>.<span class="Identifier">openModal</span><span class="PreProc">}}</span>
+<span class="PreProc">&gt;</span>
+  Open modal
+<span class="PreProc">&lt;/button&gt;</span>
+
+<span class="PreProc">{{#</span><span class="Identifier">if</span> <span class="Identifier">this</span>.<span class="Identifier">manager</span>.<span class="Identifier">isOpen</span><span class="PreProc">}}</span>
+  <span class="PreProc">&lt;FooBarModal</span> <span class="Type">@manager</span><span class="Statement">=</span><span class="PreProc">{{</span><span class="Statement">this.manager</span><span class="PreProc">}}</span> <span class="PreProc">/&gt;</span>
+<span class="PreProc">{{/</span><span class="Identifier">if</span><span class="PreProc">}}</span>
+</pre>

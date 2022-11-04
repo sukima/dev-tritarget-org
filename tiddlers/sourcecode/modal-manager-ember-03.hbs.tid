@@ -1,0 +1,30 @@
+title: sourcecode/modal-manager-ember-03.hbs
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="PreProc">&lt;Modal</span> <span class="PreProc">{{</span><span class="Identifier">on</span> <span class="Constant">&quot;cancel&quot;</span> <span class="Identifier">@manager</span>.<span class="Identifier">cancel</span><span class="PreProc">}}</span><span class="PreProc">&gt;</span>
+  <span class="PreProc">&lt;header&gt;</span>
+    <span class="PreProc">&lt;button</span>
+      <span class="Type">type</span><span class="Statement">=</span><span class="Constant">&quot;button&quot;</span>
+      <span class="Type">aria-label</span><span class="Statement">=</span><span class="Constant">&quot;Dismiss modal&quot;</span>
+      <span class="PreProc">{{</span><span class="Identifier">on</span> <span class="Constant">&quot;click&quot;</span> <span class="Identifier">@manager</span>.<span class="Identifier">cancel</span><span class="PreProc">}}</span>
+    <span class="PreProc">&gt;</span><span class="Special">&amp;cross;</span><span class="PreProc">&lt;/button&gt;</span>
+    <span class="PreProc">&lt;h</span>1<span class="PreProc">&gt;</span>Foo Bar modal example<span class="PreProc">&lt;/h</span>1<span class="PreProc">&gt;</span>
+  <span class="PreProc">&lt;/header&gt;</span>
+
+  <span class="PreProc">&lt;article&gt;</span>
+    <span class="PreProc">&lt;p&gt;</span>This is a Foo Bar modal.<span class="PreProc">&lt;/p&gt;</span>
+  <span class="PreProc">&lt;/article&gt;</span>
+
+  <span class="PreProc">&lt;footer&gt;</span>
+    <span class="PreProc">&lt;button</span>
+      <span class="Type">type</span><span class="Statement">=</span><span class="Constant">&quot;button&quot;</span>
+      <span class="PreProc">{{</span><span class="Identifier">on</span> <span class="Constant">&quot;click&quot;</span> <span class="Identifier">@manager</span>.<span class="Identifier">cancel</span><span class="PreProc">}}</span>
+    <span class="PreProc">&gt;</span>Cancel<span class="PreProc">&lt;/button&gt;</span>
+    <span class="PreProc">&lt;button</span>
+      <span class="Type">type</span><span class="Statement">=</span><span class="Constant">&quot;button&quot;</span>
+      <span class="PreProc">{{</span><span class="Identifier">on</span> <span class="Constant">&quot;click&quot;</span> <span class="Identifier">@manager</span>.<span class="Identifier">confirm</span><span class="PreProc">}}</span>
+    <span class="PreProc">&gt;</span>Confirm<span class="PreProc">&lt;/button&gt;</span>
+  <span class="PreProc">&lt;/footer&gt;</span>
+<span class="PreProc">&lt;/Modal&gt;</span>
+</pre>

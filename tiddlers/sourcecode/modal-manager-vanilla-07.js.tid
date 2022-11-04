@@ -1,0 +1,18 @@
+title: sourcecode/modal-manager-vanilla-07.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+#handleClick <span class="Statement">=</span> (event) <span class="Type">=&gt;</span> {
+  <span class="Type">let</span> value <span class="Statement">=</span>
+    event.target.dataset.value
+    <span class="Statement">??</span> <span class="Special">this</span>.element.returnValue;
+  <span class="Statement">switch</span> (event.target.dataset.action) {
+    <span class="Statement">case</span> <span class="Constant">'cancel'</span>: <span class="Statement">return</span> <span class="Special">this</span>.#<span class="Identifier">cancel</span>();
+    <span class="Statement">case</span> <span class="Constant">'confirm'</span>: <span class="Statement">return</span> <span class="Special">this</span>.#<span class="Identifier">confirm</span>(value);
+    <span class="Statement">case</span> <span class="Constant">'reject'</span>: <span class="Statement">return</span> <span class="Special">this</span>.#<span class="Identifier">reject</span>(value);
+    <span class="Statement">default</span>: <span class="Comment">// no-op</span>
+  }
+};
+…
+<span class="Special">this</span>.element.<span class="Identifier">addEventListener</span>(<span class="Constant">'click'</span>, <span class="Special">this</span>.#handleClick);
+</pre>

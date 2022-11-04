@@ -4,9 +4,7 @@ creator: Sukima
 modifier: Sukima
 title: nano-fsm_js-tab1
 tags: [[Nano State Machine]]
-type: application/javascript
+type: text/vnd.tiddlywiki
 caption: Implementation
 
-function transitionMachine(machine, state = machine.initial, event) {
-  return machine.states[state].on?.[event] ?? machine.on?.[event] ?? state;
-}
+{{sourcecode/nano-fsm.js}}

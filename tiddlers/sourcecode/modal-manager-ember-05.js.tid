@@ -1,0 +1,48 @@
+title: sourcecode/modal-manager-ember-05.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> CallbackModalManager </span><span class="Statement">extends</span><span class="Identifier"> ModalManager </span>{
+  #onDone <span class="Statement">=</span> <span class="Type">()</span> <span class="Type">=&gt;</span> {};
+  #onCancelled <span class="Statement">=</span> <span class="Type">()</span> <span class="Type">=&gt;</span> {};
+  #onConfirmed <span class="Statement">=</span> <span class="Type">()</span> <span class="Type">=&gt;</span> {};
+  #onRejected <span class="Statement">=</span> <span class="Type">()</span> <span class="Type">=&gt;</span> {};
+  #onError <span class="Statement">=</span> <span class="Type">()</span> <span class="Type">=&gt;</span> {};
+
+  <span class="Identifier">constructor</span>({
+    onDone,
+    onCancelled,
+    onConfirmed,
+    onRejected,
+    onError,
+  } = {}) {
+    <span class="Special">this</span>.#onDone <span class="Statement">=</span> onDone <span class="Statement">??</span> <span class="Special">this</span>.#onDone;
+    <span class="Special">this</span>.#onCancelled <span class="Statement">=</span> onCancelled <span class="Statement">??</span> <span class="Special">this</span>.#onCancelled;
+    <span class="Special">this</span>.#onConfirmed <span class="Statement">=</span> onConfirmed <span class="Statement">??</span> <span class="Special">this</span>.#onConfirmed;
+    <span class="Special">this</span>.#onRejected <span class="Statement">=</span> onRejected <span class="Statement">??</span> <span class="Special">this</span>.#onRejected;
+    <span class="Special">this</span>.#onError <span class="Statement">=</span> onError <span class="Statement">??</span> <span class="Special">this</span>.#onError;
+  }
+
+<span class="Special">  @</span><span class="Identifier">action</span>
+  <span class="Statement">async</span> <span class="Identifier">open</span>() {
+    <span class="Type">let</span> result;
+    <span class="Statement">try</span> {
+      result <span class="Statement">=</span> <span class="Statement">await</span> <span class="Constant">super</span>.<span class="Identifier">open</span>();
+    } <span class="Statement">catch</span> (error) {
+      <span class="Special">this</span>.#<span class="Identifier">onError</span>(error);
+      <span class="Statement">throw</span> error;
+    }
+    <span class="Special">this</span>.#<span class="Identifier">onDone</span>(result);
+    <span class="Statement">if</span> (result <span class="Statement">===</span> <span class="Constant">'cancelled'</span>)
+      <span class="Special">this</span>.#<span class="Identifier">onCancelled</span>();
+    <span class="Statement">if</span> (result <span class="Statement">===</span> <span class="Constant">'confirmed'</span>)
+      <span class="Special">this</span>.#<span class="Identifier">onConfirmed</span>(result.value);
+    <span class="Statement">if</span> (result <span class="Statement">===</span> <span class="Constant">'reject'</span>)
+      <span class="Special">this</span>.#<span class="Identifier">onRereject</span>(result.value);
+  }
+}
+
+<span class="PreProc">export</span> <span class="Type">default</span> <span class="Identifier">helper</span>(
+  (_, callbacks) <span class="Type">=&gt;</span> <span class="Statement">new</span> <span class="Identifier">CallbackModalManager</span>(callbacks),
+);
+</pre>

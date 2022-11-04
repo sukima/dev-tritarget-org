@@ -1,0 +1,9 @@
+title: sourcecode/modal-manager-vanilla-09.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+#handleClick <span class="Statement">=</span> (event) <span class="Type">=&gt;</span> {
+  <span class="Statement">if</span> (event.target <span class="Statement">===</span> <span class="Special">this</span>.element) <span class="Statement">return</span> <span class="Special">this</span>.#<span class="Identifier">cancel</span>();
+  …
+};
+</pre>

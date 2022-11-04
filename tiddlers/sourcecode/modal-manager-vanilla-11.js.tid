@@ -1,0 +1,9 @@
+title: sourcecode/modal-manager-vanilla-11.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+#handleSubmit <span class="Statement">=</span> (event) <span class="Type">=&gt;</span>
+  <span class="Special">this</span>.#<span class="Identifier">confirm</span>(<span class="Statement">new</span> <span class="Identifier">FormData</span>(event.target));
+…
+<span class="Special">this</span>.element.<span class="Identifier">addEventListener</span>(<span class="Constant">'submit'</span>, <span class="Special">this</span>.#handleSubmit);
+</pre>

@@ -21,58 +21,15 @@ There are several ways to implement a dialog in Ember. There is a `<dialog>` ele
 
 If we take the ModalManager implementation we had earlier and change `@tracked isOpen = false` then we can use this directly in a template. That makes the logic of displaying a `<Modal>` component a matter of wrapping it in an `{{#if manager.isOpen}}` block. We also should wrap our methods in `@action` to properly bind the `this` context.
 
-```javascript
-class ModalManager {
-  @tracked isOpen = false;
-  #resolve = () => {};
-  #reject = () => {};
-
-  @action
-  open() {
-    return new Promise((resolve, reject) => {
-      this.#resolve = resolve;
-      this.#reject = reject;
-    }).finally(() => {
-      this.isOpen = false;
-    });
-  }
-
-  @action cancel() { … }
-  @action confirm(value) { … }
-  @action reject(value) { … }
-  @action error(error) { … }
-}
-```
+{{sourcecode/modal-manager-ember-00.js}}
 
 In our JS we can create a new manager for the component (see helper below for an template-only alternative).
 
-```javascript
-export default class FooBar extends Component {
-  manager = new ModalManager();
-
-  @action
-  async openModal() {
-    let result = await this.manager.open();
-    if (result.reason !== 'confirmed') return;
-    console.log('Works!');
-  }
-}
-```
+{{sourcecode/modal-manager-ember-01.js}}
 
 And in our template:
 
-```handlebars
-<button
-  type="button"
-  {{on "click" this.openModal}}
->
-  Open modal
-</button>
-
-{{#if this.manager.isOpen}}
-  <FooBarModal @manager={{this.manager}} />
-{{/if}}
-```
+{{sourcecode/modal-manager-ember-02.hbs}}
 
 In this way, the use of this kind of modal component abstracts all the complexity about a modal away from the location it is used and allows the consumer of the modal to focus on the business logic instead of the implementation details.
 
@@ -80,33 +37,7 @@ The typical Data Down Actions Up is also bundled into the simple interface of th
 
 Each modal can use the ModalManager to control when and how to close itself.
 
-```handlebars
-<Modal {{on "cancel" @manager.cancel}}>
-  <header>
-    <button
-      type="button"
-      aria-label="Dismiss modal"
-      {{on "click" @manager.cancel}}
-    >&cross;</button>
-    <h1>Foo Bar modal example</h1>
-  </header>
-
-  <article>
-    <p>This is a Foo Bar modal.</p>
-  </article>
-
-  <footer>
-    <button
-      type="button"
-      {{on "click" @manager.cancel}}
-    >Cancel</button>
-    <button
-      type="button"
-      {{on "click" @manager.confirm}}
-    >Confirm</button>
-  </footer>
-</Modal>
-```
+{{sourcecode/modal-manager-ember-03.hbs}}
 
 In the example I wired up the manager to the different buttons in the modal content.
 
@@ -114,71 +45,11 @@ In the example I wired up the manager to the different buttons in the modal cont
 
 We could also expand this idea in Ember to use a ''helper'' thus showing a modal could be done completely template only without any backing class boilerplate. We can define the helper to accept a list of callbacks one per type of resolution.
 
-```handlebars
-{{#let
-  (modal-manager onDone=this.useModalResult)
-  as |manager|
-}}
-  <button
-    type="button"
-    {{on "click" manager.open}}
-  >
-    Open modal
-  </button>
-
-  {{#if manager.isOpen}}
-    <FooBarModal @manager={{manager}} />
-  {{/if}}
-{{/let}}
-```
+{{sourcecode/modal-manager-ember-04.hbs}}
 
 And the implementation:
 
-```javascript
-class CallbackModalManager extends ModalManager {
-  #onDone = () => {};
-  #onCancelled = () => {};
-  #onConfirmed = () => {};
-  #onRejected = () => {};
-  #onError = () => {};
-
-  constructor({
-    onDone,
-    onCancelled,
-    onConfirmed,
-    onRejected,
-    onError,
-  } = {}) {
-    this.#onDone = onDone ?? this.#onDone;
-    this.#onCancelled = onCancelled ?? this.#onCancelled;
-    this.#onConfirmed = onConfirmed ?? this.#onConfirmed;
-    this.#onRejected = onRejected ?? this.#onRejected;
-    this.#onError = onError ?? this.#onError;
-  }
-
-  @action
-  async open() {
-    let result;
-    try {
-      result = await super.open();
-    } catch (error) {
-      this.#onError(error);
-      throw error;
-    }
-    this.#onDone(result);
-    if (result === 'cancelled')
-      this.#onCancelled();
-    if (result === 'confirmed')
-      this.#onConfirmed(result.value);
-    if (result === 'reject')
-      this.#onRereject(result.value);
-  }
-}
-
-export default helper(
-  (_, callbacks) => new CallbackModalManager(callbacks),
-);
-```
+{{sourcecode/modal-manager-ember-05.js}}
 
 You probably want to see this in action. Well I’ve developed a [[working DEMO|https://sukima.github.io/ember-modal-manager-demo/]].
 

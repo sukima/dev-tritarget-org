@@ -1,0 +1,6 @@
+title: sourcecode/easy-dirty-change-confirmations-in-ember-02.hbs
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="PreProc">&lt;form</span> <span class="PreProc">{{</span><span class="Identifier">on</span> <span class="Constant">&quot;input&quot;</span> <span class="Identifier">this</span>.<span class="Identifier">model</span>.<span class="Identifier">unloader</span>.<span class="Identifier">registerChanges</span><span class="PreProc">}}</span><span class="PreProc">&gt;</span>
+</pre>

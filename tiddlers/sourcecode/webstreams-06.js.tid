@@ -1,0 +1,38 @@
+title: sourcecode/webstreams-06.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> LineGuardError </span><span class="Statement">extends</span><span class="Identifier"> </span><span class="Constant">Error</span><span class="Identifier"> </span>{
+  name <span class="Statement">=</span> <span class="Constant">'LineGuardError'</span>;
+  <span class="Identifier">constructor</span>(lines) {
+    <span class="Constant">super</span>(<span class="Constant">`Exceeded max lines (</span>${lines}<span class="Constant">). File truncated`</span>);
+  }
+}
+
+<span class="Statement">class</span><span class="Identifier"> LineGuard </span>{
+  lineCount <span class="Statement">=</span> <span class="Constant">0</span>;
+  <span class="Identifier">constructor</span>(columns, lines) {
+    <span class="Special">this</span>.columns <span class="Statement">=</span> columns;
+    <span class="Special">this</span>.lines <span class="Statement">=</span> lines;
+  }
+  <span class="Identifier">processLine</span>(line, controller) {
+    <span class="Special">this</span>.lineCount<span class="Statement">++</span>;
+    <span class="Statement">if</span> (<span class="Special">this</span>.lineCount <span class="Statement">&gt;</span> <span class="Special">this</span>.lines)
+      <span class="Statement">throw</span> <span class="Statement">new</span> <span class="Identifier">LineGuardError</span>(<span class="Special">this</span>.lines);
+    controller.<span class="Identifier">enqueue</span>(line.<span class="Identifier">slice</span>(<span class="Constant">0</span>, <span class="Special">this</span>.columns));
+  }
+  <span class="Identifier">stream</span>() {
+    <span class="Statement">return</span> <span class="Statement">new</span> <span class="Identifier">TransformStream</span>({
+      transform: (chunk, controller) <span class="Type">=&gt;</span>
+        <span class="Special">this</span>.<span class="Identifier">processLine</span>(chunk, controller),
+    });
+  }
+}
+
+file
+  .<span class="Identifier">stream</span>()
+  .<span class="Identifier">pipeThrough</span>(<span class="Statement">new</span> <span class="Identifier">TextDecoderStream</span>())
+  .<span class="Identifier">pipeThrough</span>(<span class="Statement">new</span> <span class="Identifier">LineChunks</span>().<span class="Identifier">stream</span>())
+  .<span class="Identifier">pipeThrough</span>(<span class="Statement">new</span> <span class="Identifier">LineGuard</span>(<span class="Constant">80</span>, <span class="Constant">24</span>).<span class="Identifier">stream</span>())
+  .<span class="Identifier">pipeTo</span>(<span class="Statement">new</span> <span class="Identifier">LineRenderer</span>({ batchSize: <span class="Constant">50</span> }).<span class="Identifier">stream</span>());
+</pre>

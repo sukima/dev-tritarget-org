@@ -1,0 +1,10 @@
+<button
+  type="button"
+  {{on "click" this.openModal}}
+>
+  Open modal
+</button>
+
+{{#if this.manager.isOpen}}
+  <FooBarModal @manager={{this.manager}} />
+{{/if}}

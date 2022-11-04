@@ -22,189 +22,57 @@ In plain HTML/JS we have the `<dialog>` element. It has two modes: non-modal and
 
 Taking inspiration from good <<oop>> design we can expand the ModalManager implementation we had earlier to delegate the open and close to a ''Controller''.
 
-```javascript
-class ModalManager {
-  isOpen = false;
-  #openModal = () => {};
-  #closeModal = () => {};
-  #resolve = () => {};
-  #reject = () => {};
-
-  open() {
-    return new Promise((resolve, reject) => {
-      this.#resolve = resolve;
-      this.#reject = reject;
-      this.#openModal();
-      this.isOpen = true;
-    }).finally(() => {
-      this.isOpen = false;
-      this.#closeModal();
-    });
-  }
-
-  cancel() { … }
-  confirm(value) { … }
-  reject(value) { … }
-  error(error) { … }
-
-  delegateTo(controller) {
-    this.#openModal = () => controller.open();
-    this.#closeModal = () => controller.close();
-  }
-}
-```
+{{sourcecode/modal-manager-vanilla-00.js}}
 
 With this we can construct any object that has an `open()` and `close()` method and when we use our modal manager it will properly instruct the controller to handle opening and closing.
 
 For the HTML5 `<dialog>` this means attaching event listeners and calling the `showModal()` and `close()` methods of the element. Before we attach meaning to the different ways to manage a modal the initial class will start off like this:
 
-```javascript
-class ModalDialogController {
-  constructor(element, manager) {
-    this.element = element;
-    this.manager = manager;
-  }
-
-  open() {
-    // … attach event listeners here …
-    this.element.showModal();
-  }
-
-  close() {
-    // … remove event listeners here …
-    this.element.close();
-  }
-}
-```
+{{sourcecode/modal-manager-vanilla-01.js}}
 
 And invoke it with this:
 
-```javascript
-let manager = new ModalManager();
-let controller = new ModalDialogController(
-  document.querySelector('dialog'),
-  manager,
-);
-manager.delegateTo(controller);
-let { reason } = await manager.open();
-```
+{{sourcecode/modal-manager-vanilla-02.js}}
 
 <<.tip """To make it a little easier you can make a factory function:""">>
 
-```javascript
-// Factory function
-static for(
-  element,
-  factory = (element, manager) =>
-    new ModalDialogController(element, manager),
-) {
-  let manager = new ModalManager();
-  manager.delegateTo(factory(element, manager));
-  return manager;
-}
-…
-let myManager = ModalManager.for(
-  document.querySelector('dialog'),
-);
-```
+{{sourcecode/modal-manager-vanilla-03.js}}
 
 Now we will hook up events to properly trigger different ways of closing the dialog. There are three main ways to close a `<dialog>` via events. But first we need to make sure we can remove those events. Since JavaScript event handling needs the original function reference and they also need binding to properly handle the `this` keyword. In the latest versions of JavaScript we can do that easily with arrow functions assigned to private methods of a class.
 
-```javascript
-class ModalDialogController {
-  #cancel = () => this.manager.cancel();
-  #confirm = (value) => this.manager.confirm(value);
-  #reject = (value) => this.manager.reject(value);
-  …
-}
-```
+{{sourcecode/modal-manager-vanilla-04.js}}
 
 We can attach to these private methods and later remove them:
 
-```javascript
-this.element.addEventListener('cancel', this.#cancel);
-
-this.element.removeEventListener('cancel', this.#cancel);
-```
+{{sourcecode/modal-manager-vanilla-05.js}}
 
 `cancel` is an event that a ''modal'' dialog triggers when the user presses the <kbd>Escape</kbd> key to close it. This is only available when a `<dialog>` is opened via the `.showModal()` method.
 
 Other ways to close the modal is via buttons we add. For example say we have the following markup:
 
-```html
-<dialog>
-  <button type="button" data-action="cancel">Cancel</button>
-  <button type="button" data-action="confirm">Yes</button>
-  <button type="button" data-action="reject">No</button>
-</dialog>
-```
+{{sourcecode/modal-manager-vanilla-06.html}}
 
 Then we can attach a `click` event to the `<dialog>` and use the `data-action` attribute to know how best to resolve the modal manager.
 
-```javascript
-#handleClick = (event) => {
-  let value =
-    event.target.dataset.value
-    ?? this.element.returnValue;
-  switch (event.target.dataset.action) {
-    case 'cancel': return this.#cancel();
-    case 'confirm': return this.#confirm(value);
-    case 'reject': return this.#reject(value);
-    default: // no-op
-  }
-};
-…
-this.element.addEventListener('click', this.#handleClick);
-```
+{{sourcecode/modal-manager-vanilla-07.js}}
 
 <<.tip """You can pick any way you want to handle a value for confirm/reject or none at all. I choose to allow something via `data-value` or the dialog’s own `returnValue` for API compatibility and flexibility.""">>
 
 If we want to capture the clicking of the `::backdrop` pseudo-element the click event will be triggered on the `<dialog>` itself which makes it easy to delegate by checking it `event.target` is the same as `this.element` ''as long as we place an inner `<div>` container''.
 
-```html
-<dialog>
-  <div>
-    …
-  </div>
-</dialog>
-```
+{{sourcecode/modal-manager-vanilla-08.html}}
 
-```javascript
-#handleClick = (event) => {
-  if (event.target === this.element) return this.#cancel();
-  …
-};
-```
+{{sourcecode/modal-manager-vanilla-09.js}}
 
 The specs also talk about placing forms inside dialogs. We can also capture that use case by adding a `submit` event listener. The cool part about this option is that unlike the `returnValue` we get from the API in the `submit` event we can convert the form values into a `FormData` object and ''confirm'' the modal manager with a full on object instead of a string value.
 
-```html
-<dialog>
-  <div>
-    <form method="dialog">
-      <label for="my-dialog-foobar">Foobar</label>
-      <input id="my-dialog-foobar" name="foobar">
-      <button type="submit">Save</button>
-    </form>
-  </div>
-</dialog>
-```
+{{sourcecode/modal-manager-vanilla-10.html}}
 
-```javascript
-#handleSubmit = (event) =>
-  this.#confirm(new FormData(event.target));
-…
-this.element.addEventListener('submit', this.#handleSubmit);
-```
+{{sourcecode/modal-manager-vanilla-11.js}}
 
 Nice thing about this is that the `submit` event doesn't happen till the form is considered valid. `method="dialog"` prevents any sending to the server (client side only form) and now you get the full breadth of options as `FormData` provides.
 
-```
-let { reason, value: formData } = await manager.open();
-if (reason === 'confirmed') {
-  console.log(`Hello ${formData.get('foobar')}!`);
-}
-```
+{{sourcecode/modal-manager-vanilla-12.js}}
 
 You probably want to see this in action. Well I’ve developed a [[working DEMO|https://tritarget.org/fiddles/?fiddle=modal-manager.html]].
 

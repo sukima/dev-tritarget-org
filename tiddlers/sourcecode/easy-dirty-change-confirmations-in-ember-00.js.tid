@@ -1,0 +1,18 @@
+title: sourcecode/easy-dirty-change-confirmations-in-ember-00.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> UnloadManager </span>{
+<span class="Special">  @</span><span class="Identifier">tracked</span> hasChanges <span class="Statement">=</span> <span class="Constant">false</span>;
+
+<span class="Special">  @</span><span class="Identifier">action</span>
+  <span class="Identifier">registerChanges</span>() {
+    <span class="Special">this</span>.hasChanges <span class="Statement">=</span> <span class="Constant">true</span>;
+  }
+
+<span class="Special">  @</span><span class="Identifier">action</span>
+  <span class="Identifier">resetChanges</span>() {
+    <span class="Special">this</span>.hasChanges <span class="Statement">=</span> <span class="Constant">false</span>;
+  }
+}
+</pre>

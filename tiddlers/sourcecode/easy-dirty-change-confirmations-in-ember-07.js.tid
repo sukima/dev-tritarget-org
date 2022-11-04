@@ -1,0 +1,24 @@
+title: sourcecode/easy-dirty-change-confirmations-in-ember-07.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> UnloadManager </span>{
+<span class="Special">  @</span><span class="Identifier">tracked</span> hasChanges <span class="Statement">=</span> <span class="Constant">false</span>;
+  confirmationModal <span class="Statement">=</span> <span class="Statement">new</span> <span class="Identifier">ModalManager</span>();
+
+  <span class="Type">get</span> <span class="Identifier">showConfirmation</span>() {
+    <span class="Statement">return</span> <span class="Special">this</span>.confirmationModal.isOpen;
+  }
+
+<span class="Special">  @</span><span class="Identifier">action</span>
+  <span class="Statement">async</span> <span class="Identifier">confirmAbandonChanges</span>() {
+    <span class="Type">let</span> result <span class="Statement">=</span> <span class="Statement">await</span> <span class="Special">this</span>.confirmationModal.<span class="Identifier">open</span>();
+    <span class="Statement">if</span> (result.reason <span class="Statement">===</span> <span class="Constant">'confirmed'</span>) {
+      <span class="Special">this</span>.<span class="Identifier">resetChanges</span>();
+    }
+    <span class="Statement">return</span> result;
+  }
+
+  …
+}
+</pre>

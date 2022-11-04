@@ -1,0 +1,28 @@
+title: sourcecode/nano-fsm-usage.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">const</span> MACHINE <span class="Statement">=</span> {
+  initial: <span class="Constant">'off'</span>,
+  on: { TURN_OFF: <span class="Constant">'off'</span> },
+  states: {
+    off: { on: { TURN_ON: <span class="Constant">'red'</span> } },
+    red: { on: { NEXT: <span class="Constant">'green'</span> } },
+    yellow: { on: { NEXT: <span class="Constant">'red'</span> } },
+    green: { on: { NEXT: <span class="Constant">'yellow'</span> } }
+  }
+};
+
+<span class="Type">let</span> state <span class="Statement">=</span> MACHINE.initial;
+<span class="Comment">// =&gt; 'off'</span>
+state <span class="Statement">=</span> <span class="Identifier">transitionMachine</span>(MACHINE, state, <span class="Constant">'TURN_ON'</span>);
+<span class="Comment">// =&gt; 'red'</span>
+state <span class="Statement">=</span> <span class="Identifier">transitionMachine</span>(MACHINE, state, <span class="Constant">'NEXT'</span>);
+<span class="Comment">// =&gt; 'green'</span>
+state <span class="Statement">=</span> <span class="Identifier">transitionMachine</span>(MACHINE, state, <span class="Constant">'NEXT'</span>);
+<span class="Comment">// =&gt; 'yellow'</span>
+state <span class="Statement">=</span> <span class="Identifier">transitionMachine</span>(MACHINE, state, <span class="Constant">'NEXT'</span>);
+<span class="Comment">// =&gt; 'red'</span>
+state <span class="Statement">=</span> <span class="Identifier">transitionMachine</span>(MACHINE, state, <span class="Constant">'TURN_OFF'</span>);
+<span class="Comment">// =&gt; 'off'</span>
+</pre>

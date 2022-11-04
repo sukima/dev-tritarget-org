@@ -1,0 +1,7 @@
+title: sourcecode/webstreams-01.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">if</span> (file.size <span class="Statement">&gt;</span> MAX_FILE_SIZE)
+  <span class="Statement">throw</span> <span class="Statement">new</span> <span class="Constant">Error</span>(<span class="Constant">'Yo dawg, that file is way too big!'</span>);
+</pre>

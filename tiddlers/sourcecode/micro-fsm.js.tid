@@ -1,0 +1,38 @@
+title: sourcecode/micro-fsm.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">function</span> <span class="Identifier">transitionMachine</span>(
+  machine,
+  { value: currentState } = {},
+  event
+) {
+  ({ type: event <span class="Statement">=</span> event } <span class="Statement">=</span> event);
+  <span class="Type">const</span> A <span class="Statement">=</span> i <span class="Type">=&gt;</span> <span class="Constant">Array</span>.<span class="Identifier">isArray</span>(i) <span class="Statement">?</span> i <span class="Statement">:</span> [i];
+  <span class="Type">let</span> state <span class="Statement">=</span> currentState <span class="Statement">??</span> machine.initial;
+  <span class="Type">let</span> transition <span class="Statement">=</span> machine.states[state].on<span class="Statement">?.</span>[event]
+    <span class="Statement">??</span> machine.on<span class="Statement">?.</span>[event]
+    <span class="Statement">??</span> { target: state };
+  <span class="Type">let</span> value <span class="Statement">=</span> transition<span class="Statement">?.</span>target <span class="Statement">??</span> transition;
+  <span class="Type">let</span> changed <span class="Statement">=</span> value <span class="Statement">!==</span> currentState;
+  <span class="Type">let</span> actions <span class="Statement">=</span> [
+    <span class="Statement">...</span>(
+      changed
+        <span class="Statement">?</span> <span class="Identifier">A</span>(machine.states[currentState]<span class="Statement">?.</span>exit <span class="Statement">??</span> [])
+        <span class="Statement">:</span> []
+    ),
+    ...<span class="Identifier">A</span>(transition.actions <span class="Statement">??</span> []),
+    ...(
+      changed
+        <span class="Statement">?</span> <span class="Identifier">A</span>(machine.states[value]<span class="Statement">?.</span>entry <span class="Statement">??</span> [])
+        <span class="Statement">:</span> []
+    )
+  ];
+  <span class="Type">let</span> states <span class="Statement">=</span> value.<span class="Identifier">split</span>(<span class="Constant">':'</span>);
+  <span class="Type">let</span> inState <span class="Statement">=</span> states.<span class="Identifier">reduce</span>(
+    (a, i) <span class="Type">=&gt;</span> ({ <span class="Statement">...</span>a, [i]: <span class="Constant">true</span> }),
+    {}
+  );
+  <span class="Statement">return</span> { value, changed, actions, states, inState };
+}
+</pre>

@@ -1,0 +1,8 @@
+title: sourcecode/modal-manager-vanilla-05.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Special">this</span>.element.<span class="Identifier">addEventListener</span>(<span class="Constant">'cancel'</span>, <span class="Special">this</span>.#cancel);
+
+<span class="Special">this</span>.element.<span class="Identifier">removeEventListener</span>(<span class="Constant">'cancel'</span>, <span class="Special">this</span>.#cancel);
+</pre>

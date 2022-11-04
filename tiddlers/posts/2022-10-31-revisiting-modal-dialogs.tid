@@ -34,14 +34,7 @@ The pattern should…
 
 And here is a simplified usage example:
 
-```javascript
-let { reason } = await modalManager.open();
-switch (reason) {
-  case 'cancelled': …;
-  case 'confirmed': …;
-  case 'rejected': …;
-}
-```
+{{sourcecode/modal-manager-00.js}}
 
 `modalManager.open()` will show the dialog to the user and hook up any triggers needed to know when the dialog is //done//. The caller waits for the result. The promise resolves with a reason which the caller can use to perform some control flow.
 
