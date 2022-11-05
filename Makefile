@@ -54,7 +54,7 @@ devcerts:
 	openssl x509 -req -days 9999 -in $@/csr.pem -signkey $@/key.pem -out $@/cert.pem
 	rm $@/csr.pem
 
-generated: tiddlers/generated/PGPKeyFile.tid tiddlers/generated/PGPKeyInfo.tid tiddlers/generated/sourcecode.css $(sourcecode_tid)
+generated: $(sourcecode_tid) tiddlers/generated/sourcecode.css tiddlers/generated/PGPKeyFile.tid tiddlers/generated/PGPKeyInfo.tid
 
 deploy: build
 	rsync -rlvz --delete --exclude-from ./config/rsync-exclude wiki/output/ $(deploy_path)
