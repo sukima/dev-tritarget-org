@@ -1,0 +1,48 @@
+created: 20221104210943000
+creator: Sukima
+modified: 20221104210943000
+modifier: Sukima
+title: vim-as-a-static-syntax-highlighter-03
+type: text/vnd.tiddlywiki
+caption: CSS styles
+
+The CSS was a bit more complex because each HTML output only defines CSS classes for the types of Vim highlight identifiers specific to that file. And they change for each syntax filetype. This is an issue because there isn’t a good way to find all the classes and define colors for them.
+
+This means we need to again process the HTML files and strip the CSS and combine them into one file. That also means de-duplicating.
+
+Another complication is that the CSS colors Vim produces are hex codes and specific to the environment in which Vim renders. Thus when ran via the ''ex-mode'' script the environment is a dumb terminal with really bad colors. The good news is that the colors Vim produces are unique and there are only sixteen of them. That means we can make a map between the hex codes and terminal colors.
+
+In my case that matched well to the sixteen colors in the [[Solarized pallet|https://ethanschoonover.com/solarized/]]. And since we are compiling our own CSS we can exchange the outputted hex codes to CSS variables.
+
+The best way I knew to compile all the HTML into one outputted CSS file was again to use [[Node.JS]] streams. The idea was to concatenate all the files into one stream and read the stream line by line. When we hit a `<style>` tag buffer the CSS rules (which Vim outputs the whole rule one per line). De-duplicate the rules; prefix the rules to provide some CSS scoping; then add TiddlyWiki front-matter.
+
+the Makefile uses `cat` and the list of HTML files to produce one long stream of data we pipe to another of our [[Node.JS]] scripts.
+
+!!! Color map
+This is a hard coded map of Vim hex colors it outputs and a CSS variable we can define in our TiddlyWiki seperatly.
+
+{{sourcecode/vim-as-a-static-syntax-highlighter-09.js}}
+
+!!! filterCssRules()
+A boolean state machine helps turn on and off the filtering. When a `<style>` tag is seen the Transform stream will start pushing lines further down the pipeline and when a `</style>` tag comes it stops and drops the lines. It also focuses only on CSS rules that are classes to avoid any element based CSS which we don’t need.
+
+{{sourcecode/vim-as-a-static-syntax-highlighter-10.js}}
+
+!!! uniqueLines()
+Here we use a `Set` to unique each line. This will reduce down to unique CSS rules.
+
+{{sourcecode/vim-as-a-static-syntax-highlighter-11.js}}
+
+!!! prepareCssRule()
+This stream processes each CSS rule prepending the scoped class `.vimCodeElement` and replaces the color hex codes using the map previously.
+
+{{sourcecode/vim-as-a-static-syntax-highlighter-12.js}}
+
+!!! prependPreambleLines()
+Add the TiddlyWiki front matter.
+
+{{sourcecode/vim-as-a-static-syntax-highlighter-13.js}}
+
+!!! Putting it all together
+
+{{sourcecode/vim-as-a-static-syntax-highlighter-14.js}}

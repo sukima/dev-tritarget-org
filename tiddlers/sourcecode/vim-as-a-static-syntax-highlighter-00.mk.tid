@@ -1,0 +1,34 @@
+title: sourcecode/vim-as-a-static-syntax-highlighter-00.mk
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Identifier">sourcecode_src </span>:= <span class="Identifier">$(</span><span class="Statement">shell</span><span class="Identifier"> find sourcecode -type f)</span>
+<span class="Identifier">sourcecode_html </span>:= <span class="Identifier">$(</span><span class="Statement">patsubst</span><span class="Identifier"> \</span>
+<span class="Identifier">  sourcecode/%,wiki/sourcecode/%.html,$(sourcecode_src))</span>
+<span class="Identifier">sourcecode_tid </span>:= <span class="Identifier">$(</span><span class="Statement">patsubst</span><span class="Identifier"> \</span>
+<span class="Identifier">  sourcecode/%,tiddlers/sourcecode/%.tid,$(sourcecode_src))</span>
+
+<span class="Statement">.PHONY:</span> generated
+
+<span class="Identifier">generated:</span> <span class="Identifier">$(sourcecode_tid)</span> <span class="Special">\</span>
+<span class="Special">  </span>tiddlers/generated/sourcecode.css <span class="Special">\</span>
+<span class="Special">  </span>tiddlers/generated/PGPKeyFile.tid <span class="Special">\</span>
+<span class="Special">  </span>tiddlers/generated/PGPKeyInfo.tid
+
+<span class="Identifier">wiki/sourcecode/%.html:</span> sourcecode/<span class="Identifier">%</span>
+<span class="Special">  @</span><span class="Constant">mkdir -p </span><span class="Identifier">$(@D)</span>
+<span class="Constant">  TARGET_FILE=</span><span class="Constant">&quot;</span><span class="Identifier">$@</span><span class="Constant">&quot;</span><span class="Constant"> </span><span class="Special">\</span>
+<span class="Constant">    SOURCE_FILE=</span><span class="Constant">&quot;</span><span class="Identifier">$(&lt;F)</span><span class="Constant">&quot;</span><span class="Constant"> </span><span class="Special">\</span>
+<span class="Constant">    vim -N -E -s </span><span class="Special">\</span>
+<span class="Constant">    -c </span><span class="Constant">&quot;source scripts/sourcecode-to-html.vim&quot;</span><span class="Constant"> </span><span class="Special">\</span>
+<span class="Constant">    </span><span class="Identifier">$&lt;</span><span class="Constant"> </span><span class="Special">\</span>
+<span class="Constant">    &gt;/dev/null</span>
+
+<span class="Identifier">tiddlers/sourcecode/%.tid:</span> wiki/sourcecode/<span class="Identifier">%</span>.html
+<span class="Constant">  TARGET_FILE=</span><span class="Constant">&quot;</span><span class="Identifier">$@</span><span class="Constant">&quot;</span><span class="Constant"> </span><span class="Special">\</span>
+<span class="Constant">    SOURCE_FILE=</span><span class="Constant">&quot;</span><span class="Identifier">$(</span><span class="Statement">basename</span><span class="Identifier"> $(&lt;F))</span><span class="Constant">&quot;</span><span class="Constant"> </span><span class="Special">\</span>
+<span class="Constant">    ./bin/sourcecode-html &lt; </span><span class="Identifier">$&lt;</span><span class="Constant"> &gt; </span><span class="Identifier">$@</span>
+
+<span class="Identifier">tiddlers/generated/sourcecode.css:</span> <span class="Identifier">$(sourcecode_html)</span>
+<span class="Constant">  cat </span><span class="Identifier">$^</span><span class="Constant"> | ./bin/sourcecode-css &gt; </span><span class="Identifier">$@</span>
+</pre>

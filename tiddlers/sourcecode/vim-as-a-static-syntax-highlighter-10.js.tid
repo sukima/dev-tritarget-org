@@ -1,0 +1,21 @@
+title: sourcecode/vim-as-a-static-syntax-highlighter-10.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">function</span> <span class="Identifier">filterCssRules</span>() {
+  <span class="Type">let</span> isStyle <span class="Statement">=</span> <span class="Constant">false</span>;
+  <span class="Statement">return</span> <span class="Statement">new</span> <span class="Identifier">Transform</span>({
+    objectMode: <span class="Constant">true</span>,
+    <span class="Identifier">transform</span>(line, _, done) {
+      <span class="Statement">if</span> (line.<span class="Identifier">startsWith</span>(<span class="Constant">'&lt;style&gt;'</span>)) {
+        isStyle <span class="Statement">=</span> <span class="Constant">true</span>;
+      } <span class="Statement">else</span> <span class="Statement">if</span> (line.<span class="Identifier">startsWith</span>(<span class="Constant">'&lt;/style&gt;'</span>)) {
+        isStyle <span class="Statement">=</span> <span class="Constant">false</span>;
+      } <span class="Statement">else</span> <span class="Statement">if</span> (isStyle <span class="Statement">&amp;&amp;</span> line.<span class="Identifier">startsWith</span>(<span class="Constant">'.'</span>)) {
+        <span class="Special">this</span>.<span class="Identifier">push</span>(line);
+      }
+      <span class="Identifier">done</span>();
+    },
+  });
+}
+</pre>

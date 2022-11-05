@@ -1,0 +1,23 @@
+title: sourcecode/vim-as-a-static-syntax-highlighter-09.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">const</span> colorTransforms <span class="Statement">=</span> <span class="Statement">new</span> <span class="Constant">Map</span>([
+  [<span class="Constant">'#000000'</span>, <span class="Constant">'var(--rebase02)'</span>],
+  [<span class="Constant">'#c00000'</span>, <span class="Constant">'var(--red)'</span>],
+  [<span class="Constant">'#008000'</span>, <span class="Constant">'var(--green)'</span>],
+  [<span class="Constant">'#804000'</span>, <span class="Constant">'var(--yellow)'</span>],
+  [<span class="Constant">'#0000c0'</span>, <span class="Constant">'var(--blue)'</span>],
+  [<span class="Constant">'#c000c0'</span>, <span class="Constant">'var(--magenta)'</span>],
+  [<span class="Constant">'#008080'</span>, <span class="Constant">'var(--cyan)'</span>],
+  [<span class="Constant">'#c0c0c0'</span>, <span class="Constant">'var(--rebase2)'</span>],
+  [<span class="Constant">'#808080'</span>, <span class="Constant">'var(--rebase03)'</span>],
+  [<span class="Constant">'#ff6060'</span>, <span class="Constant">'var(--orange)'</span>],
+  [<span class="Constant">'#00ff00'</span>, <span class="Constant">'var(--rebase01)'</span>],
+  [<span class="Constant">'#ffff00'</span>, <span class="Constant">'var(--rebase00)'</span>],
+  [<span class="Constant">'#8080ff'</span>, <span class="Constant">'var(--rebase0)'</span>],
+  [<span class="Constant">'#ff40ff'</span>, <span class="Constant">'var(--violet)'</span>],
+  [<span class="Constant">'#00ffff'</span>, <span class="Constant">'var(--rebase1)'</span>],
+  [<span class="Constant">'#ffffff'</span>, <span class="Constant">'var(--rebase3)'</span>],
+]);
+</pre>

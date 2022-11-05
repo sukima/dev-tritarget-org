@@ -1,0 +1,21 @@
+created: 20221104210714000
+creator: Sukima
+modified: 20221104210714000
+modifier: Sukima
+title: vim-as-a-static-syntax-highlighter-01
+type: text/vnd.tiddlywiki
+caption: Exporting to HTML from VIM
+
+The incantation for vim is to open a file in ''ex-mode'' then execute a vim script.
+
+```
+vim -N -E -s -c "source [script_file]" [input_file]
+```
+
+Because we are running in ''ex-mode'' we loose out on al the niceties of the normal start up scripts. We have to //rebuild// this initialization to get all the nice syntax styling we would expect. This is especially true if our file type support comes from a plugin which is not loaded when vim runs in ''ex-mode''. That is because typically when we process text through ''ex-mode'' you want it to be fast and simple.
+
+Here is the basic script to perform the export to HTML:
+
+{{sourcecode/vim-as-a-static-syntax-highlighter-01.vim}}
+
+We setup some terminal colors, and source the main `.vimrc`. We setup some tabs to better fit the content of the blog. We disabled swapfiles and viminfo. We refresh the file to run all the autocommands. And finally run the `2html.vim` script which opens up an //unsaved// buffer of the syntax converted to HTML. Then we save that file to the `$TARGET_FILE` we established in the make recipe.

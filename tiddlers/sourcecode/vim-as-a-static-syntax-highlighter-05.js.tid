@@ -1,0 +1,21 @@
+title: sourcecode/vim-as-a-static-syntax-highlighter-05.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">function</span> <span class="Identifier">convertIdsToClassNames</span>() {
+  <span class="Type">const</span> idMatcher <span class="Statement">=</span> <span class="Constant">/id=</span><span class="Constant">['&quot;]</span><span class="Constant">(</span><span class="Constant">[^'&quot;]</span><span class="Special">*</span><span class="Constant">)</span><span class="Constant">['&quot;]</span><span class="Constant">/g</span>;
+  <span class="Type">let</span> firstLine <span class="Statement">=</span> <span class="Constant">true</span>;
+  <span class="Statement">return</span> <span class="Statement">new</span> <span class="Identifier">Transform</span>({
+    objectMode: <span class="Constant">true</span>,
+    <span class="Identifier">transform</span>(line, _, done) {
+      <span class="Statement">if</span> (firstLine) {
+        firstLine <span class="Statement">=</span> <span class="Constant">false</span>;
+        <span class="Special">this</span>.<span class="Identifier">push</span>(line.<span class="Identifier">replace</span>(idMatcher, <span class="Constant">'class=&quot;$1&quot;'</span>));
+      } <span class="Statement">else</span> {
+        <span class="Special">this</span>.<span class="Identifier">push</span>(line);
+      }
+      <span class="Identifier">done</span>();
+    }
+  });
+}
+</pre>

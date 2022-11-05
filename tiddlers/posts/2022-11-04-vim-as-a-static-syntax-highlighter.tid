@@ -1,0 +1,49 @@
+created: 20221104123303000
+creator: Sukima
+modified: 20221104123303000
+modifier: Sukima
+tags: Article Vim Coding JavaScript
+title: Vim as a static syntax highlighter
+type: text/vnd.tiddlywiki
+
+\define details(tiddler)
+<details>
+<summary><$transclude tiddler=<<__tiddler__>> field="caption" mode="inline"/></summary>
+<$transclude tiddler=<<__tiddler__>> field="text" mode="block"/>
+</details>
+\end
+
+I fell in love with computers at a young age. I think a common theme with them was that the ability for them to solve problems wasn’t constrained to one methodology. I think this story I just went through highlights that concept well.
+
+A key take-away I got from this journey was just how flexible and varied technology can be and when that technology remains open to the [[Unix Philosophy’s|https://en.wikipedia.org/wiki/Unix_philosophy]] even if they produce hard to use data tools can still interface with it. A pipeline can be established that make automation work. This is in contrast to so many tools out there that think they are the only game in town and don't follow the same philosophy’s. For example I cannot imagine this working with VS Code or ~InteliJ.
+
+!! The problem
+My blog is written in TiddlyWiki which come with a [[highlight.js|https://highlightjs.org/]] plugin. There were two issue with this. First is language support which is lacking for more modern languages like [[Ember’s|Ember]] HBS templates. It was also difficult to find a suitable color scheme. This sent me to research alternatives. And there are a lot. Each taking on more complexity and in the end all to be added to the bloat of a single HTML file that is this blog.
+
+I often mused that I use [[Vim]] every day and its syntax highlighting and if there was only a way to get my blog’s code examples to show a Vim editor it would be perfect. And then it dawned on me. What if I actually could?
+
+[[Vim]] has a built in script that will output the syntax highlighting colors and source text as an HTML file complete with CSS class names. And TiddlyWiki was really just HTML and JavaScript. Why couldn't we export the HTML from [[Vim]] and import it into TiddlyWiki as a tiddler?
+
+!! Vim as a script in a build pipeline
+I already run my blog through a [[Makefile|GNU Make]] which generates diagrams with [[PlantUML]], copies assets to the output folder, bundle JavaScript through Babe, build static files, and even deploy to production. It wasn't to hard to imagine a way to ask vim to write an HTML file from another source file and then use that to build the tiddlers for the TiddlyWiki generator engine.
+
+I want the source files to live in one directory; have make convert them to HTML (via [[Vim]]); have make post process the files to generated output stored into the [[TiddlyWiki]] source directory.
+
+{{sourcecode/vim-as-a-static-syntax-highlighter-00.mk}}
+
+In the above //cryptic incantation// it defines the steps we outlined above.
+
+When make needs to build…
+
+# a `tiddlers/sourcecode/foobar.txt.tid` file it knows to build it from `wiki/sourcecode/foobar.txt.html`
+# a `wiki/sourcecode/foobar.txt.html` file it knows to build it from `sourcecode/foobar.txt`
+# a `tiddlers/generated/sourcecode.css` file it knows to build it from ''all'' the `wiki/sourcecode/*.html`
+# `generated` it knows to build all the `tiddlers/sourcecode/*.tid` which it know which ones by scanning `sourcecode/*`
+
+//Apologies but it seems in the act of explaining I fear I made it more confusing.// Trust the ''Makefile''.
+
+Click each section to read more.
+
+<<details "vim-as-a-static-syntax-highlighter-01">>
+<<details "vim-as-a-static-syntax-highlighter-02">>
+<<details "vim-as-a-static-syntax-highlighter-03">>

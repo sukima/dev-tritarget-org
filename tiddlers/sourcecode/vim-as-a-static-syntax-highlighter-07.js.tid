@@ -1,0 +1,14 @@
+title: sourcecode/vim-as-a-static-syntax-highlighter-07.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">function</span> <span class="Identifier">joinLines</span>() {
+  <span class="Statement">return</span> <span class="Statement">new</span> <span class="Identifier">Transform</span>({
+    objectMode: <span class="Constant">true</span>,
+    <span class="Identifier">transform</span>(line, _, done) {
+      <span class="Special">this</span>.<span class="Identifier">push</span>(<span class="Constant">`</span>${line}<span class="Special">\n</span><span class="Constant">`</span>);
+      <span class="Identifier">done</span>();
+    },
+  });
+}
+</pre>

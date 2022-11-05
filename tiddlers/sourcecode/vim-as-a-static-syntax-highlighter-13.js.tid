@@ -1,0 +1,23 @@
+title: sourcecode/vim-as-a-static-syntax-highlighter-13.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">function</span> <span class="Identifier">prependPreambleLines</span>() {
+  <span class="Type">let</span> sentPreamble <span class="Statement">=</span> <span class="Constant">false</span>;
+  <span class="Statement">return</span> <span class="Statement">new</span> <span class="Identifier">Transform</span>({
+    objectMode: <span class="Constant">true</span>,
+    <span class="Identifier">transform</span>(line, _, done) {
+      <span class="Statement">if</span> (<span class="Statement">!</span>sentPreamble) {
+        sentPreamble <span class="Statement">=</span> <span class="Constant">true</span>;
+        <span class="Special">this</span>.<span class="Identifier">push</span>(<span class="Constant">'/*</span><span class="Special">\\</span><span class="Constant">'</span>);
+        <span class="Special">this</span>.<span class="Identifier">push</span>(<span class="Constant">'title: $:/site/sourcecode/styles.css'</span>);
+        <span class="Special">this</span>.<span class="Identifier">push</span>(<span class="Constant">'tags: $:/tags/Stylesheet'</span>);
+        <span class="Special">this</span>.<span class="Identifier">push</span>(<span class="Constant">'type: text/css'</span>);
+        <span class="Special">this</span>.<span class="Identifier">push</span>(<span class="Constant">'</span><span class="Special">\\</span><span class="Constant">*/'</span>);
+      }
+      <span class="Special">this</span>.<span class="Identifier">push</span>(line);
+      <span class="Identifier">done</span>();
+    },
+  });
+}
+</pre>

@@ -1,0 +1,18 @@
+title: sourcecode/vim-as-a-static-syntax-highlighter-12.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">function</span> <span class="Identifier">prepareCssRule</span>() {
+  <span class="Statement">return</span> <span class="Statement">new</span> <span class="Identifier">Transform</span>({
+    objectMode: <span class="Constant">true</span>,
+    <span class="Identifier">transform</span>(line, _, done) {
+      <span class="Statement">for</span> (<span class="Type">let</span> colorTransform <span class="Statement">of</span> colorTransforms) {
+        <span class="Type">let</span> [colorMatcher, replacement] <span class="Statement">=</span> colorTransform;
+        line <span class="Statement">=</span> line.<span class="Identifier">replace</span>(colorMatcher, replacement);
+      }
+      <span class="Special">this</span>.<span class="Identifier">push</span>(<span class="Constant">`.vimCodeElement </span>${line}<span class="Constant">`</span>);
+      <span class="Identifier">done</span>();
+    },
+  });
+}
+</pre>

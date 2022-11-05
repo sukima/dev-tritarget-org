@@ -1,0 +1,13 @@
+title: sourcecode/vim-as-a-static-syntax-highlighter-14.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Constant">process</span>.stdin
+  .<span class="Identifier">pipe</span>(<span class="Identifier">splitByLines</span>())
+  .<span class="Identifier">pipe</span>(<span class="Identifier">filterCssRules</span>())
+  .<span class="Identifier">pipe</span>(<span class="Identifier">uniqueLines</span>())
+  .<span class="Identifier">pipe</span>(<span class="Identifier">prepareCssRule</span>())
+  .<span class="Identifier">pipe</span>(<span class="Identifier">prependPreambleLines</span>())
+  .<span class="Identifier">pipe</span>(<span class="Identifier">joinLines</span>())
+  .<span class="Identifier">pipe</span>(process.stdout);
+</pre>

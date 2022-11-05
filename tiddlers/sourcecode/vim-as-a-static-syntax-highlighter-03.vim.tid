@@ -1,0 +1,15 @@
+title: sourcecode/vim-as-a-static-syntax-highlighter-03.vim
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Constant">0</span>,/^<span class="Statement">&lt;</span><span class="vimIsCommand">body</span>/ <span class="vimCommand">delete</span>
+<span class="Statement">/</span><span class="Constant">^&lt;\/body/,$ delete</span>
+<span class="Constant">1</span>s/<span class="vimIsCommand">id</span><span class="Statement">=</span><span class="Constant">'\(.*\)'</span>/<span class="vimCommand">class</span><span class="Statement">=</span><span class="Constant">&quot;</span><span class="Special">\1</span><span class="Constant">&quot;</span>/
+<span class="vimCommand">call</span> <span class="Identifier">append</span><span class="Special">(</span><span class="Constant">0</span>, [
+<span class="Special">      \</span><span class="Constant">'title: '</span> <span class="Statement">..</span> <span class="PreProc">$SOURCE_FILE</span>,
+<span class="Special">      \</span><span class="Constant">'type: text/prs.sourcecode'</span>,
+<span class="Special">      \</span><span class="Constant">''</span>
+<span class="Special">      \</span>]<span class="Special">)</span>
+<span class="vimCommand">saveas</span><span class="Statement">!</span> <span class="PreProc">$TARGET_FILE</span>
+<span class="vimCommand">quitall</span>
+</pre>

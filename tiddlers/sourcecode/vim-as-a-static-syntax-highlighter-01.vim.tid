@@ -1,0 +1,20 @@
+title: sourcecode/vim-as-a-static-syntax-highlighter-01.vim
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="vimCommand">syntax</span> <span class="vimSynType">on</span>
+<span class="vimCommand">set</span><span class="Normal"> </span><span class="PreProc">t_Co</span><span class="Normal">=256</span>
+<span class="vimCommand">source</span> <span class="PreProc">$HOME</span>/<span class="Statement">.</span><span class="vimIsCommand">vimrc</span>
+<span class="vimCommand">set</span><span class="Normal"> </span><span class="PreProc">noswapfile</span>
+<span class="vimCommand">set</span><span class="Normal"> </span><span class="PreProc">viminfofile</span><span class="Normal">=NONE</span>
+<span class="vimCommand">set</span><span class="Normal"> </span><span class="PreProc">background</span><span class="Normal">=light</span>
+<span class="vimCommand">edit</span>
+<span class="vimCommand">set</span><span class="Normal"> </span><span class="PreProc">tabstop</span><span class="Normal">=2</span>
+<span class="vimCommand">set</span><span class="Normal"> </span><span class="PreProc">expandtab</span>
+<span class="vimCommand">let</span> <span class="Identifier">g:html_no_progress</span> <span class="Statement">=</span> <span class="Constant">1</span>
+<span class="vimCommand">let</span> <span class="Identifier">g:html_number_lines</span> <span class="Statement">=</span> <span class="Constant">0</span>
+<span class="vimCommand">let</span> <span class="Identifier">g:html_expand_tabs</span> <span class="Statement">=</span> <span class="Constant">1</span>
+<span class="vimCommand">runtime</span> <span class="vimCommand">syntax</span>/<span class="Constant">2</span>html<span class="Statement">.</span><span class="vimCommand">vim</span>
+<span class="vimCommand">saveas</span><span class="Statement">!</span> <span class="PreProc">$TARGET_FILE</span>
+<span class="vimCommand">quitall</span>
+</pre>

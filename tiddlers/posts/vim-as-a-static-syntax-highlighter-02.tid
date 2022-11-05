@@ -1,0 +1,48 @@
+created: 20221104210823000
+creator: Sukima
+modified: 20221104210823000
+modifier: Sukima
+title: vim-as-a-static-syntax-highlighter-02
+type: text/vnd.tiddlywiki
+caption: Convert HTML to tiddlers
+
+Our next step is to convert the HTML files to just HTML ''fragments'' that we can use a TiddlyWiki tiddlers. There are two pieces to this. First TiddlyWiki does not embed HTML the same way we would think. It can process HTML as part of its [[WikiText parser|https://tiddlywiki.com/#WikiText]] but it needs specialized rule to do so thus just injecting raw HTML into a tiddler will cause issues. Second TiddlyWiki also supports raw HTML but does so by putting it inside an `<iframe>`. Normally this will work fine but in this case we don’t want an iframe but to just render the raw HTML inline like any other webpage.
+
+To accomplish we need to make our own [[TiddlyWiki parser|https://tiddlywiki.com/dev/#Parser]]:
+
+{{sourcecode/vim-as-a-static-syntax-highlighter-02.js}}
+
+This registers a MIME type of `text/prs.sourcecode` which is how TiddlyWiki knows to use this parser for the HTML fragments. A simple tiddler with that type when rendered will just be the raw HTML as is.
+
+The second part is to convert a full HTML document to a fragment of just its `<body>`. We could again use vim’s ''ex-mode'' to do that.
+
+{{sourcecode/vim-as-a-static-syntax-highlighter-03.vim}}
+
+Honestly that is confusing but useful. The bigest issue is that it is slow. We ''have'' to use vim for the first to HTML because it is Vim the provides the syntax highlighting in the first place but now that we have raw HTML we can use other faster tools. I opted for [[Node.JS]] ''streams'' because TiddlyWiki build under Node so it is there and streams are super ''awesome''.
+
+I use my [[Split by line stream]] to turn the raw bytes to lines so each Transform stream can focus on line by line logic.
+
+!!! filterHtmlBody()
+Runs through each line ignoring lines that are not ''inside'' the `<body>`.
+
+{{sourcecode/vim-as-a-static-syntax-highlighter-04.js}}
+
+!!! convertIdsToClassNames()
+Vim’s HTML output needs a little clean up. It tacks an ID to the `<pre id='…'>` tag and uses single quotes for this even though all of the quotes in the rest of the file are double quotes. This Transform runs a simple RegExp on that line while other lines are just a pass-through.
+
+{{sourcecode/vim-as-a-static-syntax-highlighter-05.js}}
+
+!!! prependPreambleLines()
+The final tiddler output needs a `title:` and the custom `type: text/prs.sourcecode` to work. This transform adds these lines to the output pipeline.
+
+{{sourcecode/vim-as-a-static-syntax-highlighter-06.js}}
+
+!!! joinLines()
+Because we are processing the pipeline on a ''per line'' basis none of these //chunks// have an ending new-line character(s). In order for the output to make sense being piped to a byte-based Writer stream (`stdout'`) we need to convert the //lines// back into strings with ending new-lines characters.
+
+{{sourcecode/vim-as-a-static-syntax-highlighter-07.js}}
+
+!!! Putting it all together
+And the best part at the end is putting the pieces together just like Legos™
+
+{{sourcecode/vim-as-a-static-syntax-highlighter-08.js}}

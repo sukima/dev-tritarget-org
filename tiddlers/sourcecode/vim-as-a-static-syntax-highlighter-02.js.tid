@@ -1,0 +1,14 @@
+title: sourcecode/vim-as-a-static-syntax-highlighter-02.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Comment">/*\</span>
+<span class="Comment">title: $:/plugins/sukima/sourcecode/parser.js</span>
+<span class="Comment">type: application/javascript</span>
+<span class="Comment">module-type: parser</span>
+<span class="Comment">\*/</span>
+<span class="Type">function</span> <span class="Identifier">SourceCodeParser</span>(type, text, options) {
+  <span class="Special">this</span>.tree <span class="Statement">=</span> [{ type: <span class="Constant">'raw'</span>, html: text }];
+};
+<span class="Constant">exports</span>[<span class="Constant">'text/prs.sourcecode'</span>] <span class="Statement">=</span> SourceCodeParser;
+</pre>
