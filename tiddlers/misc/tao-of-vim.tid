@@ -1,22 +1,23 @@
-modified: 20191204204651000
 created: 20191204204651000
-modifier: Sukima
 creator: Sukima
-title: The Tao of Vim
+modified: 20221104184236000
+modifier: Sukima
 tags: Misc Vim
+title: The Tao of Vim
+type: text/vnd.tiddlywiki
 
-A disciple said to Joshu "Master, I have written rules so that new monks can follow the Vim Way!"
+<<<
+A disciple said to Joshu “Master, I have written rules so that new monks can follow the Vim Way!”
 
-"Oh, and what is the Vim Way, monk?"
+“Oh, and what is the Vim Way, monk?”
 
-"Well, Vim is only an editor, don't use a lot of plugins, the UNIX philosophy…"
+“Well, Vim is only an editor, don’t use a lot of plugins, the UNIX philosophy…”
 
-"You are attached to forms, so I will hit you thirty times. The Vim Way does not care about plugins, or doing this or that inside or outside of Vim. There is only the task in front of you, and how effortlessly you do it."
+“You are attached to forms, so I will hit you thirty times. The Vim Way does not care about plugins, or doing this or that inside or outside of Vim. There is only the task in front of you, and how effortlessly you do it.”
 
-"But Master, they are installing fancy status lines and fuzzy finders just to show off! They don't know the Vim commands and options behind them!"
+“But Master, they are installing fancy status lines and fuzzy finders just to show off! They don’t know the Vim commands and options behind them!”
 
-"Oh, so you are out to set them right? Isn't that one-upmanship, monk? Tell me! The Vim Way is both the null laststatus and the ten thousands glyphs from powerline. Some people want to be very knowledgeable, understanding all the options and intricacies, while some other have fun tweaking their config with plugins. The Vim Way embraces them all. When the time is right, some of these tools might become less and less useful; the sharp blade can cut its way without forcing, but the apprentice fumbles and cut himself. The Moon does not show at noon. So, don't make good and bad, vim and not-vim.
+“Oh, so you are out to set them right? Isn’t that one-upmanship, monk? Tell me! The Vim Way is both the null laststatus and the ten thousands glyphs from powerline. Some people want to be very knowledgeable, understanding all the options and intricacies, while some other have fun tweaking their config with plugins. The Vim Way embraces them all. When the time is right, some of these tools might become less and less useful; the sharp blade can cut its way without forcing, but the apprentice fumbles and cut himself. The Moon does not show at noon. So, don’t make good and bad, vim and not-vim.
 
-"Now, go wash your bowl, monk!"
-
-Original source: https://www.reddit.com/r/vim/comments/bfxr2z/vim_theory_and_reflections/elhnjfm/
+“Now, go wash your bowl, monk!”
+<<< Original source: https://www.reddit.com/r/vim/comments/bfxr2z/vim_theory_and_reflections/elhnjfm/

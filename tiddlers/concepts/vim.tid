@@ -1,0 +1,33 @@
+created: 20221104183240000
+creator: Sukima
+modified: 20221104183240000
+modifier: Sukima
+tags: Concepts
+title: Vim
+type: text/vnd.tiddlywiki
+url: https://www.vim.org/
+
+[img width=200 [//upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Vimlogo.svg/240px-Vimlogo.svg.png]]
+
+<<<
+Vim is a highly configurable text editor built to make creating and changing any kind of text very efficient. It is included as "vi" with most UNIX systems and with Apple OS X.
+
+Vim is rock stable and is continuously being developed to become even better. Among its features are:
+
+* persistent, multi-level undo tree
+* extensive plugin system
+* support for hundreds of programming languages and file formats
+* powerful search and replace
+* integrates with many tools
+
+<<< [[Vim homepage (sourced 2022-11-04)|https://www.vim.org/]]
+
+{{!!url}}
+
+!! Content about Vim
+
+<<list-links "[tag[Vim]]">>
+
+----
+
+{{The Tao of Vim}}
