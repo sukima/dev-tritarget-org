@@ -2,8 +2,8 @@ created: 20221104135422000
 creator: Sukima
 modified: 20221104135422000
 modifier: Sukima
-title: split-by-line-stream-tab2
+title: split-by-line-stream-tab4
 type: text/vnd.tiddlywiki
-caption: Node Usage
+caption: Web Usage
 
-{{sourcecode/split-by-line-stream-example.js}}
+{{sourcecode/split-by-line-stream-example-web.js}}

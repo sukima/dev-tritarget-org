@@ -30,13 +30,15 @@ There is a lot going on here. The ~TextDecoderStream is what we call a ~Transfor
 
 We did a bit of transform converting the input data from binary to text but we still want to process things on a line by line basis. We can do that by means of our first custom stream.
 
-There isn’t much of a convention concerning OOP with streams. The API is more about creating new Streams with hooks passed into the constructor then it is about class inheritance. The confusing bit for me was thinking that I could reimplement the `readable` and `writable` properties (or the `.getWriter()` in the case of ~WritableStream) thinking if I did I could pass the instance directly to `.pipThrough()` (or `.pipeTo()`) but that didn't work for me and I suspect wasn’t design that way either. Instead I realized that my classes are not actual streams like I would think but wrapper or better //managers// the expose a stream for use. That is how I came to use the `.stream()` method convention. I'll lead with an example:
+There isn’t much of a convention concerning OOP with streams. The API is more about creating new Streams with hooks passed into the constructor then it is about class inheritance. The confusing bit for me was thinking that I could reimplement the `readable` and `writable` properties (or the `.getWriter()` in the case of ~WritableStream) thinking if I did I could pass the instance directly to `.pipeThrough()` (or `.pipeTo()`) but that didn't work for me and I suspect wasn’t design that way either. Instead I realized that my classes are not actual streams like I would think but wrapper or better //managers// the expose a stream for use. That is how I came to use the `.stream()` method convention. I'll lead with an example:
 
 {{sourcecode/webstreams-03.js}}
 
 Would result in printing out to the console as the writer received data from the reader. Notice how we could still have encapsulated instance data while also exposing a stream to pipe to.
 
-Anyway after that divergence into Object Oriented Design and personal style―our line batcher can collect chunks of data as strings from the input. Split them by new lines and spit them one by one back out.
+There is an alternative using //closures// which I’ve provided an example of in my [[Split by line stream]] implementation.
+
+Anyway―after that divergence into Object Oriented Design and personal style―our line batcher can collect chunks of data as strings from the input. Split them by new lines and spit them one by one back out.
 
 {{sourcecode/webstreams-04.js}}
 

@@ -4,6 +4,6 @@ modified: 20221104135422000
 modifier: Sukima
 title: split-by-line-stream-tab1
 type: text/vnd.tiddlywiki
-caption: Implementation
+caption: Node Implementation
 
 {{sourcecode/split-by-line-stream.js}}

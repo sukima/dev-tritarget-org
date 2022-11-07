@@ -3,7 +3,7 @@ class CustomConsoleWriter {
   stream() {
     return new WriteableStream({
       write: (data) =>
-        console.log(this.counter, data),
+        console.log(this.counter++, data),
     });
   }
 }

@@ -9,11 +9,15 @@ type: text/prs.sourcecode
     controller.<span class="Identifier">enqueue</span>(<span class="Special">this</span>.buffer);
   }
   <span class="Identifier">processChunk</span>(chunk, controller) {
-    <span class="Special">this</span>.buffer <span class="Statement">+=</span> chunk;
-    <span class="Type">let</span> lines <span class="Statement">=</span> <span class="Special">this</span>.buffer.<span class="Identifier">split</span>(<span class="Constant">'</span><span class="Special">\n</span><span class="Constant">'</span>);
-    <span class="Statement">while</span> (lines.length <span class="Statement">&gt;</span> <span class="Constant">1</span>)
-      controller.<span class="Identifier">enqueue</span>(lines.<span class="Identifier">shift</span>());
-    <span class="Special">this</span>.buffer <span class="Statement">=</span> lines[<span class="Constant">0</span>];
+    <span class="Statement">for</span> (<span class="Type">let</span> char <span class="Statement">of</span> chunk) {
+      <span class="Statement">if</span> (char <span class="Statement">===</span> <span class="Constant">'</span><span class="Special">\r</span><span class="Constant">'</span>) <span class="Statement">continue</span>;
+      <span class="Statement">if</span> (char <span class="Statement">===</span> <span class="Constant">'</span><span class="Special">\n</span><span class="Constant">'</span>) {
+        controller.<span class="Identifier">enqueue</span>(<span class="Special">this</span>.buffer);
+        <span class="Special">this</span>.buffer <span class="Statement">=</span> <span class="Constant">''</span>;
+        <span class="Statement">continue</span>;
+      }
+      buffer <span class="Statement">+=</span> char;
+    }
   }
   <span class="Identifier">stream</span>() {
     <span class="Statement">return</span> <span class="Statement">new</span> <span class="Identifier">TransformStream</span>({

@@ -10,4 +10,4 @@ Every time I try to use streams in Node to do text processing it is almost alway
 
 Here is my personal implementation that works and can be copy/paste-ed.
 
-<<tabs "split-by-line-stream-tab1 split-by-line-stream-tab2" "split-by-line-stream-tab1">>
+<<tabs "split-by-line-stream-tab1 split-by-line-stream-tab2 split-by-line-stream-tab3 split-by-line-stream-tab4" "split-by-line-stream-tab1">>

@@ -18,7 +18,7 @@ The second part is to convert a full HTML document to a fragment of just its `<b
 
 {{sourcecode/vim-as-a-static-syntax-highlighter-03.vim}}
 
-Honestly that is confusing but useful. The bigest issue is that it is slow. We ''have'' to use vim for the first to HTML because it is Vim the provides the syntax highlighting in the first place but now that we have raw HTML we can use other faster tools. I opted for [[Node.JS]] ''streams'' because TiddlyWiki build under Node so it is there and streams are super ''awesome''.
+Honestly that is confusing but useful. The bigest issue is that it is slow. We ''have'' to use vim for the first to HTML because it is Vim that provides the syntax highlighting in the first place but now that we have raw HTML we can use other faster tools. I opted for [[Node.JS]] ''streams'' because TiddlyWiki is built under Node so it is already available and streams are super ''awesome''.
 
 I use my [[Split by line stream]] to turn the raw bytes to lines so each Transform stream can focus on line by line logic.
 

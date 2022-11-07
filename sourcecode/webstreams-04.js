@@ -5,11 +5,15 @@ class LineChunks {
     controller.enqueue(this.buffer);
   }
   processChunk(chunk, controller) {
-    this.buffer += chunk;
-    let lines = this.buffer.split('\n');
-    while (lines.length > 1)
-      controller.enqueue(lines.shift());
-    this.buffer = lines[0];
+    for (let char of chunk) {
+      if (char === '\r') continue;
+      if (char === '\n') {
+        controller.enqueue(this.buffer);
+        this.buffer = '';
+        continue;
+      }
+      buffer += char;
+    }
   }
   stream() {
     return new TransformStream({
