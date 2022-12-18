@@ -19,7 +19,7 @@
     "gm": "^1.21.1",
     "mktemp": "^0.4.0",
     "serve": "^13.0.2",
-    "tiddlywiki": "5.2.3"
+    "tiddlywiki": "5.2.4"
   },
   "engines": {
     "node": ">=14"

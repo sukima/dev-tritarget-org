@@ -717,10 +717,10 @@ supports-color@^7.1.0:
   dependencies:
     has-flag "^4.0.0"
 
-tiddlywiki@5.2.3:
-  version "5.2.3"
-  resolved "https://registry.yarnpkg.com/tiddlywiki/-/tiddlywiki-5.2.3.tgz#25dd71bc1eb11cfaa1a4398d5d884fb7c7ce85a5"
-  integrity sha512-kf09XBI0bswr27pM6WBj/Vek4ATle83HwAtg8rPqJ8cjcC2/xX2SLEamiT8q4AAexjDDlQA05IlcPhhGtF0j6A==
+tiddlywiki@5.2.4:
+  version "5.2.4"
+  resolved "https://registry.yarnpkg.com/tiddlywiki/-/tiddlywiki-5.2.4.tgz#8a1a3b538f7c495aeb2952dc237c7804d59c3734"
+  integrity sha512-D6x7eoqGC6nbPnapnMxC3H/1umV1Hl8UdDRvsYL80qsl0vumCNbXxs13Q99KUqgNlIvVi5Acmx0uOcLWHaST2A==
 
 type-fest@^0.20.2:
   version "0.20.2"
