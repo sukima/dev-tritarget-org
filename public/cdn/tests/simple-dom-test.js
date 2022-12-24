@@ -94,6 +94,30 @@ module('simple-dom.js', function (hooks) {
       button.dispatchEvent(new CustomEvent('bar'));
       assert.equal(callCount, 0, 'spy never called');
     });
+
+    test('attached events are iterable', async function (assert) {
+      async function iterationTest(events) {
+        for await (let event of events) {
+          assert.step(event.type);
+          break;
+        }
+      }
+
+      let button = this.fixture.querySelector('button');
+      let iterationWaiters = [
+        iterationTest(this.subject.button.on['foo']()),
+        iterationTest(this.subject.button.on['bar']().events()),
+      ];
+
+      button.dispatchEvent(new CustomEvent('foo'));
+      button.dispatchEvent(new CustomEvent('foo'));
+      button.dispatchEvent(new CustomEvent('bar'));
+      button.dispatchEvent(new CustomEvent('bar'));
+
+      await Promise.all(iterationWaiters);
+
+      assert.verifySteps(['foo', 'bar']);
+    });
   });
 
   module('Creation', function () {

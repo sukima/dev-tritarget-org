@@ -1,5 +1,5 @@
 /*******************************************/
-/* Version 1.1.0                           */
+/* Version 1.2.0                           */
 /* License MIT                             */
 /* Copyright (C) 2022 Devin Weaver         */
 /* https://tritarget.org/cdn/simple-dom.js */
@@ -58,11 +58,19 @@
  *
  * @example
  * ```js
- * let off = $.on.keyup(() => { … });
- * off();
+ * let off = $.on.keyup(() => { … }); // attach listener
+ * off(); // remove listener
  *
  * $.button.on.click(() => { … });
  * $.all['.btn'].on.customEvent(() => { … });
+ * ```
+ *
+ * Events can also be iterated over like a stream
+ *
+ * @example
+ * ```js
+ * let buttonClicks = $.button.on.click();
+ * for await (let event of buttonClicks) { … }
  * ```
  *
  * ## Creation
@@ -85,15 +93,34 @@ function attachEvents(el, eventNames, fn, options) {
     eventNames.forEach((e) => el.removeEventListener(e, fn, options));
 }
 
+function attachAll(elements, eventNames, fn, options) {
+  let detachables =
+    elements.map(e => attachEvents(e, eventNames, fn, options));
+  return () => detachables.forEach(i => i());
+}
+
+function eventStreamManager(elements, eventNames, options) {
+  async function* events() {
+    let done;
+    let handler = (event) => done(event);
+    let nextEvent = () => new Promise(r => { done = r; });
+    let detachAll = attachAll(elements, eventNames, handler, options);
+    try { while (true) yield nextEvent(); }
+    finally { detachAll(); }
+  }
+
+  return { events, [Symbol.asyncIterator]: events };
+}
+
 function eventable(...elements) {
   return new Proxy({}, {
     get(_, prop) {
       let eventNames = prop.split(',');
       return (fn, options) => {
-        let detachables = elements.map(
-          e => attachEvents(e, eventNames, fn, options)
-        );
-        return () => detachables.forEach(i => i());
+        if (typeof fn === 'function')
+          return attachAll(elements, eventNames, fn, options);
+        else
+          return eventStreamManager(elements, eventNames, fn);
       };
     },
   });
