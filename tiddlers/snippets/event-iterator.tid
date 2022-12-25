@@ -1,0 +1,15 @@
+created: 20221225005548000
+creator: Sukima
+modified: 20221225005548000
+modifier: Sukima
+tags: snippets JavaScript
+title: EventIterator
+type: text/vnd.tiddlywiki
+
+!! Example
+
+{{sourcecode/event-iterator-usage.js}}
+
+!! Implementation
+
+{{sourcecode/event-iterator.js}}

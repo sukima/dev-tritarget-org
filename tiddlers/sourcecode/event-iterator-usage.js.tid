@@ -1,0 +1,11 @@
+title: sourcecode/event-iterator-usage.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">let</span> events <span class="Statement">=</span> <span class="Identifier">eventIterator</span>(<span class="Constant">document</span>.body, <span class="Constant">'input'</span>);
+<span class="Statement">for</span> <span class="Statement">await</span> (<span class="Type">let</span> event <span class="Statement">of</span> events) {
+  <span class="Type">let</span> { value } <span class="Statement">=</span> event.target;
+  <span class="Constant">console</span>.<span class="Identifier">log</span>(event.type, value);
+  <span class="Statement">if</span> (value <span class="Statement">===</span> <span class="Constant">'done'</span>) <span class="Statement">break</span>;
+}
+</pre>
