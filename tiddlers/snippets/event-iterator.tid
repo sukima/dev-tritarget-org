@@ -1,6 +1,6 @@
 created: 20221225005548000
 creator: Sukima
-modified: 20221225005548000
+modified: 20221227181524000
 modifier: Sukima
 tags: snippets JavaScript
 title: EventIterator
@@ -13,3 +13,7 @@ type: text/vnd.tiddlywiki
 !! Implementation
 
 {{sourcecode/event-iterator.js}}
+
+A version of this is pattern is part of my [[simple-dom]] micro lib.
+
+{{sourcecode/event-iterator-simple-dom-example.js}}
