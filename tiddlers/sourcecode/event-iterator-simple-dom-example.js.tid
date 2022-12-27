@@ -4,11 +4,11 @@ type: text/prs.sourcecode
 <pre class="vimCodeElement">
 <span class="PreProc">import</span> $ <span class="PreProc">from</span> <span class="Constant">'<a href="https://tritarget.org/cdn/simple-dom.js">https://tritarget.org/cdn/simple-dom.js</a>'</span>;
 
-<span class="Type">let</span> done <span class="Statement">=</span> <span class="Constant">false</span>;
-<span class="Identifier">setTimeout</span>(<span class="Type">()</span> <span class="Type">=&gt;</span> (done <span class="Statement">=</span> <span class="Constant">true</span>), 10_000);
-
-<span class="Statement">for</span> <span class="Statement">await</span> (<span class="Type">let</span> event <span class="Statement">of</span> $.on.<span class="Identifier">click</span>()) {
-  <span class="Statement">if</span> (done) <span class="Statement">break</span>;
-  <span class="Constant">console</span>.<span class="Identifier">log</span>(<span class="Constant">'Click event from'</span>, event.target);
+<span class="Statement">async</span> <span class="Type">function</span> <span class="Identifier">listenForClicks</span>() {
+  <span class="Statement">for</span> <span class="Statement">await</span> (<span class="Type">let</span> event <span class="Statement">of</span> $.on.<span class="Identifier">click</span>()) {
+    <span class="Constant">console</span>.<span class="Identifier">log</span>(<span class="Constant">'Click event from'</span>, event.target);
+  }
 }
+
+<span class="Identifier">listenForClicks</span>();
 </pre>
