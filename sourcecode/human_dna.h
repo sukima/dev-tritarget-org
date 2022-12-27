@@ -1,20 +1,3 @@
-created: 20170809022503000
-creator: God
-modified: 20170809023523075
-modifier: Sukima
-tags: Misc Humor Coding
-title: Human DNS Code
-type: text/vnd.tiddlywiki
-
-For many years molecular biologists have been mystified by the fact that very little of an organism's DNA seems to serve any useful function.
-
-I have solved the mystery.
-
-The reason why only 30% of human DNA performs any useful function is that the rest of it is comments.
-
-Once we decode a typical human genome, we see that the contents begin as follows:
-
-```cpp
 /* HUMAN_DNA.H
  *
  * Human Genome
@@ -97,8 +80,3 @@ DNA *zygote_initialize(Sperm *, Ovum *);
  * Will be improved later to make output less ugly.
  */
 Characteristic *lookup_phenotype(Identifier *i);
-```
-
-...and so on.
-
-[ Note that God uses three-space tabs ]

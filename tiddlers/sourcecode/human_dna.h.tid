@@ -1,0 +1,87 @@
+title: sourcecode/human_dna.h
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Comment">/*</span><span class="Comment"> HUMAN_DNA.H</span>
+<span class="Comment"> *</span>
+<span class="Comment"> * Human Genome</span>
+<span class="Comment"> * Version 2.1</span>
+<span class="Comment"> *</span>
+<span class="Comment"> * (C) God</span>
+<span class="Comment"> </span><span class="Comment">*/</span>
+
+<span class="Comment">/*</span><span class="Comment"> Revision history:</span>
+<span class="Comment"> *</span>
+<span class="Comment"> * 0000-00-01 00:00  1.0  Adam.</span>
+<span class="Comment"> * 0000-00-02 10:00  1.1  Eve.</span>
+<span class="Comment"> * 0000-00-03 02:11  1.2  Added penis code to male version. A bit messy --</span>
+<span class="Comment"> *                        will require a rewrite later on to make it neater.</span>
+<span class="Comment"> * 0017-03-12 03:14  1.3  Added extra sex drive to male.h; took code from</span>
+<span class="Comment"> *                        elephant-dna.c</span>
+<span class="Comment"> * 0145-10-03 16:33  1.4  Removed tail.</span>
+<span class="Comment"> * 1115-00-31 17:20  1.5  Shortened forearms, expanded brain case.</span>
+<span class="Comment"> * 2091-08-20 13:56  1.6  Opposable thumbs added to hand() routine.</span>
+<span class="Comment"> * 2501-04-09 14:04  1.7  Minor cosmetic improvements -- skin colour made</span>
+<span class="Comment"> *                        darker to match my own image.</span>
+<span class="Comment"> * 2909-07-12 02:21  1.8  Dentition inadequate; added extra 'wisdom' teeth.</span>
+<span class="Comment"> *                        Must remember to make mouth bigger to compensate.</span>
+<span class="Comment"> * 4501-12-31 14:18  1.9  Increase average height.</span>
+<span class="Comment"> * 5533-02-12 17:09  2.0  Added gay option, triggered by high population</span>
+<span class="Comment"> *                        density, to try and slow the overpopulation problem.</span>
+<span class="Comment"> * 6004-11-04 16:11  2.1  Made forefinger narrower to fit hole in centre of</span>
+<span class="Comment"> *                        CD.</span>
+<span class="Comment"> </span><span class="Comment">*/</span>
+
+<span class="Comment">/*</span><span class="Comment"> Standard definitions</span>
+<span class="Comment"> </span><span class="Comment">*/</span>
+
+<span class="PreProc">#define SEX male</span>
+<span class="PreProc">#define HEIGHT </span><span class="Constant">1.84</span>
+<span class="PreProc">#define MASS </span><span class="Constant">68</span>
+<span class="PreProc">#define RACE caucasian</span>
+
+<span class="Comment">/*</span><span class="Comment"> Include inherited traits from parent DNA files.</span>
+<span class="Comment"> *</span>
+<span class="Comment"> * Files must be pre-processed with MENDEL program to provide proper</span>
+<span class="Comment"> * inheritance features.</span>
+<span class="Comment"> </span><span class="Comment">*/</span>
+
+<span class="PreProc">#include </span><span class="Constant">&quot;mother.h&quot;</span>
+<span class="PreProc">#include </span><span class="Constant">&quot;father.h&quot;</span>
+
+<span class="cPreCondit">#ifndef FATHER</span>
+<span class="PreProc">#warn(</span><span class="Constant">&quot;Father unknown -- guessing</span><span class="Special">\n</span><span class="Constant">&quot;</span><span class="PreProc">)</span>
+<span class="PreProc">#include </span><span class="Constant">&quot;bastard.h&quot;</span>
+<span class="cPreCondit">#endif</span>
+
+<span class="Comment">/*</span><span class="Comment"> Set up sex-specific functions and variables</span>
+<span class="Comment"> </span><span class="Comment">*/</span>
+<span class="PreProc">#include </span><span class="Constant">&lt;sex.h&gt;</span>
+ <span class="Comment">/*</span><span class="Comment"> Kludged code -- I'll re-design this lot and re-write it as a proper</span>
+<span class="Comment"> * library sometime soon.</span>
+<span class="Comment"> </span><span class="Comment">*/</span>
+<span class="Type">struct</span> genitals
+   {
+<span class="cPreCondit">#ifdef MALE</span>
+   Penis *jt;
+<span class="cPreCondit">#endif</span>
+   <span class="Comment">/*</span><span class="Comment"> G_spot *g;   Removed for debugging purposes </span><span class="Comment">*/</span>
+<span class="cPreCondit">#ifdef FEMALE</span>
+   Vagina *p;
+<span class="cPreCondit">#endif</span>
+   }
+
+<span class="Comment">/*</span><span class="Comment"> Initialization bootstrap routine -- called before DNA duplication.</span>
+<span class="Comment"> * Allocates buffers and sets up protein file pointers</span>
+<span class="Comment"> </span><span class="Comment">*/</span>
+DNA *zygote_initialize(Sperm *, Ovum *);
+
+<span class="Comment">/*</span><span class="Comment"> MAIN INITIALIZATION CODE</span>
+<span class="Comment"> *</span>
+<span class="Comment"> * Returns structures containing pre-processed phenotypes for the organism</span>
+<span class="Comment"> * to display at birth.</span>
+<span class="Comment"> *</span>
+<span class="Comment"> * Will be improved later to make output less ugly.</span>
+<span class="Comment"> </span><span class="Comment">*/</span>
+Characteristic *lookup_phenotype(Identifier *i);
+</pre>

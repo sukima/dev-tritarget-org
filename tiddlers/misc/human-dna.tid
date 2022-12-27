@@ -1,0 +1,21 @@
+created: 00000000000000000
+creator: God
+modified: 20221227023050000
+modifier: Sukima
+tags: Misc Humor Coding
+title: Human DNA Code
+type: text/vnd.tiddlywiki
+
+For many years molecular biologists have been mystified by the fact that very little of an organism's DNA seems to serve any useful function.
+
+I have solved the mystery.
+
+The reason why only 30% of human DNA performs any useful function is that the rest of it is comments.
+
+Once we decode a typical human genome, we see that the contents begin as follows:
+
+{{sourcecode/human_dna.h}}
+
+...and so on.
+
+[ Note that God uses three-space tabs ]

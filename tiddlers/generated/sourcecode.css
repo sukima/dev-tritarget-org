@@ -19,5 +19,6 @@ Sourcecode CSS styles for text/prs.sourcecode generated output
 .vimCodeElement .Comment { color: var(--rebase1); }
 .vimCodeElement .vimIsCommand { color: var(--rebase0); }
 .vimCodeElement .vimCommand { color: var(--yellow); }
+.vimCodeElement .cPreCondit { color: var(--orange); }
 .vimCodeElement .vimSynType { color: var(--cyan); }
 .vimCodeElement .Normal { color: var(--rebase00); }
