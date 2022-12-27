@@ -17,16 +17,17 @@ type: text/prs.sourcecode
 
 <span class="Identifier">wiki/sourcecode/%.html:</span> sourcecode/<span class="Identifier">%</span>
 <span class="Special">  @</span><span class="Constant">mkdir -p </span><span class="Identifier">$(@D)</span>
-<span class="Constant">  TARGET_FILE=</span><span class="Constant">&quot;</span><span class="Identifier">$@</span><span class="Constant">&quot;</span><span class="Constant"> </span><span class="Special">\</span>
-<span class="Constant">    SOURCE_FILE=</span><span class="Constant">&quot;</span><span class="Identifier">$(&lt;F)</span><span class="Constant">&quot;</span><span class="Constant"> </span><span class="Special">\</span>
+<span class="Constant">  SOURCE_FILE=</span><span class="Constant">&quot;</span><span class="Identifier">$&lt;</span><span class="Constant">&quot;</span><span class="Constant"> </span><span class="Special">\</span>
+<span class="Constant">    TARGET_FILE=</span><span class="Constant">&quot;</span><span class="Identifier">$@</span><span class="Constant">&quot;</span><span class="Constant"> </span><span class="Special">\</span>
 <span class="Constant">    vim -N -E -s </span><span class="Special">\</span>
 <span class="Constant">    -c </span><span class="Constant">&quot;source scripts/sourcecode-to-html.vim&quot;</span><span class="Constant"> </span><span class="Special">\</span>
 <span class="Constant">    </span><span class="Identifier">$&lt;</span><span class="Constant"> </span><span class="Special">\</span>
 <span class="Constant">    &gt;/dev/null</span>
 
 <span class="Identifier">tiddlers/sourcecode/%.tid:</span> wiki/sourcecode/<span class="Identifier">%</span>.html
-<span class="Constant">  TARGET_FILE=</span><span class="Constant">&quot;</span><span class="Identifier">$@</span><span class="Constant">&quot;</span><span class="Constant"> </span><span class="Special">\</span>
-<span class="Constant">    SOURCE_FILE=</span><span class="Constant">&quot;</span><span class="Identifier">$(</span><span class="Statement">basename</span><span class="Identifier"> $(&lt;F))</span><span class="Constant">&quot;</span><span class="Constant"> </span><span class="Special">\</span>
+<span class="Special">  @</span><span class="Constant">mkdir -p </span><span class="Identifier">$(@D)</span>
+<span class="Constant">  SOURCE_FILE=</span><span class="Constant">&quot;</span><span class="Identifier">$(</span><span class="Statement">patsubst</span><span class="Identifier"> wiki/sourcecode/%.html,%,$&lt;)</span><span class="Constant">&quot;</span><span class="Constant"> </span><span class="Special">\</span>
+<span class="Constant">    TARGET_FILE=</span><span class="Constant">&quot;</span><span class="Identifier">$@</span><span class="Constant">&quot;</span><span class="Constant"> </span><span class="Special">\</span>
 <span class="Constant">    ./bin/sourcecode-html &lt; </span><span class="Identifier">$&lt;</span><span class="Constant"> &gt; </span><span class="Identifier">$@</span>
 
 <span class="Identifier">tiddlers/generated/sourcecode.css:</span> <span class="Identifier">$(sourcecode_html)</span>

@@ -13,16 +13,17 @@ generated: $(sourcecode_tid) \
 
 wiki/sourcecode/%.html: sourcecode/%
 	@mkdir -p $(@D)
-	TARGET_FILE="$@" \
-		SOURCE_FILE="$(<F)" \
+	SOURCE_FILE="$<" \
+		TARGET_FILE="$@" \
 		vim -N -E -s \
 		-c "source scripts/sourcecode-to-html.vim" \
 		$< \
 		>/dev/null
 
 tiddlers/sourcecode/%.tid: wiki/sourcecode/%.html
-	TARGET_FILE="$@" \
-		SOURCE_FILE="$(basename $(<F))" \
+	@mkdir -p $(@D)
+	SOURCE_FILE="$(patsubst wiki/sourcecode/%.html,%,$<)" \
+		TARGET_FILE="$@" \
 		./bin/sourcecode-html < $< > $@
 
 tiddlers/generated/sourcecode.css: $(sourcecode_html)
