@@ -1,6 +1,6 @@
 created: 20200212174437000
 creator: Sukima
-modified: 20221227180959000
+modified: 20221227183523000
 modifier: Sukima
 tags: JavaScript snippets
 title: simple-dom
@@ -9,5 +9,3 @@ type: text/vnd.tiddlywiki
 A micro lib to manage common DOM manipulations.
 
 https://tritarget.org/cdn/simple-dom.js
-
-{{sourcecode/cdn/simple-dom.js}}
