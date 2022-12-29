@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Example using for await…of to throttle requests</title>
+<script type="module">
+  import $ from 'https://tritarget.org/cdn/simple-dom.js';
+  const { floor, random } = Math;
+
+  // Utility functions and Fake request with a result
+  const timeout = (delay) => new Promise(r => setTimeout(r, delay));
+  const randomNumber = (l, h) => floor(random() * (h - l + 1)) + l;
+  const sampleData = Array.from({ length: 120 }).keys();
+  const request = async () => {
+    let { done, value } = sampleData.next();
+    if (done) return null;
+    await timeout(randomNumber(100, 700));
+    return value + 1;
+  };
+
+  // Implementation of throttle
+  async function* throttle(
+    requestCallback,
+    batchSize = 5,
+    timing = 1000,
+  ) {
+    while (true) {
+      let waitForTimer = timeout(timing);
+      yield* Array.from({ length: batchSize }, requestCallback);
+      await waitForTimer;
+    }
+  }
+
+  // Consume the requests with throttle
+  for await (let result of throttle(request)) {
+    if (result === null) break;
+    if (result > 1) $.output.append(', ');
+    $.output.append(result);
+  }
+</script>
+</head>
+<body>
+  <p id="output"><p>
+</body>
+</html>
