@@ -356,8 +356,10 @@ class FileSaver { // {{{1
   }
 }
 
-class CancelledSaver { // {{{2
-  save() {}
+class CancelledSaver extends FileSaver { // {{{2
+  save() {
+    flash('Cancelled save');
+  }
 }
 
 class FragmentSaver extends FileSaver { // {{{2
