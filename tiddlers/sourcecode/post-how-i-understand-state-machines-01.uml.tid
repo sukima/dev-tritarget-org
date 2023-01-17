@@ -1,0 +1,33 @@
+title: sourcecode/post-how-i-understand-state-machines-01.uml
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="PreProc">@startuml</span>
+
+<span class="Type">state</span> solid {
+  <span class="Type">state</span> solid.<span class="Constant">red</span> <span class="Statement">as</span> <span class="Constant">&quot;red&quot;</span><span class="Comment"> : entry / setColorRed</span>
+  <span class="Type">state</span> solid.<span class="Constant">yellow</span> <span class="Statement">as</span> <span class="Constant">&quot;yellow&quot;</span><span class="Comment"> : entry / setColorYellow</span>
+  <span class="Type">state</span> solid.<span class="Constant">green</span> <span class="Statement">as</span> <span class="Constant">&quot;green&quot;</span><span class="Comment"> : entry / setColorGreen</span>
+
+  <span class="Type">[*]</span> <span class="Identifier">-&gt;</span> solid.<span class="Constant">red</span>
+  solid.<span class="Constant">red</span> <span class="Identifier">-&gt;</span> solid.<span class="Constant">yellow</span><span class="Comment"> : NEXT</span>
+  solid.<span class="Constant">yellow</span> <span class="Identifier">-&gt;</span> solid.<span class="Constant">green</span><span class="Comment"> : NEXT</span>
+  solid.<span class="Constant">green</span> <span class="Identifier">-&gt;</span> solid.<span class="Constant">red</span><span class="Comment"> : NEXT</span>
+}
+
+<span class="Type">state</span> blinking {
+  <span class="Type">state</span> blinking.<span class="Constant">red</span> <span class="Statement">as</span> <span class="Constant">&quot;red&quot;</span><span class="Comment"> : entry / setColorRed</span>
+  <span class="Type">state</span> blinking.<span class="Constant">yellow</span> <span class="Statement">as</span> <span class="Constant">&quot;yellow&quot;</span><span class="Comment"> : entry / setColorYellow</span>
+}
+
+blinking<span class="Comment"> : invoke / blinkerRelay</span>
+
+<span class="Type">[*]</span> <span class="Identifier">-&gt;</span> solid
+blinking <span class="Identifier">-&gt;</span> solid<span class="Comment"> : NEXT</span>
+solid <span class="Identifier">--&gt;</span> blinking.<span class="Constant">red</span><span class="Comment"> : FAIL</span>
+solid <span class="Identifier">--&gt;</span> blinking.<span class="Constant">yellow</span><span class="Comment"> : CAUTION</span>
+blinking.<span class="Constant">red</span> <span class="Identifier">-&gt;</span> blinking.<span class="Constant">yellow</span><span class="Comment"> : CAUTION</span>
+blinking.<span class="Constant">yellow</span> <span class="Identifier">-&gt;</span> blinking.<span class="Constant">red</span><span class="Comment"> : FAIL</span>
+
+<span class="PreProc">@enduml</span>
+</pre>

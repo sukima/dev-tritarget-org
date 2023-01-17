@@ -1,0 +1,26 @@
+title: sourcecode/post-how-i-understand-state-machines-03.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">const</span> light <span class="Statement">=</span> <span class="Constant">document</span>.<span class="Identifier">getElementById</span>(<span class="Constant">'light'</span>);
+
+<span class="Type">function</span> <span class="Identifier">startBlinker</span>() {
+  <span class="Type">const</span> toggleBlink <span class="Statement">=</span> <span class="Type">()</span> <span class="Type">=&gt;</span> light.classList.<span class="Identifier">toggle</span>(<span class="Constant">'on'</span>);
+  <span class="Type">let</span> interval <span class="Statement">=</span> <span class="Identifier">setInterval</span>(toggleBlink, <span class="Constant">700</span>);
+  <span class="Statement">return</span> <span class="Type">()</span> <span class="Type">=&gt;</span> {
+    <span class="Identifier">clearInterval</span>(interval);
+    light.classList.<span class="Identifier">add</span>(<span class="Constant">'on'</span>);
+  };
+}
+
+<span class="Type">const</span> trafficLight <span class="Statement">=</span> <span class="Identifier">interpret</span>(lightMachine.<span class="Identifier">withConfig</span>({
+  actions: {
+    setColorRed: <span class="Type">()</span> <span class="Type">=&gt;</span> light.dataset.color <span class="Statement">=</span> <span class="Constant">'red'</span>,
+    setColorYellow: <span class="Type">()</span> <span class="Type">=&gt;</span> light.dataset.color <span class="Statement">=</span> <span class="Constant">'yellow'</span>,
+    setColorGreen: <span class="Type">()</span> <span class="Type">=&gt;</span> light.dataset.color <span class="Statement">=</span> <span class="Constant">'green'</span>,
+  },
+  services: {
+    blinkerRelay: <span class="Type">()</span> <span class="Type">=&gt;</span> <span class="Type">()</span> <span class="Type">=&gt;</span> <span class="Identifier">startBlinker</span>(),
+  },
+})).<span class="Identifier">start</span>();
+</pre>

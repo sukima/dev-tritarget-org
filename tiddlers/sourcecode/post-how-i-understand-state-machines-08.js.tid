@@ -1,0 +1,24 @@
+title: sourcecode/post-how-i-understand-state-machines-08.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Comment">// Please don’t try to do something like this</span>
+<span class="Identifier">interpret</span>(<span class="Identifier">createMachine</span>({
+  initial: <span class="Constant">'…'</span>,
+  context: { model: <span class="Type">null</span> },
+  on: {
+    MODEL: { actions: <span class="Constant">'assignModel'</span> },
+  },
+  states: { … },
+}, {
+  actions: {
+    assignModel: <span class="Identifier">assign</span>({
+      model: (_, event) <span class="Type">=&gt;</span> event.model,
+    }),
+  },
+}))
+  .<span class="Identifier">onTransition</span>((state) <span class="Type">=&gt;</span> {
+    <span class="Identifier">doSomethingWith</span>(state.context.model);
+  })
+  .<span class="Identifier">start</span>();
+</pre>

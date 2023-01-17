@@ -1,0 +1,20 @@
+title: sourcecode/post-how-i-understand-state-machines-04.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">const</span> log <span class="Statement">=</span> (<span class="Statement">...</span>args) <span class="Type">=&gt;</span> <span class="Constant">console</span>.<span class="Identifier">log</span>(...args);
+
+<span class="Type">const</span> consoleLight <span class="Statement">=</span> <span class="Identifier">interpret</span>(lightMachine.<span class="Identifier">withConfig</span>({
+  actions: {
+    setColorRed: <span class="Type">()</span> <span class="Type">=&gt;</span> <span class="Identifier">log</span>(<span class="Constant">'Set color to Red'</span>),
+    setColorYellow: <span class="Type">()</span> <span class="Type">=&gt;</span> <span class="Identifier">log</span>(<span class="Constant">'Set color to Yellow'</span>),
+    setColorGreen: <span class="Type">()</span> <span class="Type">=&gt;</span> <span class="Identifier">log</span>(<span class="Constant">'Set color to Green'</span>),
+  },
+  services: {
+    blinkerRelay: <span class="Type">()</span> <span class="Type">=&gt;</span> <span class="Type">()</span> <span class="Type">=&gt;</span> {
+      <span class="Identifier">log</span>(<span class="Constant">'started blinking'</span>);
+      <span class="Statement">return</span> <span class="Type">()</span> <span class="Type">=&gt;</span> <span class="Identifier">log</span>(<span class="Constant">'stopped blinking'</span>);
+    },
+  },
+})).<span class="Identifier">start</span>();
+</pre>

@@ -1,0 +1,11 @@
+#light[data-state~=red] {
+  background-color: salmon;
+}
+
+#light[data-state~=yellow] {
+  background-color: gold;
+}
+
+#light[data-state~=green] {
+  background-color: lightgreen;
+}

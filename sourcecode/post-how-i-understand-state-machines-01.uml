@@ -1,0 +1,28 @@
+@startuml
+
+state solid {
+  state solid.red as "red" : entry / setColorRed
+  state solid.yellow as "yellow" : entry / setColorYellow
+  state solid.green as "green" : entry / setColorGreen
+
+  [*] -> solid.red
+  solid.red -> solid.yellow : NEXT
+  solid.yellow -> solid.green : NEXT
+  solid.green -> solid.red : NEXT
+}
+
+state blinking {
+  state blinking.red as "red" : entry / setColorRed
+  state blinking.yellow as "yellow" : entry / setColorYellow
+}
+
+blinking : invoke / blinkerRelay
+
+[*] -> solid
+blinking -> solid : NEXT
+solid --> blinking.red : FAIL
+solid --> blinking.yellow : CAUTION
+blinking.red -> blinking.yellow : CAUTION
+blinking.yellow -> blinking.red : FAIL
+
+@enduml

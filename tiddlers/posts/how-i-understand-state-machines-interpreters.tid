@@ -1,0 +1,20 @@
+created: 20230117031553000
+creator: Sukima
+modified: 20230117031553000
+modifier: Sukima
+title: post/how-i-understand-state-machines-interpreters
+type: text/vnd.tiddlywiki
+
+<<figure "Vanilla DOM example of the traffic light implementation ([[DEMO|https://tritarget.org/fiddles/?fiddle=traffic-light.html]])" {{sourcecode/post-how-i-understand-state-machines-03.js}}>>
+
+---
+
+<<figure "Console log example of the traffic light implementation ([[DEMO|https://tritarget.org/fiddles/?fiddle=traffic-light.html]])" {{sourcecode/post-how-i-understand-state-machines-04.js}}>>
+
+---
+
+<<figure "Vanilla text replacement example of the traffic light implementation ([[DEMO|https://tritarget.org/fiddles/?fiddle=traffic-light.html]])" {{sourcecode/post-how-i-understand-state-machines-05.js}}>>
+
+---
+
+<<figure "Mocks in test code example of the traffic light implementation ([[DEMO|https://tritarget.org/fiddles/?fiddle=traffic-light-test.html]])" {{sourcecode/post-how-i-understand-state-machines-06.js}}>>

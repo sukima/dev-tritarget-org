@@ -1,0 +1,49 @@
+title: sourcecode/post-how-i-understand-state-machines-02.xml
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Comment">&lt;?</span><span class="Type">xml</span><span class="Type"> </span><span class="Type">version</span>=<span class="Constant">&quot;1.0&quot;</span><span class="Comment">?&gt;</span>
+<span class="Identifier">&lt;</span><span class="Identifier">scxml</span><span class="Identifier"> </span><span class="Type">xmlns</span>=<span class="Constant">&quot;<a href="http://www.w3.org/2005/07/scxml">http://www.w3.org/2005/07/scxml</a>&quot;</span><span class="Identifier"> </span><span class="Type">version</span>=<span class="Constant">&quot;1.0&quot;</span><span class="Identifier"> </span><span class="Type">initial</span>=<span class="Constant">&quot;solid&quot;</span><span class="Identifier">&gt;</span>
+  <span class="Identifier">&lt;</span><span class="Identifier">state</span><span class="Identifier"> </span><span class="Type">id</span>=<span class="Constant">&quot;solid&quot;</span><span class="Identifier">&gt;</span>
+    <span class="Identifier">&lt;</span><span class="Identifier">transition</span><span class="Identifier"> </span><span class="Type">event</span>=<span class="Constant">&quot;FAIL&quot;</span><span class="Identifier"> </span><span class="Type">target</span>=<span class="Constant">&quot;blinking.red&quot;</span><span class="Identifier"> /&gt;</span>
+    <span class="Identifier">&lt;</span><span class="Identifier">transition</span><span class="Identifier"> </span><span class="Type">event</span>=<span class="Constant">&quot;CAUTION&quot;</span><span class="Identifier"> </span><span class="Type">target</span>=<span class="Constant">&quot;blinking.yellow&quot;</span><span class="Identifier"> /&gt;</span>
+    <span class="Identifier">&lt;</span><span class="Identifier">initial</span><span class="Identifier">&gt;</span>
+      <span class="Identifier">&lt;</span><span class="Identifier">transition</span><span class="Identifier"> </span><span class="Type">target</span>=<span class="Constant">&quot;solid.red&quot;</span><span class="Identifier"> /&gt;</span>
+    <span class="Identifier">&lt;/</span><span class="Identifier">initial</span><span class="Identifier">&gt;</span>
+    <span class="Identifier">&lt;</span><span class="Identifier">state</span><span class="Identifier"> </span><span class="Type">id</span>=<span class="Constant">&quot;solid.red&quot;</span><span class="Identifier">&gt;</span>
+      <span class="Identifier">&lt;</span><span class="Identifier">onentry</span><span class="Identifier">&gt;</span>
+        <span class="Identifier">&lt;</span><span class="Identifier">send</span><span class="Identifier"> </span><span class="Type">event</span>=<span class="Constant">&quot;setColorRed&quot;</span><span class="Identifier"> /&gt;</span>
+      <span class="Identifier">&lt;/</span><span class="Identifier">onentry</span><span class="Identifier">&gt;</span>
+      <span class="Identifier">&lt;</span><span class="Identifier">transition</span><span class="Identifier"> </span><span class="Type">event</span>=<span class="Constant">&quot;NEXT&quot;</span><span class="Identifier"> </span><span class="Type">target</span>=<span class="Constant">&quot;solid.yellow&quot;</span><span class="Identifier"> /&gt;</span>
+    <span class="Identifier">&lt;/</span><span class="Identifier">state</span><span class="Identifier">&gt;</span>
+    <span class="Identifier">&lt;</span><span class="Identifier">state</span><span class="Identifier"> </span><span class="Type">id</span>=<span class="Constant">&quot;solid.yellow&quot;</span><span class="Identifier">&gt;</span>
+      <span class="Identifier">&lt;</span><span class="Identifier">onentry</span><span class="Identifier">&gt;</span>
+        <span class="Identifier">&lt;</span><span class="Identifier">send</span><span class="Identifier"> </span><span class="Type">event</span>=<span class="Constant">&quot;setColorYellow&quot;</span><span class="Identifier"> /&gt;</span>
+      <span class="Identifier">&lt;/</span><span class="Identifier">onentry</span><span class="Identifier">&gt;</span>
+      <span class="Identifier">&lt;</span><span class="Identifier">transition</span><span class="Identifier"> </span><span class="Type">event</span>=<span class="Constant">&quot;NEXT&quot;</span><span class="Identifier"> </span><span class="Type">target</span>=<span class="Constant">&quot;solid.green&quot;</span><span class="Identifier"> /&gt;</span>
+    <span class="Identifier">&lt;/</span><span class="Identifier">state</span><span class="Identifier">&gt;</span>
+    <span class="Identifier">&lt;</span><span class="Identifier">state</span><span class="Identifier"> </span><span class="Type">id</span>=<span class="Constant">&quot;solid.green&quot;</span><span class="Identifier">&gt;</span>
+      <span class="Identifier">&lt;</span><span class="Identifier">onentry</span><span class="Identifier">&gt;</span>
+        <span class="Identifier">&lt;</span><span class="Identifier">send</span><span class="Identifier"> </span><span class="Type">event</span>=<span class="Constant">&quot;setColorGreen&quot;</span><span class="Identifier"> /&gt;</span>
+      <span class="Identifier">&lt;/</span><span class="Identifier">onentry</span><span class="Identifier">&gt;</span>
+      <span class="Identifier">&lt;</span><span class="Identifier">transition</span><span class="Identifier"> </span><span class="Type">event</span>=<span class="Constant">&quot;NEXT&quot;</span><span class="Identifier"> </span><span class="Type">target</span>=<span class="Constant">&quot;solid.red&quot;</span><span class="Identifier"> /&gt;</span>
+    <span class="Identifier">&lt;/</span><span class="Identifier">state</span><span class="Identifier">&gt;</span>
+  <span class="Identifier">&lt;/</span><span class="Identifier">state</span><span class="Identifier">&gt;</span>
+  <span class="Identifier">&lt;</span><span class="Identifier">state</span><span class="Identifier"> </span><span class="Type">id</span>=<span class="Constant">&quot;blinking&quot;</span><span class="Identifier">&gt;</span>
+    <span class="Identifier">&lt;</span><span class="Identifier">invoke</span><span class="Identifier"> </span><span class="Type">src</span>=<span class="Constant">&quot;blinkingRelay&quot;</span><span class="Identifier"> /&gt;</span>
+    <span class="Identifier">&lt;</span><span class="Identifier">transition</span><span class="Identifier"> </span><span class="Type">event</span>=<span class="Constant">&quot;NEXT&quot;</span><span class="Identifier"> </span><span class="Type">target</span>=<span class="Constant">&quot;solid&quot;</span><span class="Identifier"> /&gt;</span>
+    <span class="Identifier">&lt;</span><span class="Identifier">state</span><span class="Identifier"> </span><span class="Type">id</span>=<span class="Constant">&quot;blinking.red&quot;</span><span class="Identifier">&gt;</span>
+      <span class="Identifier">&lt;</span><span class="Identifier">onentry</span><span class="Identifier">&gt;</span>
+        <span class="Identifier">&lt;</span><span class="Identifier">send</span><span class="Identifier"> </span><span class="Type">event</span>=<span class="Constant">&quot;setColorRed&quot;</span><span class="Identifier"> /&gt;</span>
+      <span class="Identifier">&lt;/</span><span class="Identifier">onentry</span><span class="Identifier">&gt;</span>
+      <span class="Identifier">&lt;</span><span class="Identifier">transition</span><span class="Identifier"> </span><span class="Type">event</span>=<span class="Constant">&quot;CAUTION&quot;</span><span class="Identifier"> </span><span class="Type">target</span>=<span class="Constant">&quot;blinking.yellow&quot;</span><span class="Identifier"> /&gt;</span>
+    <span class="Identifier">&lt;/</span><span class="Identifier">state</span><span class="Identifier">&gt;</span>
+    <span class="Identifier">&lt;</span><span class="Identifier">state</span><span class="Identifier"> </span><span class="Type">id</span>=<span class="Constant">&quot;blinking.yellow&quot;</span><span class="Identifier">&gt;</span>
+      <span class="Identifier">&lt;</span><span class="Identifier">onentry</span><span class="Identifier">&gt;</span>
+        <span class="Identifier">&lt;</span><span class="Identifier">send</span><span class="Identifier"> </span><span class="Type">event</span>=<span class="Constant">&quot;setColorYellow&quot;</span><span class="Identifier"> /&gt;</span>
+      <span class="Identifier">&lt;/</span><span class="Identifier">onentry</span><span class="Identifier">&gt;</span>
+      <span class="Identifier">&lt;</span><span class="Identifier">transition</span><span class="Identifier"> </span><span class="Type">event</span>=<span class="Constant">&quot;FAIL&quot;</span><span class="Identifier"> </span><span class="Type">target</span>=<span class="Constant">&quot;blinking.red&quot;</span><span class="Identifier"> /&gt;</span>
+    <span class="Identifier">&lt;/</span><span class="Identifier">state</span><span class="Identifier">&gt;</span>
+  <span class="Identifier">&lt;/</span><span class="Identifier">state</span><span class="Identifier">&gt;</span>
+<span class="Identifier">&lt;/</span><span class="Identifier">scxml</span><span class="Identifier">&gt;</span>
+</pre>

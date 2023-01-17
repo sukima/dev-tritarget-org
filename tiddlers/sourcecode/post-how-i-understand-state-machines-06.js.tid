@@ -1,0 +1,31 @@
+title: sourcecode/post-how-i-understand-state-machines-06.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">function</span> <span class="Identifier">mockConfig</span>(assert) {
+  <span class="Statement">return</span> {
+    actions: {
+      setColorRed: <span class="Type">()</span> <span class="Type">=&gt;</span> assert.<span class="Identifier">step</span>(<span class="Constant">'red'</span>),
+      setColorYellow: <span class="Type">()</span> <span class="Type">=&gt;</span> assert.<span class="Identifier">step</span>(<span class="Constant">'yellow'</span>),
+      setColorGreen: <span class="Type">()</span> <span class="Type">=&gt;</span> assert.<span class="Identifier">step</span>(<span class="Constant">'green'</span>),
+    },
+    services: {
+      blinkerRelay: <span class="Type">()</span> <span class="Type">=&gt;</span> <span class="Type">()</span> <span class="Type">=&gt;</span> {
+        assert.<span class="Identifier">step</span>(<span class="Constant">'start blinking'</span>);
+        <span class="Statement">return</span> <span class="Type">()</span> <span class="Type">=&gt;</span> assert.<span class="Identifier">step</span>(<span class="Constant">'stop blinking'</span>);
+      },
+    },
+  };
+}
+
+<span class="Constant">module</span>(<span class="Constant">'Traffic Light'</span>, <span class="Type">function</span> () {
+  <span class="Identifier">test</span>(<span class="Constant">'cycles the light'</span>, <span class="Type">function</span> (assert) {
+    <span class="Type">let</span> config <span class="Statement">=</span> <span class="Identifier">mockConfig</span>(assert);
+    <span class="Type">let</span> machine <span class="Statement">=</span> lightMachine.<span class="Identifier">withConfig</span>(config);
+    <span class="Type">let</span> subject <span class="Statement">=</span> <span class="Identifier">interpret</span>(machine);
+    subject.<span class="Identifier">start</span>();
+    subject.<span class="Identifier">send</span>([<span class="Constant">'NEXT'</span>, <span class="Constant">'NEXT'</span>, <span class="Constant">'NEXT'</span>]);
+    assert.<span class="Identifier">verifySteps</span>([<span class="Constant">'red'</span>, <span class="Constant">'yellow'</span>, <span class="Constant">'green'</span>, <span class="Constant">'red'</span>]);
+  });
+});
+</pre>

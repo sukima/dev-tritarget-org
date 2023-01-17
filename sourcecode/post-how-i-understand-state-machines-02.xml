@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="solid">
+  <state id="solid">
+    <transition event="FAIL" target="blinking.red" />
+    <transition event="CAUTION" target="blinking.yellow" />
+    <initial>
+      <transition target="solid.red" />
+    </initial>
+    <state id="solid.red">
+      <onentry>
+        <send event="setColorRed" />
+      </onentry>
+      <transition event="NEXT" target="solid.yellow" />
+    </state>
+    <state id="solid.yellow">
+      <onentry>
+        <send event="setColorYellow" />
+      </onentry>
+      <transition event="NEXT" target="solid.green" />
+    </state>
+    <state id="solid.green">
+      <onentry>
+        <send event="setColorGreen" />
+      </onentry>
+      <transition event="NEXT" target="solid.red" />
+    </state>
+  </state>
+  <state id="blinking">
+    <invoke src="blinkingRelay" />
+    <transition event="NEXT" target="solid" />
+    <state id="blinking.red">
+      <onentry>
+        <send event="setColorRed" />
+      </onentry>
+      <transition event="CAUTION" target="blinking.yellow" />
+    </state>
+    <state id="blinking.yellow">
+      <onentry>
+        <send event="setColorYellow" />
+      </onentry>
+      <transition event="FAIL" target="blinking.red" />
+    </state>
+  </state>
+</scxml>

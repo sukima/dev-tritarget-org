@@ -1,0 +1,19 @@
+title: sourcecode/post-how-i-understand-state-machines-09.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">const</span> light <span class="Statement">=</span> <span class="Constant">document</span>.<span class="Identifier">getElementById</span>(<span class="Constant">'light'</span>);
+
+<span class="Identifier">interpret</span>(<span class="Identifier">createMachine</span>({
+  initial: <span class="Constant">'red'</span>,
+  states: {
+    red: { … },
+    yellow: { … },
+    green: { … },
+  },
+}))
+  .<span class="Identifier">onTransition</span>((state) <span class="Type">=&gt;</span> {
+    light.dataset.state <span class="Statement">=</span> state.<span class="Identifier">toStrings</span>().<span class="Identifier">join</span>(<span class="Constant">' '</span>);
+  })
+  .<span class="Identifier">start</span>();
+</pre>

@@ -1,0 +1,46 @@
+title: sourcecode/post-how-i-understand-state-machines-00.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Identifier">createMachine</span>({
+  initial: <span class="Constant">'solid'</span>,
+  states: {
+    solid: {
+      initial: <span class="Constant">'red'</span>,
+      on: {
+        FAIL: <span class="Constant">'#blinking.red'</span>,
+        CAUTION: <span class="Constant">'#blinking.yellow'</span>,
+      },
+      states: {
+        red: {
+          entry: <span class="Constant">'setColorRed'</span>,
+          on: { NEXT: <span class="Constant">'yellow'</span> },
+        },
+        yellow: {
+          entry: <span class="Constant">'setColorYellow'</span>,
+          on: { NEXT: <span class="Constant">'green'</span> },
+        },
+        green: {
+          entry: <span class="Constant">'setColorGreen'</span>,
+          on: { NEXT: <span class="Constant">'red'</span> },
+        },
+      },
+    },
+    blinking: {
+      id: <span class="Constant">'blinking'</span>,
+      invoke: { src: <span class="Constant">'blinkerRelay'</span> },
+      on: { NEXT: <span class="Constant">'solid'</span> },
+      states: {
+        red: {
+          entry: <span class="Constant">'setColorRed'</span>,
+          on: { CAUTION: <span class="Constant">'yellow'</span> },
+        },
+        yellow: {
+          entry: <span class="Constant">'setColorYellow'</span>,
+          on: { FAIL: <span class="Constant">'red'</span> },
+        },
+      },
+    },
+  },
+});
+</pre>

@@ -1,0 +1,21 @@
+title: sourcecode/post-how-i-understand-state-machines-05.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">const</span> color <span class="Statement">=</span> <span class="Constant">document</span>.<span class="Identifier">querySelector</span>(<span class="Constant">'#text .color'</span>);
+<span class="Type">const</span> blinker <span class="Statement">=</span> <span class="Constant">document</span>.<span class="Identifier">querySelector</span>(<span class="Constant">'#text .blinker'</span>);
+
+<span class="Type">const</span> textLight <span class="Statement">=</span> <span class="Identifier">interpret</span>(lightMachine.<span class="Identifier">withConfig</span>({
+  actions: {
+    setColorRed: <span class="Type">()</span> <span class="Type">=&gt;</span> color.textContent <span class="Statement">=</span> <span class="Constant">'red'</span>,
+    setColorYellow: <span class="Type">()</span> <span class="Type">=&gt;</span> color.textContent <span class="Statement">=</span> <span class="Constant">'yellow'</span>,
+    setColorGreen: <span class="Type">()</span> <span class="Type">=&gt;</span> color.textContent <span class="Statement">=</span> <span class="Constant">'green'</span>,
+  },
+  services: {
+    blinkerRelay: <span class="Type">()</span> <span class="Type">=&gt;</span> <span class="Type">()</span> <span class="Type">=&gt;</span> {
+      blinker.textContent <span class="Statement">=</span> <span class="Constant">'(blinking)'</span>;
+      <span class="Statement">return</span> <span class="Type">()</span> <span class="Type">=&gt;</span> blinker.textContent <span class="Statement">=</span> <span class="Constant">''</span>;
+    },
+  },
+})).<span class="Identifier">start</span>();
+</pre>

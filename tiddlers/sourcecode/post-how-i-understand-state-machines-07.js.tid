@@ -1,0 +1,30 @@
+title: sourcecode/post-how-i-understand-state-machines-07.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Identifier">createMachine</span>({
+  initial: <span class="Constant">'idle'</span>,
+  context: { pressCount: <span class="Constant">0</span> },
+  states: {
+    idle: {
+      on: {
+        PRESS: [
+          { target: <span class="Constant">'boom'</span>, cond: <span class="Constant">'hasReachedPressLimit'</span> },
+          { actions: <span class="Constant">'incPressCount'</span> },
+        ],
+      },
+    },
+    boom: { type: <span class="Constant">'final'</span> },
+  },
+}, {
+  guards: {
+    hasReachedPressLimit:
+      (ctx) <span class="Type">=&gt;</span> ctx.pressCount <span class="Statement">&gt;=</span> PRESS_LIMIT,
+  },
+  actions: {
+    incPressCount: <span class="Identifier">assign</span>({
+      pressCount: (ctx) <span class="Type">=&gt;</span> ctx.pressCount <span class="Statement">+</span> <span class="Constant">1</span>,
+    }),
+  },
+});
+</pre>

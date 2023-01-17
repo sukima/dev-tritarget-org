@@ -1,0 +1,16 @@
+title: sourcecode/post-how-i-understand-state-machines-10.css
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Identifier">#light</span><span class="Special">[</span><span class="Constant">data-state</span><span class="Special">~=</span><span class="Constant">red</span><span class="Special">]</span> <span class="Identifier">{</span>
+  <span class="Type">background-color</span>: <span class="Constant">salmon</span>;
+<span class="Identifier">}</span>
+
+<span class="Identifier">#light</span><span class="Special">[</span><span class="Constant">data-state</span><span class="Special">~=</span><span class="Constant">yellow</span><span class="Special">]</span> <span class="Identifier">{</span>
+  <span class="Type">background-color</span>: <span class="Constant">gold</span>;
+<span class="Identifier">}</span>
+
+<span class="Identifier">#light</span><span class="Special">[</span><span class="Constant">data-state</span><span class="Special">~=</span><span class="Constant">green</span><span class="Special">]</span> <span class="Identifier">{</span>
+  <span class="Type">background-color</span>: <span class="Constant">lightgreen</span>;
+<span class="Identifier">}</span>
+</pre>
