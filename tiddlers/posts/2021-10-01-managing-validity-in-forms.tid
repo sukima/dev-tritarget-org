@@ -1,6 +1,6 @@
 created: 20211001191625000
 creator: Sukima
-modified: 20211001191625000
+modified: 20230117012222000
 modifier: Sukima
 tags: Article JavaScript Coding
 title: Managing validity in forms
@@ -94,7 +94,7 @@ Using what the DOM does best we can leverage events to suit our needs. This has 
 
 <figure>
 
-{{validity-sequence.svg}}
+{{diagrams/validity-sequence.svg}}
 
 <figcaption>Figure: <abbr title="Unified Modeling Language">UML</abbr> sequence diagram of how the browser executes validations during form submission</figcaption>
 

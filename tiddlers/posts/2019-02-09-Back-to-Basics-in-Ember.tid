@@ -1,6 +1,7 @@
-modified: 20190209161259000
 created: 20190209161259000
 creator: Sukima
+modified: 20230117012157000
+modifier: Sukima
 tags: Article Coding Ember
 title: Back to Basics in Ember
 type: text/vnd.tiddlywiki
@@ -25,13 +26,13 @@ The ''controller'' pattern of the MVC design is the middle man between the ''mod
 
 In Ember this process is handled by a series of hooks in the route. Any data returned from the `model()` hook will be passed to Ember's controller. The `setupContoller()` hook sets up the controller. There are a few more for different life cycles of a route transitions.
 
-{{ember-route-lifecycle.svg}}
+{{diagrams/ember-route-lifecycle.svg}}
 
 ! View (Controller/Template)
 
 The ''view'' pattern in Ember is split into two. This is a point of drastic confusion. On one hand you have your top level templates controlled by a Controller and then you have templates controlled by Components. This could almost be argued there are three view categories: Controllers, Components, and Templates. I tend to think about this in three levels:
 
-{{ember-view-tree.svg}}
+{{diagrams/ember-view-tree.svg}}
 
 Some of these need explanation&mdash;
 

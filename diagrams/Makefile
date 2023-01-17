@@ -58,7 +58,7 @@ $(OUTPUT)/%.svg.meta:
 	echo "created: $(TIDDLER_NOW)" >> $@; \
 	echo "modified: $(TIDDLER_NOW)" >> $@; \
 	echo "tags: Diagrams" >> $@; \
-	echo "title: $(notdir $(@:.meta=))" >> $@; \
+	echo "title: diagrams/$(notdir $(@:.meta=))" >> $@; \
 	echo "type: image/svg+xml" >> $@; \
 	echo "Created \`$@'"
 

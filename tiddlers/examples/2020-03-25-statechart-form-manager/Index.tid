@@ -1,5 +1,7 @@
 created: 20200325020817367
-modified: 20200329041852680
+creator: Sukima
+modified: 20230117012202000
+modifier: Sukima
 title: FormManagerExample
 type: text/vnd.tiddlywiki
 
@@ -7,7 +9,7 @@ type: text/vnd.tiddlywiki
 
 Here is a [[UML state diagram|https://en.wikipedia.org/wiki/UML_state_machine]] showing the form and the side effects it manages:
 
-<<fold "FormManagerExample.svg" "Statechart">>
+<<fold "diagrams/FormManagerExample.svg" "Statechart">>
 
 ! Demo
 

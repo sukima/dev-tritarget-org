@@ -1,6 +1,6 @@
 created: 20200513020814617
 creator: Sukima
-modified: 20200514035614391
+modified: 20230117012209000
 modifier: Sukima
 tags: Article
 title: State Machines work for logic too
@@ -28,7 +28,7 @@ It also meant that since the parser would tokenize to a flat list of OP Codes I 
 
 ! The Parser
 
-<<fold "uri-template-mini-parser.svg" "UML State Diagram">>
+<<fold "diagrams/uri-template-mini-parser.svg" "UML State Diagram">>
 
 The idea behind this is that each character can produce an event that the state machine can react to. For example say we define the following character map:
 
@@ -55,11 +55,11 @@ for (let char of [...input, EOL]) {
 
 Walking through the example `foo.com{/bar,baz}` would mean we would kick off a series of events: `TEXT`, `TEXT`, `TEXT`, `OPERATION`, `TEXT`, `TEXT`, `TEXT`, `OPEN_BRACE`, `OPERATION`, `TEXT`, `TEXT`, `TEXT`, `SPLIT`, `TEXT`, `TEXT`, `TEXT`, `CLOSE_BRACE`, `END_INPUT`.
 
-Looking at the [[UML State Diagram|uri-template-mini-parser.svg]] above we can follow those events and see how they would affect a running state machine:
+Looking at the [[UML State Diagram|diagrams/uri-template-mini-parser.svg]] above we can follow those events and see how they would affect a running state machine:
 
-<<fold "uri-template-mini-parser-sequence.svg" "Example Sequence">>
+<<fold "diagrams/uri-template-mini-parser-sequence.svg" "Example Sequence">>
 
-And finally if we take into account the actions defined in the [[UML State Diagram|uri-template-mini-parser.svg]] we can see the OP Codes being built.
+And finally if we take into account the actions defined in the [[UML State Diagram|diagrams/uri-template-mini-parser.svg]] we can see the OP Codes being built.
 
 * `append` — adds the character into the OP Code's `value` property
 * `flush` — yield (or push onto an array) the current OP Code and prepare a new one
@@ -82,7 +82,7 @@ And finally if we take into account the actions defined in the [[UML State Diagr
 
 !! Modeling the machine
 
-Using the [[UML State Diagram|uri-template-mini-parser.svg]] we can model this in object notation like the following:
+Using the [[UML State Diagram|diagrams/uri-template-mini-parser.svg]] we can model this in object notation like the following:
 
 <<fold "examples/state-machines-work-for-logic-too/lexer" "Lexer machine in object notation">>
 
