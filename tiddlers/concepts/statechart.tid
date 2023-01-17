@@ -1,0 +1,11 @@
+created: 20230106223109000
+creator: Sukima
+modified: 20230106223109000
+modifier: Sukima
+tags: Concepts
+title: Statechart
+type: text/vnd.tiddlywiki
+
+> A statechart is a beefed up [[state machine|StateMachine]]. The beefing up solves a lot of the problems that state machines have, especially state explosion that happens as state machines grow.
+
+https://statecharts.dev/
