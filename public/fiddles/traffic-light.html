@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Traffic Light example</title>
+<script type="module">
+  import $ from 'https://tritarget.org/cdn/simple-dom.js';
+  import { createMachine, interpret } from 'https://unpkg.com/xstate@4/dist/xstate.web.js';
+
+  function startBlinker() {
+    const toggleBlink = () => $.light.classList.toggle('on');
+    let interval = setInterval(toggleBlink, 700);
+    return () => {
+      clearInterval(interval);
+      $.light.classList.add('on');
+    };
+  }
+
+  const lightMachine = createMachine({
+    initial: 'solid',
+    states: {
+      solid: {
+        initial: 'red',
+        on: {
+          FAIL: '#blinking.red',
+          CAUTION: '#blinking.yellow',
+        },
+        states: {
+          red: {
+            entry: 'setColorRed',
+            on: { NEXT: 'yellow' },
+          },
+          yellow: {
+            entry: 'setColorYellow',
+            on: { NEXT: 'green' },
+          },
+          green: {
+            entry: 'setColorGreen',
+            on: { NEXT: 'red' },
+          },
+        },
+      },
+      blinking: {
+        id: 'blinking',
+        invoke: { src: 'blinkerRelay' },
+        on: { NEXT: 'solid' },
+        states: {
+          red: {
+            entry: 'setColorRed',
+            on: { CAUTION: 'yellow' },
+          },
+          yellow: {
+            entry: 'setColorYellow',
+            on: { FAIL: 'red' },
+          },
+        },
+      },
+    },
+  });
+
+  const consoleLight = interpret(lightMachine.withConfig({
+    actions: {
+      setColorRed: () => console.log('Set color to Red'),
+      setColorYellow: () => console.log('Set color to Yellow'),
+      setColorGreen: () => console.log('Set color to Green'),
+    },
+    services: {
+      blinkerRelay: () => () => {
+        console.log('started blinking');
+        return () => console.log('stopped blinking');
+      },
+    },
+  })).start();
+
+  const textLight = interpret(lightMachine.withConfig({
+    actions: {
+      setColorRed: () => $['#text .color'].textContent = 'red',
+      setColorYellow: () => $['#text .color'].textContent = 'yellow',
+      setColorGreen: () => $['#text .color'].textContent = 'green',
+    },
+    services: {
+      blinkerRelay: () => () => {
+        $['#text .blinker'].textContent = '(blinking)';
+        return () => $['#text .blinker'].textContent = '';
+      },
+    },
+  })).start();
+
+  const trafficLight = interpret(lightMachine.withConfig({
+    actions: {
+      setColorRed: () => $.light.dataset.color = 'red',
+      setColorYellow: () => $.light.dataset.color = 'yellow',
+      setColorGreen: () => $.light.dataset.color = 'green',
+    },
+    services: {
+      blinkerRelay: () => () => startBlinker(),
+    },
+  })).start();
+
+  for await (let { target: button } of $.controls.on.click()) {
+    let { action = 'UNKNOWN' } = button.dataset;
+    consoleLight.send(action);
+    textLight.send(action);
+    trafficLight.send(action);
+  }
+</script>
+
+<style>
+#controls {
+  margin-top: 1rem;
+}
+
+.traffic-light-container {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.traffic-light {
+  border: 0.25rem solid black;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.traffic-light > * {
+  background-color: gainsboro;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  margin: 0;
+  padding: 0;
+}
+
+.traffic-light > * + * {
+  margin-top: 1rem;
+}
+
+.traffic-light.on[data-color=red] .red {
+  background-color: salmon;
+}
+
+.traffic-light.on[data-color=yellow] .yellow {
+  background-color: gold;
+}
+
+.traffic-light.on[data-color=green] .green {
+  background-color: lightgreen;
+}
+</style>
+</head>
+<body>
+  <div class="traffic-light-container">
+    <div id="light" class="traffic-light on">
+      <div class="red"></div>
+      <div class="yellow"></div>
+      <div class="green"></div>
+    </div>
+  </div>
+
+  <div id="text">
+    <span class="color"></span>
+    <span class="blinker"></span>
+  </div>
+
+  <div id="controls">
+    <button type="button" data-action="NEXT">Change light</button>
+    <button type="button" data-action="CAUTION">Caution light</button>
+    <button type="button" data-action="FAIL">Fail light</button>
+  </div>
+</body>
+</html>

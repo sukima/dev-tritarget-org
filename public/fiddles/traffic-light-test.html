@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Traffic Light testing example</title>
+<script type="module">
+  import { QUnit, xstate } from 'https://tritarget.org/cdn/testing.js';
+
+  const { module, test } = QUnit;
+  const { createMachine, interpret } = xstate;
+
+  const lightMachine = createMachine({
+    initial: 'solid',
+    states: {
+      solid: {
+        initial: 'red',
+        on: {
+          FAIL: '#blinking.red',
+          CAUTION: '#blinking.yellow',
+        },
+        states: {
+          red: {
+            entry: 'setColorRed',
+            on: { NEXT: 'yellow' },
+          },
+          yellow: {
+            entry: 'setColorYellow',
+            on: { NEXT: 'green' },
+          },
+          green: {
+            entry: 'setColorGreen',
+            on: { NEXT: 'red' },
+          },
+        },
+      },
+      blinking: {
+        id: 'blinking',
+        invoke: { src: 'blinkerRelay' },
+        on: { NEXT: 'solid' },
+        states: {
+          red: {
+            entry: 'setColorRed',
+            on: { CAUTION: 'yellow' },
+          },
+          yellow: {
+            entry: 'setColorYellow',
+            on: { FAIL: 'red' },
+          },
+        },
+      },
+    },
+  });
+
+  function mockConfig(assert) {
+    return {
+      actions: {
+        setColorRed: () => assert.step('red'),
+        setColorYellow: () => assert.step('yellow'),
+        setColorGreen: () => assert.step('green'),
+      },
+      services: {
+        blinkerRelay: () => () => {
+          assert.step('start blinking');
+          return () => assert.step('stop blinking');
+        },
+      },
+    };
+  }
+
+  module('Traffic Light', function () {
+    test('cycles the light', function (assert) {
+      let subject = interpret(lightMachine.withConfig(mockConfig(assert)));
+      subject.start();
+      subject.send(['NEXT', 'NEXT', 'NEXT']);
+      assert.verifySteps(['red', 'yellow', 'green', 'red']);
+    });
+
+    test('blinks fail status', function (assert) {
+      let subject = interpret(lightMachine.withConfig(mockConfig(assert)));
+      subject.start();
+      subject.send('FAIL');
+      subject.send('NEXT');
+      assert.verifySteps([
+        'red',
+        'start blinking',
+        'red',
+        'stop blinking',
+        'red',
+      ]);
+    });
+
+    test('blinks caution status', function (assert) {
+      let subject = interpret(lightMachine.withConfig(mockConfig(assert)));
+      subject.start();
+      subject.send('CAUTION');
+      subject.send('NEXT');
+      assert.verifySteps([
+        'red',
+        'start blinking',
+        'yellow',
+        'stop blinking',
+        'red',
+      ]);
+    });
+  });
+</script>
+</head>
+<body></body>
+</html>
