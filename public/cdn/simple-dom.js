@@ -1,5 +1,5 @@
 /*******************************************/
-/* Version 1.2.0                           */
+/* Version 1.2.1                           */
 /* License MIT                             */
 /* Copyright (C) 2022 Devin Weaver         */
 /* https://tritarget.org/cdn/simple-dom.js */
@@ -27,7 +27,7 @@
  *
  * // By ID
  * $.anElementId.dataset.foo;
- * $['#anElementId']dataset.foo;
+ * $['#anElementId'].dataset.foo;
  *
  * // By CSS selection
  * $['.foobar'].classList.add('list-item');
@@ -205,7 +205,7 @@ function dom(element) {
   });
 
   return wrapper(() => new Proxy(queryWrap, {
-    get(_, prop) {
+    get(_, prop, receiver) {
       switch (prop) {
         case 'element': return element;
         case 'all': return domAll(element);
@@ -213,16 +213,16 @@ function dom(element) {
         case 'on':
           return eventable(element === document ? document.body : element);
       }
-      if (Reflect.has(element, prop)) {
-        let thing = Reflect.get(element, prop);
+      if (Reflect.has(element, prop, receiver)) {
+        let thing = Reflect.get(element, prop, receiver);
         return typeof thing === 'function'
           ? (...args) => thing.call(element, ...args)
           : thing;
       }
       return queryWrap(prop);
     },
-    set(_, prop, value) {
-      return Reflect.set(element, prop, value);
+    set(_, prop, value, receiver) {
+      return Reflect.set(element, prop, value, receiver);
     },
   }))();
 }
