@@ -68,7 +68,7 @@ Unlike the use of it as a database of sorts:
 
 !!! Derived value from states
 
-Another pattern I see is the idea of derived value to state changes. This is a case where the state itself caries enough contextual meaning that the system using the state machine have no side effects from the state change. This is most noticeable in small cases where the sate name itself is an identifier for another system.
+Another pattern I see is the idea of derived value to state changes. This is a case where the state itself caries enough contextual meaning that the system using the state machine have no side effects from the state change. This is most noticeable in small cases where the state name itself is an identifier for another system.
 
 <<figure "Example of an XState machine’s state used for CSS styling" """
 {{sourcecode/post-how-i-understand-state-machines-09.js}}
@@ -86,7 +86,7 @@ In this way you know that that part of the form was hidden because the `hideDeta
 
 !! Conclusion
 
-I hope I’ve demonstrated some ideas that help drive your future statechart endeavours. I think that if we pull back from the implementation deatils and think about the higher level design of our logic―including ''visualizations''―that we can make much more understandable and maintainable systems. Statecharts have a deal of advantages to Front End development but they do not come without their //foot-guns// and it is on us to make sure we properly tame such beasts.
+I hope I’ve demonstrated some ideas that help drive your future statechart endeavours. I think that if we pull back from the implementation details and think about the higher level design of our logic―including ''visualizations''―that we can make much more understandable and maintainable systems. Statecharts have a deal of advantages to Front End development but they do not come without their //foot-guns// and it is on us to make sure we properly tame such beasts.
 
 A good trick for this is to think about state machines like a brain, detached from any tangible reality but to only receive input signals and send output signals. With this metaphor it makes it clear how to define actions, guards, and services as a named hook. Implementing them inline for internal logic (liek the use of `context`) and attaching to externally in the case of outside side effects and data ownership.
 
