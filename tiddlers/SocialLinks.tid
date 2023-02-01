@@ -1,5 +1,7 @@
 created: 20160324015728482
-modified: 20160324020534301
+creator: Sukima
+modified: 20230201031813000
+modifier: Sukima
 tags: 
 title: SocialLinks
 type: text/vnd.tiddlywiki
@@ -26,7 +28,7 @@ padding: 0;
 
 * {{$:/site/images/rss}} [[RSS Feed|https://tritarget.org/atom.xml]]
 * {{$:/core/images/github}} [[GitHub|https://github.com/sukima]]
-* {{$:/core/images/globe}} [[Mastodon|https://twit.social/@sukima]]
+* {{$:/core/images/mastodon}} [[Mastodon|https://twit.social/@sukima]]
 * {{$:/core/images/twitter}} [[Twitter|https://twitter.com/sukima]]
 * {{$:/core/images/locked-padlock}} [[Keybase|https://keybase.io/sukima]]
 * {{$:/core/images/plugin-generic-language}} [[LinkedIn|https://www.linkedin.com/in/tritargetorg/]]
