@@ -12,16 +12,7 @@
 <meta property="og:url" content="https://tritarget.org/fiddles/">
 <meta charset="utf-8">
 <link rel="stylesheet" href="lib/main.css">
-<link rel="stylesheet" href="lib/codemirror.css">
-<link rel="stylesheet" href="themes/monokai.css">
-<link rel="stylesheet" href="lib/codemirror-tweaks.css">
-<script src="lib/codemirror.js"></script>
-<script src="addon/selection/active-line.js"></script>
-<script src="mode/xml.js"></script>
-<script src="mode/javascript.js"></script>
-<script src="mode/css.js"></script>
-<script src="mode/htmlmixed.js"></script>
-<script type="module" src="./lib/main.js"></script>
+<script type="module" src="lib/main.js"></script>
 </head>
 <body>
 <!-- MENU ICON -->
@@ -85,7 +76,7 @@
     <li><a id="menu-contribute" href="https://github.com/rioastamal/html-editor/" target="_blank">Contribute</a></li>
   </ul>
   <div class="menu-footer">
-    <span>HTML Editor v2.0</span>
+    <span>HTML Editor v2.1</span>
     <span>Made with &#x2665; by <a href="https://tritarget.org/">Devin Weaver</a></span>
     <span>Based off work by <a href="https://rioastamal.net/">Rio Astamal</a></span>
   </div>
@@ -94,28 +85,7 @@
 <!-- EDITOR WINDOW -->
 <div class="editor">
   <h2 class="title text-center border-bottom">HTML Editor</h2>
-<textarea id="editor" hidden>&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
-&lt;head&gt;
-&lt;meta charset="UTF-8"&gt;
-&lt;title&gt;New Fiddle&lt;/title&gt;
-
-&lt;script type="module"&gt;
-  /* ==== JavaScript ==== */
-  
-&lt;/script&gt;
-
-&lt;style&gt;
-  /* ==== CSS ==== */
-  
-&lt;/style&gt;
-
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;!-- ==== HTML ==== --&gt;
-  
-&lt;/body&gt;
-&lt;/html&gt;</textarea>
+  <div id="editor"></div>
 </div>
 
 <!-- PREVIEW WINDOW -->
@@ -132,5 +102,6 @@
   <button type="button" aria-label="Dismiss dialog">&cross;</button>
   <p class="content"></p>
 </dialog>
+
 </body>
 </html>

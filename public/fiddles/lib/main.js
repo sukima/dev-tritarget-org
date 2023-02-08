@@ -1,8 +1,35 @@
-import $ from 'https://tritarget.org/cdn/simple-dom.js';
-import { createMachine, interpret } from 'https://unpkg.com/xstate@4/dist/xstate.web.js';
+import $ from '../../cdn/simple-dom.js';
+import * as CodeMirror from '../../cdn/codemirror.js';
+import { createMachine, interpret } from '../../cdn/xstate.js';
 
-const BASE_TITLE = $.element.title;
 let suggestedFileName = 'new-fiddle.html';
+const BASE_TITLE = $.element.title;
+
+// Default Text {{{1
+const defaultText = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>New Fiddle</title>
+
+<script type="module">
+/* ==== JavaScript ==== */
+
+</script>
+
+<style>
+/* ==== CSS ==== */
+
+</style>
+
+</head>
+<body>
+<!-- ==== HTML ==== -->
+
+</body>
+</html>
+`.trim();
 
 const applicationMachine = createMachine({ // {{{1
   id: 'applicationMachine',
@@ -243,34 +270,27 @@ class Button { // {{{1
 }
 
 class Editor { // {{{1
-  constructor(cmInstance, updateCallback) {
-    this.codemirror = cmInstance;
+  constructor(element, updateCallback) {
+    let { editor, lineWrap } = this.createCodeEditor(element);
+    this.editor = editor;
+    this.lineWrap = lineWrap;
     this.updateCallback = updateCallback;
     this.initialValue = this.currentValue;
     this.enableOnChangeEvents();
-    this.attachEvents();
   }
 
   get currentValue() {
-    return this.codemirror.getValue();
+    return this.editor.state.doc.toString();
   }
 
   set currentValue(value) {
-    this.codemirror.setValue(value);
+    let size = this.currentValue.length;
+    this.editor.dispatch({ changes: { from: 0, to: size, insert: value } });
   }
 
   get hasChanged() {
     return this.initialValue !== this.currentValue;
   }
-
-  attachEvents() {
-    let boundOnChange = () => this.handleChangeEvent();
-    this.dettachEvents();
-    this.dettachEvents = () => this.codemirror.off('change', boundOnChange);
-    this.codemirror.on('change', boundOnChange);
-  }
-
-  dettachEvents() {}
 
   handleChangeEvent() {
     DataBrowserHook.from(this.hasChanged).prepare();
@@ -278,11 +298,13 @@ class Editor { // {{{1
   }
 
   enableWordWrap() {
-    this.codemirror.setOption('lineWrapping', true);
+    let { editor, lineWrap } = this;
+    editor.dispatch({ effects: lineWrap.enable() });
   }
 
   disableWordWrap() {
-    this.codemirror.setOption('lineWrapping', false);
+    let { editor, lineWrap } = this;
+    editor.dispatch({ effects: lineWrap.disable() });
   }
 
   enableOnChangeEvents() {
@@ -308,6 +330,49 @@ class Editor { // {{{1
 
   update() {
     this.updateCallback(this.currentValue);
+  }
+
+  createCodeEditor(parent, doc = defaultText) { // {{{1
+    const { view, state, languages, extensions, themes } = CodeMirror;
+    const { basicSetup } = CodeMirror.codemirror;
+    const { EditorView } = view;
+    const { EditorState } = state;
+    const { html, css, javascript } = languages;
+    const { emmet, vim, color } = extensions;
+    const { solarized: { solarizedDark } } = themes
+    const { updateListener } = EditorView;
+
+    let lineWrap = new Editor.Toggle(EditorView.lineWrapping);
+    let editor = new EditorView({
+      doc,
+      parent,
+      extensions: [
+        basicSetup,
+        solarizedDark,
+        html(),
+        color,
+        emmet('Ctrl-e'),
+        vim(),
+        lineWrap.initial,
+        updateListener.of(() => this.handleChangeEvent()),
+      ],
+    });
+
+    return { editor, lineWrap };
+  }
+
+  static Toggle = class {
+    compartment = new CodeMirror.state.Compartment();
+    initial = this.compartment.of([]);
+    constructor(extension) {
+      this.extension = extension;
+    }
+    enable() {
+      return this.compartment.reconfigure(this.extension);
+    }
+    disable() {
+      return this.compartment.reconfigure([]);
+    }
   }
 }
 
@@ -497,17 +562,10 @@ function dasherize(input) { // {{{1
   return input.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 }
 
-const cm = CodeMirror.fromTextArea($['#editor'].element, { // {{{1
-  lineNumbers: true,
-  styleActiveLine: true,
-  mode: 'text/html',
-  theme: 'monokai',
-});
-
 const app = new Application({ // {{{1
   fileBrowser: new FileBrowser($['#file-open-input'].element),
   menu: new Menu($['#menu'].element, () => app.trigger('CLOSE_MENU')),
-  editor: new Editor(cm, updatePreview),
+  editor: new Editor($['#editor'].element, updatePreview),
   columns: {
     editor: new Column($['.editor'].element),
     preview: new Column($['.preview'].element),
