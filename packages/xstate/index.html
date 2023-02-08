@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TriTarget CDN Codemirror Bundle</title>
+    <script type="module">
+      import { createMachine, interpret } from './xstate.js';
+
+      const output = document.getElementById('output');
+      const trigger = document.getElementById('trigger');
+
+      function log(message) {
+        let li = document.createElement('li');
+        li.textContent = message;
+        output.append(li);
+      }
+
+      let machine = interpret(createMachine({
+        initial: 'red',
+        states: {
+          red: { on: { NEXT: 'yellow' } },
+          yellow: { on: { NEXT: 'green' } },
+          green: { on: { NEXT: 'red' } },
+        },
+      }))
+        .onTransition((state) => log(state.value))
+        .start();
+
+      trigger.addEventListener('click', () => machine.send('NEXT'));
+    </script>
+  </head>
+  <body>
+    <button id="trigger" type="button">Next</button>
+    <ol id="output"></ol>
+  </body>
+</html>

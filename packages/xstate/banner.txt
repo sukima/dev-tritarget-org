@@ -1,0 +1,5 @@
+/**
+ * XState version 4 Statechart library.
+ *
+ * import { createMachine, interpret } from 'https://tritarget.org/cdn/xstate.js';
+ */

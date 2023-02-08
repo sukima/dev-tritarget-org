@@ -1,0 +1,17 @@
+{
+  "name": "tritarget-cdn-xstate",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && cp dist/xstate.js ../../public/cdn/xstate.js",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^2.9.0",
+    "vite-plugin-banner": "^0.2.0"
+  },
+  "dependencies": {
+    "xstate": "^4.30.6"
+  }
+}
