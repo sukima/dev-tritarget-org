@@ -1,0 +1,28 @@
+{
+  "name": "tritarget-cdn-codemirror",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && cp dist/codemirror.js ../../public/cdn/codemirror.js",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^2.9.0",
+    "vite-plugin-banner": "^0.2.0"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.20.13",
+    "@codemirror/commands": "^6.2.0",
+    "@codemirror/lang-css": "^6.0.1",
+    "@codemirror/lang-html": "^6.4.1",
+    "@codemirror/lang-javascript": "^6.1.2",
+    "@codemirror/state": "^6.2.0",
+    "@codemirror/view": "^6.7.3",
+    "@emmetio/codemirror6-plugin": "^0.2.0",
+    "@replit/codemirror-vim": "^6.0.4",
+    "@uiw/codemirror-extensions-color": "^4.19.7",
+    "@uiw/codemirror-theme-solarized": "^4.19.7",
+    "codemirror": "^6.0.1"
+  }
+}

@@ -1,0 +1,23 @@
+/**
+ * Codemirror version 6 editor in a single ESM file.
+ *
+ * import { codemirror, languages, extensions, themes }
+ *   from 'https://tritarget.org/cdn/codemirror.js';
+ *
+ * const { EditorView, basicSetup } = codemirror;
+ * const { html } = languages;
+ * const { emmet, vim, color } = extensions;
+ * const { solarized: { solarizedLight } } = themes
+ *
+ * let view = new EditorView({
+ *   extensions: [
+ *     basicSetup,
+ *     html(),
+ *     vim(),
+ *     emmet(),
+ *     color,
+ *     solarizedLight,
+ *   ],
+ *   parent: document.body,
+ * });
+ */
