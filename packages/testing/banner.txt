@@ -5,7 +5,7 @@
  * This module exposes the following libraries:
  *
  * ====[ QUnit ]====
- *   import { QUnit } from './testing.js';
+ *   import { QUnit } from 'https://tritarget.org/cdn/testing.js';
  *   const { module, test } = QUnit;
  *
  * ====[ Sinon ]====
@@ -18,11 +18,12 @@
  *   });
  *
  * ====[ XState ]====
- *   import { xstate } from './testing.js';
+ *   import { xstate } from 'https://tritarget.org/cdn/testing.js';
  *   const { createMachine, interpret } = xstate;
  *
  * ====[ @xstate/test ]====
- *   import { QUnit, xstate, xstateTest, testWrapper } from './testing.js';
+ *   import { QUnit, xstate, xstateTest, testWrapper }
+ *     from 'https://tritarget.org/cdn/testing.js';
  *   const { module, test } = QUnit;
  *   const { createMachine } = xstate;
  *   const { createModel } = xstateTest;
