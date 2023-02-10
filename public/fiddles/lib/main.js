@@ -332,29 +332,80 @@ class Editor { // {{{1
     this.updateCallback(this.currentValue);
   }
 
-  createCodeEditor(parent, doc = defaultText) { // {{{1
-    const { view, state, languages, extensions, themes } = CodeMirror;
-    const { basicSetup } = CodeMirror.codemirror;
-    const { EditorView } = view;
-    const { EditorState } = state;
-    const { html, css, javascript } = languages;
-    const { emmet, vim, color } = extensions;
-    const { solarized: { solarizedDark } } = themes
+  createCodeEditor(parent, doc = defaultText) {
+    const {
+      EditorView,
+      keymap,
+      highlightSpecialChars,
+      drawSelection,
+      highlightActiveLine,
+      dropCursor,
+      rectangularSelection,
+      crosshairCursor,
+      lineNumbers,
+      highlightActiveLineGutter,
+    } = CodeMirror.view;
+    const {
+      defaultHighlightStyle,
+      syntaxHighlighting,
+      indentOnInput,
+      bracketMatching,
+      foldGutter,
+      foldKeymap,
+    } = CodeMirror.language;
+    const { defaultKeymap, history, historyKeymap } = CodeMirror.commands;
+    const { searchKeymap, highlightSelectionMatches } = CodeMirror.search
+    const { autocompletion, completionKeymap } = CodeMirror.autocomplete
+    const { lintKeymap } = CodeMirror.lint
+    const { EditorState } = CodeMirror.state;
+    const { html, css, javascript } = CodeMirror.languages;
+    const { emmet, vim, color } = CodeMirror.extensions;
+    const { solarized: { solarizedDark } } = CodeMirror.themes
     const { updateListener } = EditorView;
 
     let lineWrap = new Editor.Toggle(EditorView.lineWrapping);
+    let vimMode = new Editor.Toggle(vim());
+    let toggleVimMode = () => {
+      editor.dispatch({ effects: vimMode.toggle() });
+      flash(vimMode.enabled ? 'Vim mode ON' : 'Vim mode OFF');
+    };
+
     let editor = new EditorView({
       doc,
       parent,
       extensions: [
-        basicSetup,
-        solarizedDark,
-        html(),
-        color,
+        keymap.of({ key: 'Ctrl-Shift-`', run: toggleVimMode }),
         emmet('Ctrl-e'),
-        vim(),
+        vimMode.initial,
         lineWrap.initial,
+        solarizedDark,
+        color,
+        html(),
         updateListener.of(() => this.handleChangeEvent()),
+        lineNumbers(),
+        highlightActiveLineGutter(),
+        highlightSpecialChars(),
+        history(),
+        foldGutter(),
+        drawSelection(),
+        dropCursor(),
+        EditorState.allowMultipleSelections.of(true),
+        indentOnInput(),
+        syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+        bracketMatching(),
+        autocompletion(),
+        rectangularSelection(),
+        crosshairCursor(),
+        highlightActiveLine(),
+        highlightSelectionMatches(),
+        keymap.of([
+          ...defaultKeymap,
+          ...searchKeymap,
+          ...historyKeymap,
+          ...foldKeymap,
+          ...completionKeymap,
+          ...lintKeymap
+        ]),
       ],
     });
 
@@ -362,16 +413,22 @@ class Editor { // {{{1
   }
 
   static Toggle = class {
+    enabled = false;
     compartment = new CodeMirror.state.Compartment();
-    initial = this.compartment.of([]);
-    constructor(extension) {
+    constructor(extension, initial = false) {
       this.extension = extension;
+      this.initial = this.compartment.of(initial ? this.extension : []);
     }
     enable() {
+      this.enabled = true;
       return this.compartment.reconfigure(this.extension);
     }
     disable() {
+      this.enabled = false;
       return this.compartment.reconfigure([]);
+    }
+    toggle() {
+      return this.enabled ? this.disable() : this.enable();
     }
   }
 }
