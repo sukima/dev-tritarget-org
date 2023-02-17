@@ -27,10 +27,10 @@ padding: 0;
 !!! Social Links
 
 * {{$:/site/images/rss}} [[RSS Feed|https://tritarget.org/atom.xml]]
-* {{$:/core/images/github}} [[GitHub|https://github.com/sukima]]
+* {{$:/core/images/globe}} [[Discord|https://discord.com/users/286151917095354368]]
 * {{$:/core/images/mastodon}} [[Mastodon|https://twit.social/@sukima]]
 * {{$:/core/images/twitter}} [[Twitter|https://twitter.com/sukima]]
-* {{$:/core/images/locked-padlock}} [[Keybase|https://keybase.io/sukima]]
+* {{$:/core/images/github}} [[GitHub|https://github.com/sukima]]
 * {{$:/core/images/plugin-generic-language}} [[LinkedIn|https://www.linkedin.com/in/tritargetorg/]]
 
 </div>
