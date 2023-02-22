@@ -1,12 +1,12 @@
-modified: 20210329231835000
+modified: 20230222125439000
 title: PGPKeyInfo
 type: text/plain
 caption: Public Key Info
 
-pub   rsa4096 2013-08-20 [SC] [expires: 2021-09-27]
+pub   rsa4096 2013-08-20 [SC] [expires: 2024-02-22]
       FA9F14008BA5A847B0977C06EBD99C92DE767C8A
 uid                      Devin Weaver (@sukima) <suki@tritarget.org>
 uid                      [jpeg image of size 9051]
 uid                      Devin Weaver (@sukima) <weaver.devin@gmail.com>
-sub   rsa4096 2013-08-20 [E] [expires: 2021-09-27]
+sub   rsa4096 2013-08-20 [E] [expires: 2024-02-22]
 
