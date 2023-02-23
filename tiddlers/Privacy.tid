@@ -1,0 +1,21 @@
+created: 20230223040541000
+creator: Sukima
+modified: 20230223040541000
+modifier: Sukima
+tags: 
+title: Privacy
+type: text/vnd.tiddlywiki
+
+I feel it is important to provide safe places to reach me. For that effort I support the following methods for ''private communication''.
+
+This site conforms with the following [[Privacy and Terms]].
+
+!! Signal
+
+For chats you can {{SignalLink}}. Signal is a secure chat program that performs end to end encryption.
+
+!! PGP/~GnuPG
+
+You can send me sensitive data in insecure mediums like E-Mail and public forums by encrypting it with PGP/~GnuPG.
+
+{{PGP Key}}
