@@ -1,0 +1,23 @@
+#!/bin/bash
+
+tiddlywiki="./node_modules/.bin/tiddlywiki"
+deobfuscated=./deobfuscated
+obfuscated=./tiddlers/obfuscated
+
+obfuscated_output() {
+  echo "title: $(basename "$1" .tid)" > "$1"
+  echo "type: text/prs.obfuscated" >> "$1"
+  echo "" >> "$1"
+  cat >> "$1"
+}
+
+obfuscated_input() {
+  awk 'f;/^$/{f=1}' "$1"
+}
+
+if [[ $1 == "-d" ]]; then
+  shift
+  $tiddlywiki wiki --deobfuscate <(obfuscated_input "$1") "$2"
+else
+  $tiddlywiki wiki --obfuscate "$1" >(obfuscated_output "$2")
+fi

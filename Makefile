@@ -8,11 +8,12 @@ asset_files := $(patsubst public/%,wiki/output/%,$(shell find public -type f))
 sourcecode_src := $(shell find -L sourcecode -type f)
 sourcecode_html := $(patsubst sourcecode/%,wiki/sourcecode/%.html,$(sourcecode_src))
 sourcecode_tid := $(patsubst sourcecode/%,tiddlers/sourcecode/%.tid,$(sourcecode_src))
+obfuscated_tid := $(patsubst deobfuscated/%.html,tiddlers/obfuscated/%.tid,$(wildcard deobfuscated/*.html))
 
 modified_date = $(shell date +%Y%m%d%H%M%S000)
 pgp_fingerprint = FA9F14008BA5A847B0977C06EBD99C92DE767C8A
 
-.PHONY: build-files build clean generated diagrams assets tiddlywiki server devpublic media-build deploy updatekey certs
+.PHONY: build-files build clean generated diagrams assets tiddlywiki server devpublic media-build deploy updatekey certs obfuscate deobfuscate
 
 build:
 	@rm -f wiki/tiddlywiki.info
@@ -54,7 +55,7 @@ devcerts:
 	openssl x509 -req -days 9999 -in $@/csr.pem -signkey $@/key.pem -out $@/cert.pem
 	rm $@/csr.pem
 
-generated: $(sourcecode_tid) tiddlers/generated/sourcecode.css tiddlers/generated/PGPKeyFile.tid tiddlers/generated/PGPKeyInfo.tid
+generated: $(sourcecode_tid) $(obfuscated_tid) tiddlers/generated/sourcecode.css tiddlers/generated/PGPKeyFile.tid tiddlers/generated/PGPKeyInfo.tid
 
 deploy: build
 	rsync -rlvz --delete --exclude-from ./config/rsync-exclude wiki/output/ $(deploy_path)
@@ -118,3 +119,16 @@ tiddlers/generated/PGPKeyInfo.tid: public/key
 	@echo "caption: Public Key Info" >> $@
 	@echo >> $@
 	@gpg --show-keys $< >> $@
+
+deobfuscate:
+	@mkdir -p deobfuscated
+	for src in tiddlers/obfuscated/*.tid; do \
+		echo "bin/obfuscate -d \"$$src\" \"deobfuscated/$$(basename \"$$src\" .tid).html"; \
+		bin/obfuscate -d "$$src" "deobfuscated/$$(basename "$$src" .tid).html"; \
+	done
+
+obfuscate: $(obfuscated_tid)
+
+tiddlers/obfuscated/%.tid: deobfuscated/%.html
+	@mkdir -p $(@D)
+	bin/obfuscate $< $@

@@ -1,0 +1,4 @@
+title: SignalLink
+type: text/prs.obfuscated
+
+{"iv":"fyGDjKWnLpndI4+6KYAbRQ==","v":1,"iter":10000,"ks":128,"ts":64,"mode":"ccm","adata":"","cipher":"aes","salt":"BKXYs6UXD5Q=","ct":"XV+2Sg5xWD3uW35roHMV85Cmi60bLMKebQ6VSJ614JQ3ZM9mvsIlf9Vz1kuCD7VQZOUd9NRXUAuN1Sn+fyQNRbt6etahElLWSLMAZCVB23mf3KZLzA/8yOPEEr9zv6Nu"}

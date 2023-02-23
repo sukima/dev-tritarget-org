@@ -7,12 +7,12 @@ module-type: utils
 A text/prs.obfuscated creator utility
 
 \*/
-const OBFUSCATE_SALT = 'DN-2I4,zYX:<9A2nGK4&yTzfG;C7drODToNgr/WrSe<zNuG[+#yL@^*-Th(Y{]y';
+const OBFUSCATE_SECRET = 'Stzla#tiAMcmD3ga6zEGwZIWwaRO&%W626c9wRBorC82!x38dhAU#iUSQ2$trI6gJW7iPC%bcGyfZGB6kM96pLEQ9h^zgne^pGS0rj*T$N0nEdxSc!zcg1JO#igr89JB';
 
 $tw.utils.obfuscate = function(text) {
-  return sjcl.encrypt(OBFUSCATE_SALT, text);
+  return $tw.crypto.encrypt(text, OBFUSCATE_SECRET);
 };
 
 $tw.utils.deobfuscate = function(text) {
-  return sjcl.decrypt(OBFUSCATE_SALT, text);
+  return $tw.crypto.decrypt(text, OBFUSCATE_SECRET);
 };

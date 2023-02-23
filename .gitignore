@@ -2,6 +2,7 @@
 devcerts/
 yarn-error.log
 node_modules/
+deobfuscated/
 diagrams/.depend
 diagrams/*.png
 tiddlers/config/Import.tid
