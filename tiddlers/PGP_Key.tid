@@ -7,11 +7,9 @@ title: PGP Key
 type: text/vnd.tiddlywiki
 
 ;PGP key:
-:<code>{{!!id}}</code> <small>([[no known shared factors|http://phuctor.nosuchlabs.com/gpgkey/CE7D973914C9BFD6B8AB50693B23DFCC421A01338FBCFE96786E1D1AC3214CB1]])</small>
+:<code>{{!!id}}</code>
 ;Fingerprint:
 :<code>{{!!fingerprint}}</code>
-;Keybase.io
-:https://keybase.io/sukima
 ;Download
 :https://tritarget.org/key
 
