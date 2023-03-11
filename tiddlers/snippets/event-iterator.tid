@@ -1,6 +1,6 @@
 created: 20221225005548000
 creator: Sukima
-modified: 20221227181524000
+modified: 20230311221115000
 modifier: Sukima
 tags: snippets JavaScript
 title: EventIterator
@@ -17,3 +17,9 @@ type: text/vnd.tiddlywiki
 A version of this is pattern is part of my [[simple-dom]] micro lib.
 
 {{sourcecode/event-iterator-simple-dom-example.js}}
+
+!! Using an ~AbortController
+
+An example of working with `postMessage` and [[AbortController|https://developer.mozilla.org/en-US/docs/Web/API/AbortController]]
+
+{{sourcecode/event-iterator-abort-controller-example.js}}
