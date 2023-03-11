@@ -1,0 +1,12 @@
+title: sourcecode/browser-based-text-utils/text-converters.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">function</span> <span class="Identifier">toBinary</span>(str) {
+  <span class="Statement">return</span> <span class="Statement">new</span> <span class="Identifier">TextEncoder</span>().<span class="Identifier">encode</span>(str)
+}
+
+<span class="Type">function</span> <span class="Identifier">fromBinary</span>(binary) {
+  <span class="Statement">return</span> <span class="Statement">new</span> <span class="Identifier">TextDecoder</span>().<span class="Identifier">decode</span>(binary);
+}
+</pre>

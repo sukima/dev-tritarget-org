@@ -1,0 +1,35 @@
+created: 20230310225217000
+creator: Sukima
+modified: 20230310225217000
+modifier: Sukima
+tags: Article JavaScript Coding
+title: Browser based text utils
+type: text/vnd.tiddlywiki
+
+//I lack the imagination today to come up with a clever title.//
+
+In cryptography it is very clear that one should never write their own. Which lead me to look for web client side implementations. [[libsodium|https://doc.libsodium.org/]] is useful but bulky, [[Natrium|https://github.com/gryor/natrium]] is no longer maintained, and [[SJCL|https://bitwiseshiftleft.github.io/sjcl/]] is also quite old but at least audited. Then I stumbled on [[TweetNaCl|https://tweetnacl.js.org/]] which was not only audited but small and easy to comprehend for me.
+
+Using this library (and a few others) does come with a caveat though. They all interface with [[Uint8Array|https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array]] and ''not'' strings. This is my adventure into figuring out how to have a simplified web browser based solution for converting strings to and from Uint8Array and also base64 (for use in an XML data interchange).
+
+I started with the assumption that my use case was going to be //browser only// as my project meant a web app that implemented end-to-end encryption. I knew that the typic logic of using the built-in `btoa()` & `atob()` functions would have some draw backs. For one that work on strings both ways. So no mater the string content (binary string or UTF-8) I would still need to convert it to and from Uint8Arrays The libsodium docs point to a solution that uses the string functions `toCharCode()` & `.fromCharCode()` but again something felt off about that. For one there has a lot of <abbr title="Fear, Uncertainty, and Doubt">FUD</abbr> surrounding base64, UTF-8, and conversions. With the confusion started in several stackoverflow threads I really wanted a more stream lined approach.
+
+The ~TweetNaCl-js repository also suggested that they moved maintenance of such text utilities to another project. When I looked into that project, though very well done, I could tell they implemented base64 and UTF-8 encodings by hand. Though I know this is a good method and likely includes time-constant algorithms it also seemed necessary to support both browser and Node environments. It also felt like over kill because really what I was concerned about was the Uint8Array integration not the text encoding.
+
+Now granted most web applications will be dealing with UTF-8 text which is why we tend to encode with `encodeURIComponent()` & `btoa()` but at this point I was on a mission. First because I though it would be nice if I could have a pure binary solution in case I work with canvas (images), file uploads, and user input (text). And I also wanted to prove to myself that pulling in a self-implemented 3^^rd^^ party module wasn’t the //only// way to accomplish this. I ''knew'' there had to be a more code-golf like way to sdo this especially if I dropped any expectation of Node compatibility.
+
+That is when I discovered this interesting bit of code:
+
+{{sourcecode/browser-based-text-utils/toBase64.js}}
+
+It looked excellent for my needs because what I neded was a way to take a Uint8Array binary data produced by ~TweetNaCl and turn it into something I could put into a text node of an XML document (or JSON but I was going the XML route). But it had one flaw which is that in the browser there was no reverse for that because there is no ''~FileWriter''. Still it looked promising because it focused on the binary data and didn’t need any `encodeURIComponent()` or `toCharCode()` for loop like the stackoverflows all wanted.
+
+That is what brought be to some other ideas deep in the stackoverflow comments. I could use `fetch()`. Here is that implementation.
+
+{{sourcecode/browser-based-text-utils/fromBase64.js}}
+
+With these two options I could seamlessly move any ~TweetNaCl data to and from an XML payload. And in the case where an app is using ~TweetNaCl with actual UTF-8 text the conversion are already one-liners
+
+{{sourcecode/browser-based-text-utils/text-converters.js}}
+
+I think this is clean and small and doesn’t need yet another module to be added and maintained. If you are interested you can see this [[working in a demo|https://tritarget.org/fiddles/?fiddle=text-utils.html]].

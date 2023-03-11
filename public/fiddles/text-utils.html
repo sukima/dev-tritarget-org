@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Text Utils</title>
+<script type="module">
+  import { QUnit } from 'https://tritarget.org/cdn/testing.js';
+  const { test } = QUnit;
+
+  const DATA_URL_PREFIX = 'data:application/octet-stream;base64,';
+  
+  function toBinary(str) {
+    return new TextEncoder().encode(str);
+  }
+  
+  function fromBinary(binary) {
+    return new TextDecoder().decode(binary);
+  }
+
+  async function toBase64(binary) {
+    let dataUrl = await new Promise(resolve => {
+      let reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(new Blob([binary]));
+    });
+    return dataUrl.slice(DATA_URL_PREFIX.length);
+  }
+
+  async function fromBase64(str) {
+    let res = await fetch(DATA_URL_PREFIX + str);
+    return new Uint8Array(await res.arrayBuffer());
+  }
+  
+  test('#toBinary converts string into Uint8Array', async function (assert) {
+    let actual = await toBinary('\u2713');
+    assert.deepEqual(Array.from(actual), [226, 156, 147]);
+  });
+  
+  test('#fromBinary converts Uint8Array into string', async function (assert) {
+    let actual = await fromBinary(new Uint8Array([226, 156, 147]));
+    assert.strictEqual(actual, '\u2713');
+  });
+  
+  test('#toBase64 converts Uint8Array into Base64 encoded string', async function (assert) {
+    let actual = await toBase64(new Uint8Array([226, 156, 147]));
+    assert.strictEqual(actual, '4pyT');
+  });
+  
+  test('#fromBase64 converts Base64 encoded string into Uint8Array', async function (assert) {
+    let actual = await fromBase64('4pyT');
+    assert.deepEqual(Array.from(actual), [226, 156, 147]);
+  });
+</script>
+</head>
+<body></body>
+</html>

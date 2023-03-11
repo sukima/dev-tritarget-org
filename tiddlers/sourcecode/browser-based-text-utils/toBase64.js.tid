@@ -1,0 +1,15 @@
+title: sourcecode/browser-based-text-utils/toBase64.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">async</span> <span class="Type">function</span> <span class="Identifier">toBase64</span>(binary) {
+  <span class="Type">let</span> dataUrl <span class="Statement">=</span> <span class="Statement">await</span> <span class="Statement">new</span> <span class="Constant">Promise</span>(resolve <span class="Type">=&gt;</span> {
+    <span class="Type">let</span> reader <span class="Statement">=</span> <span class="Statement">new</span> <span class="Identifier">FileReader</span>();
+    reader.onload <span class="Statement">=</span> <span class="Type">()</span> <span class="Type">=&gt;</span> <span class="Identifier">resolve</span>(reader.result);
+    reader.<span class="Identifier">readAsDataURL</span>(<span class="Statement">new</span> <span class="Identifier">Blob</span>([binary]));
+  });
+
+  <span class="Comment">// removes prefix &quot;data:application/octet-stream;base64,&quot;</span>
+  <span class="Statement">return</span> dataUrl.<span class="Identifier">slice</span>(<span class="Constant">37</span>);
+}
+</pre>

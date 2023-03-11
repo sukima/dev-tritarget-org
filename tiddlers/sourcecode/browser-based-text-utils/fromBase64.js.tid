@@ -1,0 +1,10 @@
+title: sourcecode/browser-based-text-utils/fromBase64.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">async</span> <span class="Type">function</span> <span class="Identifier">fromBase64</span>(str) {
+  <span class="Type">let</span> prefix <span class="Statement">=</span> <span class="Constant">'data:application/octet-stream;base64,'</span>;
+  <span class="Type">let</span> res <span class="Statement">=</span> <span class="Statement">await</span> <span class="Constant">fetch</span>(prefix <span class="Statement">+</span> str);
+  <span class="Statement">return</span> <span class="Statement">new</span> <span class="Constant">Uint8Array</span>(<span class="Statement">await</span> res.<span class="Identifier">arrayBuffer</span>());
+}
+</pre>
