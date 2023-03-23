@@ -6,19 +6,19 @@ type: text/css
 Sourcecode CSS styles for text/prs.sourcecode generated output
 
 \*/
-.vimCodeElement .Statement { color: var(--green); }
 .vimCodeElement .Identifier { color: var(--blue); }
-.vimCodeElement .Constant { color: var(--cyan); }
+.vimCodeElement .Statement { color: var(--green); }
 .vimCodeElement .Type { color: var(--yellow); }
-.vimCodeElement .Special { color: var(--red); }
-.vimCodeElement .Comment { color: var(--rebase1); }
-.vimCodeElement .PreProc { color: var(--orange); }
+.vimCodeElement .Constant { color: var(--cyan); }
 .vimCodeElement .htmlEndTag { color: var(--rebase1); }
 .vimCodeElement .htmlArg { color: var(--rebase0); }
 .vimCodeElement .htmlTag { color: var(--rebase1); }
 .vimCodeElement .htmlTagName { color: var(--blue); font-weight: bold; }
+.vimCodeElement .Special { color: var(--red); }
+.vimCodeElement .PreProc { color: var(--orange); }
+.vimCodeElement .Comment { color: var(--rebase1); }
 .vimCodeElement .vimIsCommand { color: var(--rebase0); }
 .vimCodeElement .vimCommand { color: var(--yellow); }
+.vimCodeElement .cPreCondit { color: var(--orange); }
 .vimCodeElement .vimSynType { color: var(--cyan); }
 .vimCodeElement .Normal { color: var(--rebase00); }
-.vimCodeElement .cPreCondit { color: var(--orange); }

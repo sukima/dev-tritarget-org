@@ -1,0 +1,8 @@
+title: sourcecode/left-pad-1.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">const</span> pad2 <span class="Statement">=</span> (num) <span class="Type">=&gt;</span> <span class="Constant">`00</span>${num}<span class="Constant">`</span>.<span class="Identifier">slice</span>(<span class="Statement">-</span><span class="Constant">2</span>);
+<span class="Type">const</span> pad4 <span class="Statement">=</span> (num) <span class="Type">=&gt;</span> <span class="Constant">`0000</span>${num}<span class="Constant">`</span>.<span class="Identifier">slice</span>(<span class="Statement">-</span><span class="Constant">4</span>);
+<span class="Type">const</span> pad16 <span class="Statement">=</span> (num) <span class="Type">=&gt;</span> <span class="Constant">`0000000000000000</span>${num}<span class="Constant">`</span>.<span class="Identifier">slice</span>(<span class="Statement">-</span><span class="Constant">16</span>);
+</pre>

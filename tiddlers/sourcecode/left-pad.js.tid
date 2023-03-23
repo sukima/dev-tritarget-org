@@ -1,0 +1,7 @@
+title: sourcecode/left-pad.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">const</span> pad <span class="Statement">=</span> (num, size = <span class="Constant">2</span>, fill = <span class="Constant">'0'</span>) <span class="Type">=&gt;</span>
+  <span class="Constant">`</span>${<span class="Constant">Array</span>(size).<span class="Identifier">fill</span>(fill).<span class="Identifier">join</span>(<span class="Constant">''</span>)}${num}<span class="Constant">`</span>.<span class="Identifier">slice</span>(<span class="Statement">-</span>size);
+</pre>

@@ -1,0 +1,15 @@
+created: 20230323191431000
+creator: Sukima
+modified: 20230323191431000
+modifier: Sukima
+tags: snippets JavaScript Coding
+title: left-pad
+type: text/vnd.tiddlywiki
+
+Because left pad can be done as a one liner:
+
+{{sourcecode/left-pad.js}}
+
+For a less generic version you can also inline the expectations and make the one liner more specific to the module it is being used in.
+
+{{sourcecode/left-pad-1.js}}
