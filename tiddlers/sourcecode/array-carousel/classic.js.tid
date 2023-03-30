@@ -1,0 +1,10 @@
+title: sourcecode/array-carousel/classic.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">function</span> <span class="Identifier">fromPointer</span>(array, pointer) {
+  <span class="Type">let</span> size <span class="Statement">=</span> array.length;
+  <span class="Type">let</span> boundIndex <span class="Statement">=</span> ((pointer <span class="Statement">%</span> size) <span class="Statement">+</span> size) <span class="Statement">%</span> size;
+  <span class="Statement">return</span> array[boundIndex];
+}
+</pre>

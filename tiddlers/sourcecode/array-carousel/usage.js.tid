@@ -1,0 +1,14 @@
+title: sourcecode/array-carousel/usage.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Type">let</span> example <span class="Statement">=</span> [<span class="Constant">'foo'</span>, <span class="Constant">'bar'</span>, <span class="Constant">'baz'</span>];
+
+<span class="Identifier">fromPointer</span>(example, <span class="Statement">-</span><span class="Constant">3</span>); <span class="Comment">// =&gt; 'foo'</span>
+<span class="Identifier">fromPointer</span>(example, <span class="Statement">-</span><span class="Constant">2</span>); <span class="Comment">// =&gt; 'bar'</span>
+<span class="Identifier">fromPointer</span>(example, <span class="Statement">-</span><span class="Constant">1</span>); <span class="Comment">// =&gt; 'baz'</span>
+<span class="Identifier">fromPointer</span>(example,  <span class="Constant">0</span>); <span class="Comment">// =&gt; 'foo'</span>
+<span class="Identifier">fromPointer</span>(example,  <span class="Constant">1</span>); <span class="Comment">// =&gt; 'bar'</span>
+<span class="Identifier">fromPointer</span>(example,  <span class="Constant">2</span>); <span class="Comment">// =&gt; 'baz'</span>
+<span class="Identifier">fromPointer</span>(example,  <span class="Constant">3</span>); <span class="Comment">// =&gt; 'foo'</span>
+</pre>

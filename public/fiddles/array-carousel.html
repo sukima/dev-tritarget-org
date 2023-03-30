@@ -13,11 +13,26 @@
       element: 'apples',
     };
 
-    function render(step) {
+    function modern(step) {
+      let size = data.array.length;
+      data.pointer += step;
+      data.index = (data.pointer % size);
+      data.element = data.array.at(data.index);
+    }
+
+    function classic(step) {
       let size = data.array.length;
       data.pointer += step;
       data.index = ((data.pointer % size) + size) % size;
       data.element = data.array[data.index];
+    }
+
+    function render(step) {
+      if (typeof Array.prototype.at === 'function') {
+        modern(step);
+      } else {
+        classic(step);
+      }
       output.textContent = JSON.stringify(data, null, 2);
     }
 

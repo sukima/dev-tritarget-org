@@ -10,22 +10,15 @@ Everytime I try to do this I mess it up and it take hours to find just the right
 
 To turn an array pointer into a carousel use this formula:
 
-```javascript
-function fromPointer(array, pointer) {
-  let size = array.length;
-  let boundIndex = ((pointer % size) + size) % size;
-  return array[boundIndex];
-}
+{{sourcecode/array-carousel/usage.js}}
 
-const example = ['foo', 'bar', 'baz'];
+[[Working example|https://tritarget.org/fiddles/?fiddle=array-carousel.html]]
 
-fromPointer(example, -3); // => 'foo'
-fromPointer(example, -2); // => 'bar'
-fromPointer(example, -1); // => 'baz'
-fromPointer(example,  0); // => 'foo'
-fromPointer(example,  1); // => 'bar'
-fromPointer(example,  2); // => 'baz'
-fromPointer(example,  3); // => 'foo'
-```
+!! Modern ~JavaScript
 
-[[Working example|tips/array-carousel-example.html]]
+{{sourcecode/array-carousel/modern.js}}
+
+!! Classic ~JavaScript
+
+{{sourcecode/array-carousel/classic.js}}
+
