@@ -1,0 +1,27 @@
+created: 20230331012014000
+creator: Sukima
+modified: 20230331012014000
+modifier: Sukima
+tags: Tips Coding JavaScript
+title: Decorator Proxies
+type: text/vnd.tiddlywiki
+
+Sometimes I run into situations where my data object/classes need more information to provide presentation logic. When this happens I feel torn about seperation of concerns. Especially when said data comes from another module and I want to enhance it.
+
+In OO Design this would be a use case for the [[Decorator Pattern|https://en.wikipedia.org/wiki/Decorator_pattern]]. An easy method to avoid having to duplicate every property of the decorated object we can use a `Proxy` to dispatch messages between the original object (target) and the decorator.
+
+There are some caveats to this which is why every time I do this I spend far too long trying to work out all the edge cases. `Proxy` is quite level but it comes with great power. Here are the guidelines.
+
+# Any ''traps'' that are not defined on the proxy will just forward to the ''target'' as if it was the target (including any `this` referencing). This means that the first argument should be the thing the decorator is wrapping
+# Due to internal implementation reasons we should always interact with the ''target'' using the [[Reflect|https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect]] APIs
+# When the `get` ''trap'' is called to fetch a function reference the returned function (when called) will not have the expected `this` context that a non-proxy would. This means the `get` ''trap'' must //bind// the function to the ''target''
+# When the `set` ''trap'' is called you must return a ''boolean'' (typically true) or things break
+# When wrapping objects using a function the closure is enough to reference the ''target'' making the use of the first argument to the ''traps'' kind of redundant (in this use case)
+
+!! Utility function
+
+{{sourcecode/decorator-proxies/function-example.js}}
+
+!! Utility class
+
+{{sourcecode/decorator-proxies/class-example.js}}

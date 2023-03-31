@@ -1,0 +1,31 @@
+title: sourcecode/decorator-proxies/class-example.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> Decorator </span>{
+  <span class="Type">get</span> <span class="Identifier">bar</span>() {
+    <span class="Statement">return</span> <span class="Constant">'BAR'</span>;
+  }
+
+  <span class="Type">static</span> <span class="Identifier">wrap</span>(subject) {
+    <span class="Type">let</span> decorator <span class="Statement">=</span> <span class="Statement">new</span> <span class="Identifier">Decorator</span>();
+    <span class="Statement">return</span> <span class="Statement">new</span> <span class="Constant">Proxy</span>(subject, {
+      <span class="Identifier">get</span>(_, prop) {
+        <span class="Type">let</span> target <span class="Statement">=</span> <span class="Constant">Reflect</span>.<span class="Identifier">has</span>(decorator, prop)
+          <span class="Statement">?</span> decorator
+          <span class="Statement">:</span> subject;
+        <span class="Type">let</span> value <span class="Statement">=</span> <span class="Constant">Reflect</span>.<span class="Identifier">get</span>(target, prop);
+        <span class="Statement">return</span> <span class="Statement">typeof</span> value <span class="Statement">===</span> <span class="Constant">'function'</span>
+          <span class="Statement">?</span> value.<span class="Identifier">bind</span>(target)
+          <span class="Statement">:</span> value;
+      }
+    });
+  }
+}
+
+<span class="Type">let</span> foo <span class="Statement">=</span> { foo: <span class="Constant">'FOO'</span> };
+<span class="Type">let</span> baz <span class="Statement">=</span> Decorator.<span class="Identifier">wrap</span>(foo);
+
+baz.foo; <span class="Comment">// =&gt; &quot;FOO&quot;</span>
+baz.bar; <span class="Comment">// =&gt; &quot;BAR&quot;</span>
+</pre>
