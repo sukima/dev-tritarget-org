@@ -1,0 +1,25 @@
+created: 20230402164701000
+creator: Sukima
+modified: 20230402171617432
+modifier: Sukima
+tags: Tips Coding
+title: De Morgan's Laws
+type: text/vnd.tiddlywiki
+
+[[De Morgan's Laws|https://en.wikipedia.org/wiki/De_Morgan%27s_laws]]
+
+!!! Programming Language
+| !AND | !OR |
+| `!(a && b)` | `!a || !b` |
+| `!a && !b` | `!(a || b)` |
+| &nbsp; |<|
+| `a && !b` | `!(!a || b)` |
+| `!(a && !b)` | `!a || b` |
+
+!!! Formal Language
+| !AND | !OR |
+| `¬(P∧Q)` | `¬P∨¬Q` |
+| `¬P∧¬Q` | `¬(P∨Q)` |
+| &nbsp; |<|
+| `P∧¬Q` | `¬(¬P∨Q)` |
+| `¬(P∧¬Q)` | `¬P∨Q` |
