@@ -292,7 +292,8 @@ class Editor { // {{{1
     return this.initialValue !== this.currentValue;
   }
 
-  handleChangeEvent() {
+  handleChangeEvent(state) {
+    if (state.changes.empty) return;
     DataBrowserHook.from(this.hasChanged).prepare();
     this.onChange();
   }
@@ -374,7 +375,7 @@ class Editor { // {{{1
       doc,
       parent,
       extensions: [
-        updateListener.of(() => this.handleChangeEvent()),
+        updateListener.of((state) => this.handleChangeEvent(state)),
         keymap.of({ key: 'Ctrl-Shift-`', run: toggleVimMode }),
         emmet('Ctrl-e'),
         vimMode.initial,
