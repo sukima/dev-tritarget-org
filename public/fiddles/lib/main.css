@@ -28,6 +28,11 @@ button {
     font-family: inherit;
     margin: 0;
 }
+button.jumbo {
+    cursor: pointer;
+    font-size: 2rem;
+    padding: 0 1rem;
+}
 h2.title {
     display: block;
     width: 100%;
@@ -35,6 +40,12 @@ h2.title {
     font-size: 1.2em;
     font-weight: normal;
     box-sizing: border-box;
+}
+#refresh {
+    margin-top: -0.5rem;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 .text-center {
     text-align: center;
@@ -44,6 +55,15 @@ h2.title {
 }
 .border-bottom {
     border-bottom: 1px solid #333;
+}
+.flow {
+    display: flex;
+}
+.horizontal {
+    flex-direction: row;
+}
+.flow > .grow {
+    flex-grow: 1;
 }
 .menu-icon {
     box-sizing: border-box;
@@ -119,10 +139,6 @@ ul.menu-list li .sublabel {
 }
 .menu-icon button {
     padding: 0.5rem 1rem;
-}
-.menu-close button {
-    font-size: 2rem;
-    padding: 0 1rem;
 }
 .menu-footer {
     font-size: 0.7em;

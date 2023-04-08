@@ -41,7 +41,8 @@ const applicationMachine = createMachine({ // {{{1
     SAVED: 'menu.closed',
     LOAD: { actions: 'loadEditorContents' },
     LOADED: 'menu.closed',
-    MANUAL_UPDATE: { actions: 'updatePreview' },
+    UPDATE: { actions: 'updatePreview' },
+    UPDATED: { actions: 'hintPreviewUpdate' },
   },
   states: {
     editorPreviewColumns: {
@@ -106,11 +107,19 @@ const applicationMachine = createMachine({ // {{{1
       initial: 'deactivated',
       states: {
         deactivated: {
-          entry: ['deactivateManualPreviewConfig', 'disableEditorManualPreview'],
+          entry: [
+            'deactivateManualPreviewConfig',
+            'disableEditorManualPreview',
+            'hideRefreshButton',
+          ],
           on: { TOGGLE_MANUAL_PREVIEW: 'activated' },
         },
         activated: {
-          entry: ['activateManualPreviewConfig', 'enableEditorManualPreview'],
+          entry: [
+            'activateManualPreviewConfig',
+            'enableEditorManualPreview',
+            'showRefreshButton',
+          ],
           on: { TOGGLE_MANUAL_PREVIEW: 'deactivated' },
         },
       },
@@ -137,6 +146,7 @@ class Application { // {{{1
     actions: {
       openMenu: () => this.menu.open(),
       closeMenu: () => this.menu.close(),
+      hintPreviewUpdate: () => this.buttons.refresh.animate(),
       updatePreview: () => this.editor.update(),
       openFileBrowser: () => this.fileBrowser.open(),
       showEditorHalfWidth: () => this.columns.editor.halfWidth(),
@@ -157,6 +167,8 @@ class Application { // {{{1
       deactivateWordWrapConfig: () => this.buttons.wordWrap.deactivate(),
       activateManualPreviewConfig: () => this.buttons.manualPreview.activate(),
       deactivateManualPreviewConfig: () => this.buttons.manualPreview.deactivate(),
+      showRefreshButton: () => this.buttons.refresh.show(),
+      hideRefreshButton: () => this.buttons.refresh.hide(),
       saveEditorContents: async () => {
         this.savedFilename = prompt(
           'Save As: Enter a file name',
@@ -180,7 +192,7 @@ class Application { // {{{1
 
   constructor({ fileBrowser, menu, editor, columns, buttons }) {
     Object.assign(this, { fileBrowser, menu, editor, columns, buttons });
-    this.machine.start();
+    requestAnimationFrame(() => this.machine.start());
   }
 
   trigger(...args) {
@@ -255,9 +267,39 @@ class Column { // {{{1
 }
 
 class Button { // {{{1
+  constructor(element) {
+    this.element = element;
+  }
+
+  show() {
+    this.element.hidden = false;
+  }
+
+  hide() {
+    this.element.hidden = true;
+  }
+}
+
+class SpinningButton extends Button { // {{{1
+  async animate() {
+    let { element } = this;
+    let { hidden } = element;
+    element.hidden = false;
+    element.disabled = true;
+    await element.animate(
+      [{ transform: 'rotate(360deg)' }],
+      { duration: 400, iterations: 1 },
+    ).finished;
+    element.hidden = hidden;
+    element.disabled = false;
+  }
+}
+
+class MenuButton extends Button { // {{{1
   constructor(element, label) {
+    super(element);
     this.labelEl = element.querySelector('.label');
-    this.labelText = label;
+    this.labelText = this.labelEl.textContent;
   }
 
   activate() {
@@ -623,16 +665,20 @@ function dasherize(input) { // {{{1
 const app = new Application({ // {{{1
   fileBrowser: new FileBrowser($['#file-open-input'].element),
   menu: new Menu($['#menu'].element, () => app.trigger('CLOSE_MENU')),
-  editor: new Editor($['#editor'].element, updatePreview),
+  editor: new Editor($['#editor'].element, (content) => {
+    app.trigger('UPDATED');
+    updatePreview(content);
+  }),
   columns: {
     editor: new Column($['.editor'].element),
     preview: new Column($['.preview'].element),
   },
   buttons: {
-    editor: new Button($['#menu-show-editor'].element, 'Editor Window'),
-    preview: new Button($['#menu-show-preview'].element, 'Preview Window'),
-    wordWrap: new Button($['#menu-word-wrap'].element, 'Word Wrap'),
-    manualPreview: new Button($['#menu-manual-preview'].element, 'Manual Preview'),
+    editor: new MenuButton($['#menu-show-editor'].element),
+    preview: new MenuButton($['#menu-show-preview'].element),
+    wordWrap: new MenuButton($['#menu-word-wrap'].element),
+    manualPreview: new MenuButton($['#menu-manual-preview'].element),
+    refresh: new SpinningButton($['#refresh'].element),
   },
 });
 
@@ -656,6 +702,7 @@ $['#menu-show-editor'].on.click(() => app.trigger('TOGGLE_EDITOR'));
 $['#menu-show-preview'].on.click(() => app.trigger('TOGGLE_PREVIEW'));
 $['#menu-word-wrap'].on.click(() => app.trigger('TOGGLE_WORDWRAP'));
 $['#menu-manual-preview'].on.click(() => app.trigger('TOGGLE_MANUAL_PREVIEW'));
+$['#refresh'].on.click(() => app.trigger('UPDATE'));
 
 // Keyboard Events {{{1
 $.on.keyup(event => {
@@ -672,7 +719,7 @@ $.on.keyup(event => {
     case 'E': return trigger('TOGGLE_EDITOR');
     case 'W': return trigger('TOGGLE_PREVIEW');
     case 'M': return trigger('TOGGLE_MANUAL_PREVIEW');
-    case 'U': return trigger('MANUAL_UPDATE');
+    case 'U': return trigger('UPDATE');
     default: //
   }
 });
