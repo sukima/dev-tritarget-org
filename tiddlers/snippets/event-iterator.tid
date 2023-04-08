@@ -18,6 +18,12 @@ A version of this is pattern is part of my [[simple-dom]] micro lib.
 
 {{sourcecode/event-iterator-simple-dom-example.js}}
 
+!! Once function
+
+Using a `once()` function with a promise.
+
+{{sourcecode/event-iterator-once.js}}
+
 !! Using an ~AbortController
 
 An example of working with `postMessage` and [[AbortController|https://developer.mozilla.org/en-US/docs/Web/API/AbortController]]
