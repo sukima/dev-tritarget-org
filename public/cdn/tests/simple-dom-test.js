@@ -59,10 +59,18 @@ module('simple-dom.js', function (hooks) {
 
   module('Events', function () {
     test('can attach events to a single element', function (assert) {
-      let callCount = 0;
-      this.subject.button.on.click(() => callCount++);
+      this.subject.button.on.click(() => assert.step('called'));
       this.fixture.querySelector('button').click();
-      assert.equal(callCount, 1, 'spy called');
+      this.fixture.querySelector('button').click();
+      assert.verifySteps(['called', 'called']);
+    });
+
+    test('cat attach events once', async function (assert) {
+      let promise = this.subject.button.once.click();
+      this.fixture.querySelector('button').click();
+      this.fixture.querySelector('button').click();
+      let event = await promise;
+      assert.ok(typeof event !== 'undefiend');
     });
 
     test('can attach events to multiple elements', function (assert) {
@@ -73,26 +81,24 @@ module('simple-dom.js', function (hooks) {
     });
 
     test('can attach multiple events', function (assert) {
-      let callCount = 0;
       let button = this.fixture.querySelector('button');
-      this.subject.button.on['click,foo,bar'](() => callCount++);
+      this.subject.button.on['click,foo,bar'](() => assert.step('called'));
       button.click();
       button.dispatchEvent(new CustomEvent('foo'));
       button.dispatchEvent(new CustomEvent('bar'));
-      assert.equal(callCount, 3, 'spy called');
+      assert.verifySteps(['called', 'called', 'called']);
     });
 
     test('can detach events', function (assert) {
-      let callCount = 0;
       let button = this.fixture.querySelector('button');
-      let detach1 = this.subject.button.on['click,foo,bar'](() => callCount++);
-      let detach2 = this.subject.all.button.on.click(() => callCount++);
+      let detach1 = this.subject.button.on['click,foo,bar'](() => assert.step('called'));
+      let detach2 = this.subject.all.button.on.click(() => assert.step('called'));
       detach1();
       detach2();
       this.fixture.querySelectorAll('button').forEach(i => i.click());
       button.dispatchEvent(new CustomEvent('foo'));
       button.dispatchEvent(new CustomEvent('bar'));
-      assert.equal(callCount, 0, 'spy never called');
+      assert.verifySteps([]);
     });
 
     test('attached events are iterable', async function (assert) {

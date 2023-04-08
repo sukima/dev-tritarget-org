@@ -1,5 +1,5 @@
 /*******************************************/
-/* Version 1.2.0                           */
+/* Version 1.3.0                           */
 /* License MIT                             */
 /* Copyright (C) 2022 Devin Weaver         */
 /* https://tritarget.org/cdn/simple-dom.js */
@@ -126,6 +126,18 @@ function eventable(...elements) {
   });
 }
 
+function onceEventable(...elements) {
+  return new Proxy({}, {
+    get(_, prop) {
+      let eventNames = prop.split(',');
+      return async (options) => {
+        let events = eventStreamManager(elements, eventNames, options);
+        for await (let event of events) return event;
+      };
+    },
+  });
+}
+
 function wrapper(fn) {
   return subject => {
     if (proxies.has(subject)) { return subject; }
@@ -212,6 +224,8 @@ function dom(element) {
         case 'new': return creatable();
         case 'on':
           return eventable(element === document ? document.body : element);
+        case 'once':
+          return onceEventable(element === document ? document.body : element);
       }
       if (Reflect.has(element, prop)) {
         let thing = Reflect.get(element, prop);
