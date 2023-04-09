@@ -10,9 +10,10 @@ It consists of `index.html` and the files under `lib/`.
 ## Dependencies
 
 * Modern broswer with HTML5, ES6, CSS3, and JavaScript Module support
-* [lz-string](https://pieroxy.net/blog/pages/lz-string/index.html)
 * [XState](https://xstate.js.org) ― https://tritarget.org/cdn/xstate.js
 * [CodeMirror](https://codemirror.net/) ― https://tritarget.org/cdn/codemirror.js
+* [Marked](https://marked.js.org) ― https://tritarget.org/cdn/marked.js
+* [lz-string](https://pieroxy.net/blog/pages/lz-string/index.html) ― https://tritarget.org/fiddles/lib/ls-string.js
 * [Simple DOM](https://tritarget.org/cdn/simple-dom.js) ― https://tritarget.org/cdn/simple-dom.js
 
 ## Usage

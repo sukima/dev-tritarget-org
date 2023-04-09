@@ -180,11 +180,11 @@ dialog.flash button {
 }
 .editor {
   padding-bottom: 4em;
+  background-color: #002b36;
 }
 .editor, .cm-editor {
   font-family: mononoki,"SF Mono","Monaco","Andale Mono","Lucida Console","Bitstream Vera Sans Mono","Courier New",Courier,monospace;
   font-size: 12pt;
-  background-color: #173541;
 }
 .editor > h2:first-child {
   background-color: #272822;

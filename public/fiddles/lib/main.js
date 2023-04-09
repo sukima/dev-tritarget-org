@@ -2,8 +2,11 @@ import $ from '../../cdn/simple-dom.js';
 import * as CodeMirror from '../../cdn/codemirror.js';
 import { createMachine, interpret } from '../../cdn/xstate.js';
 
-let suggestedFileName = 'new-fiddle.html';
+const lazyLoadLzString = () => import('../../cdn/lz-string.js');
+const lazyLoadMarked = () => import('../../cdn/marked.js');
+
 const BASE_TITLE = $.element.title;
+let suggestedFileName = 'new-fiddle.html';
 
 // Default Text {{{1
 const defaultText = `
@@ -38,13 +41,17 @@ const applicationMachine = createMachine({ // {{{1
     BROWSE_FILES: { actions: 'openFileBrowser' },
     SAVE: { actions: 'saveEditorContents' },
     SHARE: { actions: 'shareEditorContents' },
-    SAVED: 'menu.closed',
     LOAD: { actions: 'loadEditorContents' },
-    LOADED: 'menu.closed',
     UPDATE: { actions: 'updatePreview' },
-    UPDATED: { actions: 'hintPreviewUpdate' },
   },
   states: {
+    previewHint: {
+      initial: 'initializing',
+      states: {
+        initializing: { on: { UPDATED: 'initialized' } },
+        initialized: { on: { UPDATED: { actions: 'hintPreviewUpdate' } } },
+      },
+    },
     editorPreviewColumns: {
       initial: 'initialize',
       states: {
@@ -146,7 +153,11 @@ const applicationMachine = createMachine({ // {{{1
         },
         open: {
           entry: 'openMenu',
-          on: { CLOSE_MENU: 'closed' },
+          on: {
+            CLOSE_MENU: 'closed',
+            SAVED: 'closed',
+            LOADED: 'closed',
+          },
         },
       },
     },
@@ -172,8 +183,8 @@ class Application { // {{{1
       disableEditorWordWrap: () => this.editor.setOption('lineWrap', false),
       enableEditorVimMode: () => this.editor.setOption('vimMode', true),
       disableEditorVimMode: () => this.editor.setOption('vimMode', false),
-      enableEditorManualPreview: () => this.editor.setOption('onChange', true),
-      disableEditorManualPreview: () => this.editor.setOption('onChange', false),
+      enableEditorManualPreview: () => this.editor.setOption('onChange', false),
+      disableEditorManualPreview: () => this.editor.setOption('onChange', true),
       activateEditorConfig: () => this.buttons.editor.activate(),
       deactivateEditorConfig: () => this.buttons.editor.deactivate(),
       activatePreviewConfig: () => this.buttons.preview.activate(),
@@ -330,13 +341,13 @@ class MenuButton extends Button { // {{{1
 
 class Editor { // {{{1
   constructor(element, updateCallback) {
-    let { editor, ...options } = this.createCodeEditor(element);
+    let { editor, languageMode, ...options } = this.createCodeEditor(element);
     let onChangeToggle = new Editor.Toggle((val) => this.setOnChange(val));
     this.editor = editor;
+    this.languageMode = languageMode;
     this.options = { onChange: onChangeToggle, ...options };
     this.updateCallback = updateCallback;
     this.initialValue = this.currentValue;
-    this.setOption('onChange', true);
   }
 
   get currentValue() {
@@ -356,6 +367,12 @@ class Editor { // {{{1
     if (state.changes.empty) return;
     DataBrowserHook.from(this.hasChanged).prepare();
     this.onChange();
+  }
+
+  chooseLanguage(state) {
+    if (state.changes.empty) return;
+    let languageChoice = isHtml(this.currentValue) ? 'html' : 'markdown';
+    this.languageMode.withEditor(this.editor).choose(languageChoice);
   }
 
   setOption(optionName, value) {
@@ -388,77 +405,36 @@ class Editor { // {{{1
   }
 
   createCodeEditor(parent, doc = defaultText) {
-    const {
-      EditorView,
-      keymap,
-      highlightSpecialChars,
-      drawSelection,
-      highlightActiveLine,
-      dropCursor,
-      rectangularSelection,
-      crosshairCursor,
-      lineNumbers,
-      highlightActiveLineGutter,
-    } = CodeMirror.view;
-    const {
-      defaultHighlightStyle,
-      syntaxHighlighting,
-      indentOnInput,
-      bracketMatching,
-      foldGutter,
-      foldKeymap,
-    } = CodeMirror.language;
-    const { defaultKeymap, history, historyKeymap } = CodeMirror.commands;
-    const { searchKeymap, highlightSelectionMatches } = CodeMirror.search
-    const { autocompletion, completionKeymap } = CodeMirror.autocomplete
-    const { lintKeymap } = CodeMirror.lint
-    const { EditorState } = CodeMirror.state;
-    const { html, css, javascript } = CodeMirror.languages;
+    const { EditorView } = CodeMirror.view;
+    const { basicSetup } = CodeMirror.codemirror;
+    const { html, markdown } = CodeMirror.languages;
     const { emmet, vim, color } = CodeMirror.extensions;
     const { solarized: { solarizedDark } } = CodeMirror.themes
     const { updateListener } = EditorView;
 
     let lineWrap = new Editor.ExtensionToggle(EditorView.lineWrapping);
     let vimMode = new Editor.ExtensionToggle(vim());
+    let languageMode = new Editor.ExtensionChooser({
+      html: html({ autoCloseTags: false }),
+      markdown: markdown(),
+    });
     let editor = new EditorView({
       doc,
       parent,
       extensions: [
+        basicSetup,
+        solarizedDark,
+        updateListener.of((state) => this.chooseLanguage(state)),
         updateListener.of((state) => this.handleChangeEvent(state)),
         emmet('Ctrl-e'),
+        color,
         vimMode.initial,
         lineWrap.initial,
-        solarizedDark,
-        color,
-        html({ autoCloseTags: false }),
-        lineNumbers(),
-        highlightActiveLineGutter(),
-        highlightSpecialChars(),
-        history(),
-        foldGutter(),
-        drawSelection(),
-        dropCursor(),
-        EditorState.allowMultipleSelections.of(true),
-        indentOnInput(),
-        syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
-        bracketMatching(),
-        autocompletion(),
-        rectangularSelection(),
-        crosshairCursor(),
-        highlightActiveLine(),
-        highlightSelectionMatches(),
-        keymap.of([
-          ...defaultKeymap,
-          ...searchKeymap,
-          ...historyKeymap,
-          ...foldKeymap,
-          ...completionKeymap,
-          ...lintKeymap
-        ]),
+        languageMode.initial,
       ],
     });
 
-    return { editor, lineWrap, vimMode };
+    return { editor, lineWrap, vimMode, languageMode };
   }
 
   static Toggle = class {
@@ -494,6 +470,26 @@ class Editor { // {{{1
       let config = enabled ? this.extension : [];
       let effects = this.compartment.reconfigure(config);
       return editor.dispatch({ effects });
+    }
+  };
+
+  static ExtensionChooser = class {
+    compartment = new CodeMirror.state.Compartment();
+    constructor(options) {
+      this.options = options;
+      this.choice = Object.values(options)[0];
+      this.initial = this.compartment.of(this.choice);
+    }
+    withEditor(editor) {
+      this.editor = editor;
+      return this;
+    }
+    choose(choice) {
+      let { compartment, options, editor } = this;
+      let config = this.choice = this.options[choice];
+      let effects = compartment.reconfigure(config);
+      try { return editor.dispatch({ effects }); }
+      finally { this.editor = null; }
     }
   };
 }
@@ -551,7 +547,7 @@ class CancelledSaver extends FileSaver { // {{{2
 
 class FragmentSaver extends FileSaver { // {{{2
   async save(blob) {
-    let { LZString } = await import('./lz-string.js');
+    let { LZString } = await lazyLoadLzString();
     let url = new URL(window.location);
     url.search = '';
     url.hash = LZString.compressToEncodedURIComponent(await blob.text());
@@ -652,7 +648,7 @@ class UrlLoader { // {{{1
   }
 }
 
-function updatePreview(content) { // {{{1
+async function updatePreview(content) { // {{{1
   const fiddleParam = () => new URL(window.location).searchParams.get('fiddle');
   let previewFrame = $.createElement('iframe');
   let oldPreview = $['#preview'].element;
@@ -664,7 +660,7 @@ function updatePreview(content) { // {{{1
 
   let preview = previewFrame.contentWindow.document;
   preview.open();
-  preview.write(content);
+  preview.write(await renderContent(content));
   preview.close();
 
   let subtitle = preview.title || fiddleParam() || 'New Fiddle';
@@ -682,6 +678,19 @@ function debounce(fn, delay = 10) { // {{{1
 
 function dasherize(input) { // {{{1
   return input.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+}
+
+function isHtml(content) { /// {{{1
+  return /^\s*</.test(content);
+}
+
+async function renderContent(content) { // {{{1
+  if (isHtml(content)) {
+    return content;
+  } else {
+    let { marked } = await lazyLoadMarked();
+    return marked.parse(content);
+  }
 }
 
 const app = new Application({ // {{{1
@@ -744,7 +753,6 @@ $.on.keyup(event => {
     case 'E': return trigger('TOGGLE_EDITOR');
     case 'W': return trigger('TOGGLE_PREVIEW');
     case 'M': return trigger('TOGGLE_MANUAL_PREVIEW');
-    case 'U': return trigger('UPDATE');
     case 'U': return trigger('UPDATE');
     default: //
   }
