@@ -10,6 +10,7 @@ import * as lint from "@codemirror/lint"
 
 // Extensions
 import * as solarized from '@uiw/codemirror-theme-solarized';
+import { markdown } from '@codemirror/lang-markdown';
 import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
 import { javascript } from '@codemirror/lang-javascript';
@@ -18,7 +19,7 @@ import { vim } from "@replit/codemirror-vim"
 import { color } from '@uiw/codemirror-extensions-color';
 
 const emmet = (key = 'Cmd-e') => view.keymap.of({ key, run: expandAbbreviation });
-const languages = { html, css, javascript };
+const languages = { html, css, javascript, markdown };
 const extensions = { emmet, vim, color };
 const themes = { solarized };
 
