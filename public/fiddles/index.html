@@ -26,14 +26,14 @@
 
 <!-- MENU WINDOW -->
 <nav id="menu" class="menu">
-  <div class="menu-close">
+  <div class="menu-close flow">
     <button
       type="button"
       id="menu-close"
-      class="jumbo"
+      class="jumbo grow"
       aria-label="Close menu"
       title="Close menu"
-    >&cross;</button>
+    >&larr;</button>
   </div>
   <ul class="menu-list">
     <li>
@@ -79,10 +79,21 @@
         <span class="sublabel">(<kbd>CTRL+Shift+U</kbd> to Update Preview)</span>
       </button>
     </li>
-    <li><a id="menu-contribute" href="https://github.com/rioastamal/html-editor/" target="_blank">Contribute</a></li>
+    <li>
+      <button type="button" id="menu-vim-mode">
+        <span class="label">Vim Keybindings</span>
+        <span class="sublabel"><kbd>Ctrl+Shift+~</kbd></span>
+      </button>
+    </li>
+    <li>
+      <a
+        href="https://github.com/sukima/dev-tritarget-org/tree/master/public/fiddles"
+        target="_blank"
+      >Contribute</a>
+    </li>
   </ul>
   <div class="menu-footer">
-    <span>HTML Editor v2.1</span>
+    <span>HTML Editor v2.2</span>
     <span>Made with &#x2665; by <a href="https://tritarget.org/">Devin Weaver</a></span>
     <span>Based off work by <a href="https://rioastamal.net/">Rio Astamal</a></span>
   </div>

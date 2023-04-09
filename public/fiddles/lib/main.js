@@ -103,6 +103,19 @@ const applicationMachine = createMachine({ // {{{1
         },
       },
     },
+    vimMode: {
+      initial: 'deactivated',
+      states: {
+        deactivated: {
+          entry: ['deactivateVimModeConfig', 'disableEditorVimMode'],
+          on: { TOGGLE_VIMMODE: 'activated' },
+        },
+        activated: {
+          entry: ['activateVimModeConfig', 'enableEditorVimMode'],
+          on: { TOGGLE_VIMMODE: 'deactivated' },
+        },
+      },
+    },
     manualPreviewUpdate: {
       initial: 'deactivated',
       states: {
@@ -155,16 +168,20 @@ class Application { // {{{1
       showPreviewHalfWidth: () => this.columns.preview.halfWidth(),
       showPreviewFullWidth: () => this.columns.preview.fullWidth(),
       hidePreview: () => this.columns.preview.hide(),
-      enableEditorWordWrap: () => this.editor.enableWordWrap(),
-      disableEditorWordWrap: () => this.editor.disableWordWrap(),
-      enableEditorManualPreview: () => this.editor.disableOnChangeEvents(),
-      disableEditorManualPreview: () => this.editor.enableOnChangeEvents(),
+      enableEditorWordWrap: () => this.editor.setOption('lineWrap', true),
+      disableEditorWordWrap: () => this.editor.setOption('lineWrap', false),
+      enableEditorVimMode: () => this.editor.setOption('vimMode', true),
+      disableEditorVimMode: () => this.editor.setOption('vimMode', false),
+      enableEditorManualPreview: () => this.editor.setOption('onChange', true),
+      disableEditorManualPreview: () => this.editor.setOption('onChange', false),
       activateEditorConfig: () => this.buttons.editor.activate(),
       deactivateEditorConfig: () => this.buttons.editor.deactivate(),
       activatePreviewConfig: () => this.buttons.preview.activate(),
       deactivatePreviewConfig: () => this.buttons.preview.deactivate(),
       activateWordWrapConfig: () => this.buttons.wordWrap.activate(),
       deactivateWordWrapConfig: () => this.buttons.wordWrap.deactivate(),
+      activateVimModeConfig: () => this.buttons.vimMode.activate(),
+      deactivateVimModeConfig: () => this.buttons.vimMode.deactivate(),
       activateManualPreviewConfig: () => this.buttons.manualPreview.activate(),
       deactivateManualPreviewConfig: () => this.buttons.manualPreview.deactivate(),
       showRefreshButton: () => this.buttons.refresh.show(),
@@ -313,12 +330,13 @@ class MenuButton extends Button { // {{{1
 
 class Editor { // {{{1
   constructor(element, updateCallback) {
-    let { editor, lineWrap } = this.createCodeEditor(element);
+    let { editor, ...options } = this.createCodeEditor(element);
+    let onChangeToggle = new Editor.Toggle((val) => this.setOnChange(val));
     this.editor = editor;
-    this.lineWrap = lineWrap;
+    this.options = { onChange: onChangeToggle, ...options };
     this.updateCallback = updateCallback;
     this.initialValue = this.currentValue;
-    this.enableOnChangeEvents();
+    this.setOption('onChange', true);
   }
 
   get currentValue() {
@@ -340,22 +358,16 @@ class Editor { // {{{1
     this.onChange();
   }
 
-  enableWordWrap() {
-    let { editor, lineWrap } = this;
-    editor.dispatch({ effects: lineWrap.enable() });
+  setOption(optionName, value) {
+    let { editor, options } = this;
+    let { [optionName]: option } = options;
+    if (!(option instanceof Editor.Toggle))
+      throw new TypeError(`${optionName} is not an Editor option`);
+    option.withEditor(editor).toggle(value);
   }
 
-  disableWordWrap() {
-    let { editor, lineWrap } = this;
-    editor.dispatch({ effects: lineWrap.disable() });
-  }
-
-  enableOnChangeEvents() {
-    this.onChange = debounce(() => this.update(), 700);
-  }
-
-  disableOnChangeEvents() {
-    this.onChange = () => {};
+  setOnChange(enabled) {
+    this.onChange = enabled ? debounce(() => this.update(), 700) : () => {};
   }
 
   async save(saver) {
@@ -406,19 +418,13 @@ class Editor { // {{{1
     const { solarized: { solarizedDark } } = CodeMirror.themes
     const { updateListener } = EditorView;
 
-    let lineWrap = new Editor.Toggle(EditorView.lineWrapping);
-    let vimMode = new Editor.Toggle(vim());
-    let toggleVimMode = () => {
-      editor.dispatch({ effects: vimMode.toggle() });
-      flash(vimMode.enabled ? 'Vim mode ON' : 'Vim mode OFF');
-    };
-
+    let lineWrap = new Editor.ExtensionToggle(EditorView.lineWrapping);
+    let vimMode = new Editor.ExtensionToggle(vim());
     let editor = new EditorView({
       doc,
       parent,
       extensions: [
         updateListener.of((state) => this.handleChangeEvent(state)),
-        keymap.of({ key: 'Ctrl-Shift-`', run: toggleVimMode }),
         emmet('Ctrl-e'),
         vimMode.initial,
         lineWrap.initial,
@@ -452,28 +458,44 @@ class Editor { // {{{1
       ],
     });
 
-    return { editor, lineWrap };
+    return { editor, lineWrap, vimMode };
   }
 
   static Toggle = class {
     enabled = false;
+    constructor(callback) {
+      this.callback = callback;
+    }
+    withEditor(editor) {
+      this.editor = editor;
+      return this;
+    }
+    enable() {
+      this.toggle(true);
+    }
+    disable() {
+      this.toggle(false);
+    }
+    toggle(value = !this.enabled) {
+      this.enabled = value;
+      try { return this.callback(this.enabled, this.editor); }
+      finally { this.editor = null; }
+    }
+  };
+
+  static ExtensionToggle = class extends Editor.Toggle {
     compartment = new CodeMirror.state.Compartment();
     constructor(extension, initial = false) {
+      super((enabled, editor) => this.reconfigure(enabled, editor));
       this.extension = extension;
       this.initial = this.compartment.of(initial ? this.extension : []);
     }
-    enable() {
-      this.enabled = true;
-      return this.compartment.reconfigure(this.extension);
+    reconfigure(enabled, editor) {
+      let config = enabled ? this.extension : [];
+      let effects = this.compartment.reconfigure(config);
+      return editor.dispatch({ effects });
     }
-    disable() {
-      this.enabled = false;
-      return this.compartment.reconfigure([]);
-    }
-    toggle() {
-      return this.enabled ? this.disable() : this.enable();
-    }
-  }
+  };
 }
 
 class DataBrowserHook { // {{{1
@@ -677,6 +699,7 @@ const app = new Application({ // {{{1
     editor: new MenuButton($['#menu-show-editor'].element),
     preview: new MenuButton($['#menu-show-preview'].element),
     wordWrap: new MenuButton($['#menu-word-wrap'].element),
+    vimMode: new MenuButton($['#menu-vim-mode'].element),
     manualPreview: new MenuButton($['#menu-manual-preview'].element),
     refresh: new SpinningButton($['#refresh'].element),
   },
@@ -701,6 +724,7 @@ $['#menu-share'].on.click(() => app.trigger('SHARE'));
 $['#menu-show-editor'].on.click(() => app.trigger('TOGGLE_EDITOR'));
 $['#menu-show-preview'].on.click(() => app.trigger('TOGGLE_PREVIEW'));
 $['#menu-word-wrap'].on.click(() => app.trigger('TOGGLE_WORDWRAP'));
+$['#menu-vim-mode'].on.click(() => app.trigger('TOGGLE_VIMMODE'));
 $['#menu-manual-preview'].on.click(() => app.trigger('TOGGLE_MANUAL_PREVIEW'));
 $['#refresh'].on.click(() => app.trigger('UPDATE'));
 
@@ -715,10 +739,12 @@ $.on.keyup(event => {
     case 'O': return trigger('BROWSE_FILES');
     case 'S': return trigger('SAVE');
     case 'L': return trigger('SHARE');
+    case '~': return trigger('TOGGLE_VIMMODE');
     case 'B': return trigger('TOGGLE_WORDWRAP');
     case 'E': return trigger('TOGGLE_EDITOR');
     case 'W': return trigger('TOGGLE_PREVIEW');
     case 'M': return trigger('TOGGLE_MANUAL_PREVIEW');
+    case 'U': return trigger('UPDATE');
     case 'U': return trigger('UPDATE');
     default: //
   }

@@ -59,7 +59,7 @@ h2.title {
 .flow {
     display: flex;
 }
-.horizontal {
+.flow.horizontal {
     flex-direction: row;
 }
 .flow > .grow {
@@ -88,7 +88,6 @@ h2.title {
     z-index: 10;
     box-sizing: border-box;
     min-height: 100%;
-    padding-top: 2em;
     padding-right: 2em;
     display: none;
     background-color: inherit;
@@ -133,9 +132,10 @@ ul.menu-list li .sublabel {
 }
 .menu-close {
     padding: 0;
-    position: absolute;
-    top: 0;
-    right: 0;
+}
+#menu-close {
+    text-align: left;
+    width: 100%;
 }
 .menu-icon button {
     padding: 0.5rem 1rem;
