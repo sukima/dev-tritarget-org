@@ -17,7 +17,13 @@
 <body>
 <!-- MENU ICON -->
 <div id="menu-icon" class="menu-icon">
-  <button type="button" id="menu-open" aria-label="Open menu" title="Open menu">
+  <button
+    type="button"
+    id="menu-open"
+    aria-label="Open menu"
+    title="Open menu"
+    data-action="OPEN_MENU"
+  >
     <span class="linemenu"></span>
     <span class="linemenu"></span>
     <span class="linemenu"></span>
@@ -33,54 +39,55 @@
       class="jumbo grow"
       aria-label="Close menu"
       title="Close menu"
+      data-action="CLOSE_MENU"
     >&larr;</button>
   </div>
   <ul class="menu-list">
     <li>
-      <button type="button" id="menu-open-file">
+      <button type="button" id="menu-open-file" data-action="BROWSE_FILES">
         <span class="label">Open file&hellip;</span>
         <span class="sublabel"><kbd>Ctrl+Shift+O</kbd></span>
       </button>
     </li>
     <li>
-      <button type="button" id="menu-save-file">
+      <button type="button" id="menu-save-file" data-action="SAVE">
         <span class="label">Save as&hellip;</span>
         <span class="sublabel"><kbd>Ctrl+Shift+S</kbd></span>
       </button>
     </li>
     <li>
-      <button type="button" id="menu-share">
+      <button type="button" id="menu-share" data-action="SHARE">
         <span class="label">Share link&hellip;</span>
         <span class="sublabel"><kbd>Ctrl+Shift+L</kbd></span>
       </button>
     </li>
     <li>
-      <button type="button" id="menu-word-wrap">
+      <button type="button" id="menu-word-wrap" data-action="TOGGLE_WORDWRAP">
         <span class="label">Word wrap</span>
         <span class="sublabel"><kbd>Ctrl+Shift+B</kbd></span>
       </button>
     </li>
     <li>
-      <button type="button" id="menu-show-editor">
+      <button type="button" id="menu-show-editor" data-action="TOGGLE_EDITOR">
         <span class="label">Editor window</span>
         <span class="sublabel"><kbd>Ctrl+Shift+E</kbd></span>
       </button>
     </li>
     <li>
-      <button type="button" id="menu-show-preview">
+      <button type="button" id="menu-show-preview" data-action="TOGGLE_PREVIEW">
         <span class="label">Preview window</span>
         <span class="sublabel"><kbd>Ctrl+Shift+W</kbd></span>
       </button>
     </li>
     <li>
-      <button type="button" id="menu-manual-preview" data-manual-preview="no">
+      <button type="button" id="menu-manual-preview" data-action="TOGGLE_MANUAL_PREVIEW">
         <span class="label">Manual preview</span>
         <span class="sublabel"><kbd>Ctrl+Shift+P</kbd></span>
         <span class="sublabel">(<kbd>CTRL+Shift+U</kbd> to Update Preview)</span>
       </button>
     </li>
     <li>
-      <button type="button" id="menu-vim-mode">
+      <button type="button" id="menu-vim-mode" data-action="TOGGLE_VIMMODE">
         <span class="label">Vim key bindings</span>
         <span class="sublabel"><kbd>Ctrl+Shift+~</kbd></span>
       </button>
@@ -114,6 +121,7 @@
       class="jumbo"
       aria-label="Refresh preview"
       title="Refresh preview"
+      data-action="UPDATE"
       hidden
     >&orarr;</button>
     <h2 class="title text-center border-bottom grow">Preview</h2>

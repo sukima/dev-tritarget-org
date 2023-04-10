@@ -363,7 +363,7 @@ class Editor { // {{{1
     return this.initialValue !== this.currentValue;
   }
 
-  handleChangeEvent(state) {
+  handleEditorChangeEvent(state) {
     if (state.changes.empty) return;
     DataBrowserHook.from(this.hasChanged).prepare();
     this.onChange();
@@ -392,7 +392,7 @@ class Editor { // {{{1
     let blob = new Blob([currentValue], { type: 'text/html' });
     await saver.save(blob);
     this.initialValue = this.currentValue;
-    this.handleChangeEvent();
+    DataBrowserHook.from(this.hasChanged).prepare();
   }
 
   async load(loader) {
@@ -425,7 +425,7 @@ class Editor { // {{{1
         basicSetup,
         solarizedDark,
         updateListener.of((state) => this.chooseLanguage(state)),
-        updateListener.of((state) => this.handleChangeEvent(state)),
+        updateListener.of((state) => this.handleEditorChangeEvent(state)),
         emmet('Ctrl-e'),
         color,
         vimMode.initial,
@@ -608,7 +608,7 @@ class FragmentLoader { // {{{1
   }
 
   async load() {
-    let { LZString } = await import('./lz-string.js');
+    let { LZString } = await lazyLoadLzString();
     try {
       return LZString.decompressFromEncodedURIComponent(this.hash);
     } finally {
@@ -714,9 +714,7 @@ const app = new Application({ // {{{1
   },
 });
 
-// }}}1
-
-// DOM Events {{{1
+// Buttons {{{1
 $['#file-open-input'].on.change(
   ({ target }) => app.trigger(
     'LOAD',
@@ -724,18 +722,9 @@ $['#file-open-input'].on.change(
   )
 );
 
-// Mouse Events {{{1
-$['#menu-open'].on.click(() => app.trigger('OPEN_MENU'));
-$['#menu-close'].on.click(() => app.trigger('CLOSE_MENU'));
-$['#menu-open-file'].on.click(() => app.trigger('BROWSE_FILES'));
-$['#menu-save-file'].on.click(() => app.trigger('SAVE'));
-$['#menu-share'].on.click(() => app.trigger('SHARE'));
-$['#menu-show-editor'].on.click(() => app.trigger('TOGGLE_EDITOR'));
-$['#menu-show-preview'].on.click(() => app.trigger('TOGGLE_PREVIEW'));
-$['#menu-word-wrap'].on.click(() => app.trigger('TOGGLE_WORDWRAP'));
-$['#menu-vim-mode'].on.click(() => app.trigger('TOGGLE_VIMMODE'));
-$['#menu-manual-preview'].on.click(() => app.trigger('TOGGLE_MANUAL_PREVIEW'));
-$['#refresh'].on.click(() => app.trigger('UPDATE'));
+$.all.button.on.click(
+  ({ currentTarget }) => app.trigger(currentTarget.dataset.action ?? 'UNKNOWN'),
+);
 
 // Keyboard Events {{{1
 $.on.keyup(event => {
@@ -758,7 +747,6 @@ $.on.keyup(event => {
   }
 });
 
-// }}}1
 // Flash messages {{{1
 const flash = (function () {
   let flashTimeout;
@@ -776,7 +764,7 @@ const flash = (function () {
   }
 })();
 
-function preloadRelativeContent() {
+preloadRelativeContent: { // {{{1
   let currentUrl = new URL(window.location);
   let { searchParams } = currentUrl;
 
@@ -787,7 +775,5 @@ function preloadRelativeContent() {
     app.trigger('LOAD', { loader: new FragmentLoader(window.location.hash) });
   }
 }
-
-preloadRelativeContent();
 
 // vim: et sw=2 fdm=marker
