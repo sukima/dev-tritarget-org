@@ -1,5 +1,5 @@
 /*******************************************/
-/* Version 1.3.0                           */
+/* Version 1.4.0                           */
 /* License MIT                             */
 /* Copyright (C) 2022 Devin Weaver         */
 /* https://tritarget.org/cdn/simple-dom.js */
@@ -99,7 +99,7 @@ function attachAll(elements, eventNames, fn, options) {
   return () => detachables.forEach(i => i());
 }
 
-function eventStreamManager(elements, eventNames, options) {
+function eventStream(elements, eventNames, options) {
   async function* events() {
     let done;
     let handler = (event) => done(event);
@@ -120,7 +120,7 @@ function eventable(...elements) {
         if (typeof fn === 'function')
           return attachAll(elements, eventNames, fn, options);
         else
-          return eventStreamManager(elements, eventNames, fn);
+          return eventStream(elements, eventNames, fn);
       };
     },
   });
@@ -131,7 +131,7 @@ function onceEventable(...elements) {
     get(_, prop) {
       let eventNames = prop.split(',');
       return async (options) => {
-        let events = eventStreamManager(elements, eventNames, options);
+        let events = eventStream(elements, eventNames, options);
         for await (let event of events) return event;
       };
     },
@@ -148,25 +148,35 @@ function wrapper(fn) {
 }
 
 function domAll(element) {
-  const queryWrap = wrapper(prop => {
-    return new Proxy([...element.querySelectorAll(prop)].map(dom), {
+  const queryWrap = wrapper(elements => {
+    return new Proxy(elements.map(dom), {
       get(target, prop) {
         switch (prop) {
-          case 'elements': return target.map(i => i.element);
-          case 'on': return eventable(...target.map(i => i.element));
+          case 'elements': return elements;
+          case 'on': return eventable(...elements);
+          case 'once': return onceEventable(...elements);
         }
         return Reflect.get(target, prop);
-      },
-      set(target, prop, value) {
-        return Reflect.set(target, prop, value);
       },
     });
   });
 
+  function* findElements(targets) {
+    for (let target of targets) {
+      if (typeof target === 'string')
+        yield* element.querySelectorAll(target)
+      else
+        yield target;
+    }
+  }
+
   return wrapper(() => new Proxy(queryWrap, {
     get(_, prop) {
-      return queryWrap(prop);
+      return queryWrap(Array.from(element.querySelectorAll(prop)));
     },
+    apply(_a, _b, targets) {
+      return queryWrap(Array.from(findElements(targets)));
+    }
   }))();
 }
 
@@ -211,9 +221,9 @@ function creatable() {
 
 function dom(element) {
   const queryWrap = wrapper(prop => {
-    return prop instanceof Node
-      ? dom(prop)
-      : dom(element.querySelector(prop) ?? document.getElementById(prop));
+    return typeof prop === 'string'
+      ? dom(element.querySelector(prop) ?? document.getElementById(prop))
+      : dom(prop);
   });
 
   return wrapper(() => new Proxy(queryWrap, {
@@ -234,6 +244,9 @@ function dom(element) {
           : thing;
       }
       return queryWrap(prop);
+    },
+    apply(_a, _b, targets) {
+      return queryWrap(targets[0]);
     },
     set(_, prop, value) {
       return Reflect.set(element, prop, value);

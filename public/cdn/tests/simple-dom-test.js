@@ -32,10 +32,24 @@ module('simple-dom.js', function (hooks) {
         this.subject['[data-bar]'].element,
         this.fixture.querySelector('[data-bar]')
       );
+      assert.strictEqual(
+        this.subject('[data-bar]').element,
+        this.fixture.querySelector('[data-bar]')
+      );
       assert.deepEqual(
         $.all['[data-bar]'].elements,
         [...this.fixture.querySelectorAll('[data-bar]')]
       );
+      assert.deepEqual(
+        $.all('[data-bar]').elements,
+        [...this.fixture.querySelectorAll('[data-bar]')]
+      );
+    });
+
+    test('can query by Node', function (assert) {
+      let fixtureEls = [...this.fixture.querySelectorAll('[data-bar]')];
+      assert.strictEqual(this.subject(fixtureEls[0]).element, fixtureEls[0]);
+      assert.deepEqual($.all(...fixtureEls).elements, fixtureEls);
     });
 
     test('can access DOM properties', function (assert) {
@@ -65,19 +79,10 @@ module('simple-dom.js', function (hooks) {
       assert.verifySteps(['called', 'called']);
     });
 
-    test('cat attach events once', async function (assert) {
-      let promise = this.subject.button.once.click();
-      this.fixture.querySelector('button').click();
-      this.fixture.querySelector('button').click();
-      let event = await promise;
-      assert.ok(typeof event !== 'undefiend');
-    });
-
     test('can attach events to multiple elements', function (assert) {
-      let callCount = 0;
-      this.subject.all.button.on.click(() => callCount++);
+      this.subject.all.button.on.click(() => assert.step('called'));
       this.fixture.querySelectorAll('button').forEach(i => i.click());
-      assert.equal(callCount, 2, 'spy called');
+      assert.verifySteps(['called', 'called']);
     });
 
     test('can attach multiple events', function (assert) {
@@ -87,6 +92,33 @@ module('simple-dom.js', function (hooks) {
       button.dispatchEvent(new CustomEvent('foo'));
       button.dispatchEvent(new CustomEvent('bar'));
       assert.verifySteps(['called', 'called', 'called']);
+    });
+
+    module('once', function () {
+      test('can attach events', async function (assert) {
+        let promise = this.subject.button.once.click();
+        this.fixture.querySelector('button').click();
+        this.fixture.querySelector('button').click();
+        let event = await promise;
+        assert.ok(typeof event !== 'undefiend');
+      });
+
+      test('can attach events to multiple elements', async function (assert) {
+        let promise = this.subject.button.once.click();
+        this.fixture.querySelectorAll('button').forEach(i => i.click());
+        let event = await promise;
+        assert.ok(typeof event !== 'undefiend');
+      });
+
+      test('can attach multiple events', async function (assert) {
+        let button = this.fixture.querySelector('button');
+        let promise = this.subject.button.once['click,foo,bar']();
+        button.click();
+        button.dispatchEvent(new CustomEvent('foo'));
+        button.dispatchEvent(new CustomEvent('bar'));
+        let event = await promise;
+        assert.ok(typeof event !== 'undefiend');
+      });
     });
 
     test('can detach events', function (assert) {
