@@ -90,7 +90,7 @@ wiki/output/%: public/%
 
 wiki/sourcecode/%.html: sourcecode/%
 	@mkdir -p $(@D)
-	SOURCE_FILE="$<" TARGET_FILE="$@" vim -N -E -s -c "source scripts/sourcecode-to-html.vim" $< >/dev/null
+	SOURCE_FILE="$<" TARGET_FILE="$@" vim -NRE -S "scripts/sourcecode-to-html.vim" $<
 
 tiddlers/sourcecode/%.tid: wiki/sourcecode/%.html
 	@mkdir -p $(@D)
