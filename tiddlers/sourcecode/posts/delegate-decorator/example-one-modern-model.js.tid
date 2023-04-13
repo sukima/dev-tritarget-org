@@ -1,0 +1,26 @@
+title: sourcecode/posts/delegate-decorator/example-one-modern-model.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> ModernModel </span>{
+  <span class="Identifier">constructor</span>({ id, firstName, lastName }) {
+    <span class="Special">this</span>.id <span class="Statement">=</span> id;
+    <span class="Special">this</span>.firstName <span class="Statement">=</span> firstName;
+    <span class="Special">this</span>.lastName <span class="Statement">=</span> lastName;
+  }
+  <span class="Identifier">save</span>() {
+    <span class="Statement">throw</span> <span class="Statement">new</span> <span class="Constant">Error</span>(<span class="Constant">`API hasn't been implemented yet!`</span>);
+  }
+  <span class="Type">static</span> <span class="Statement">async</span> <span class="Identifier">fetch</span>(id) {
+    <span class="Statement">throw</span> <span class="Statement">new</span> <span class="Constant">Error</span>(<span class="Constant">`API hasn't been implemented yet!`</span>);
+  }
+}
+
+<span class="Comment">// And the new system will use it like this:</span>
+<span class="Constant">console</span>.<span class="Identifier">log</span>(
+  <span class="Constant">'%s: Hello %s, with a last name of %s.'</span>,
+  model.id,
+  model.firstName,
+  model.lastName,
+);
+</pre>

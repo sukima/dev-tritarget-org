@@ -1,0 +1,29 @@
+title: sourcecode/posts/delegate-decorator/example-one-legacy-model.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> LegacyModel </span>{
+  <span class="Identifier">constructor</span>({ id, name }) {
+    <span class="Special">this</span>.id <span class="Statement">=</span> id;
+    <span class="Special">this</span>.name <span class="Statement">=</span> name;
+  }
+  <span class="Identifier">save</span>() {
+    <span class="Statement">return</span> <span class="Constant">fetch</span>(
+      <span class="Constant">`/api/users/</span>${<span class="Special">this</span>.id}<span class="Constant">`</span>,
+      { method: <span class="Constant">'PUT'</span>, body: <span class="Constant">JSON</span>.<span class="Identifier">stringify</span>(<span class="Special">this</span>) }
+    );
+  }
+  <span class="Type">static</span> <span class="Statement">async</span> <span class="Identifier">fetch</span>(id) {
+    <span class="Type">let</span> res <span class="Statement">=</span> <span class="Statement">await</span> <span class="Constant">fetch</span>(<span class="Constant">`/api/users/</span>${id}<span class="Constant">`</span>);
+    <span class="Type">let</span> data <span class="Statement">=</span> <span class="Statement">await</span> res.<span class="Identifier">json</span>();
+    <span class="Statement">return</span> <span class="Statement">new</span> <span class="Identifier">LegacyModel</span>(data);
+  }
+}
+
+<span class="Comment">// And the legacy system would have used it like this:</span>
+<span class="Constant">console</span>.<span class="Identifier">log</span>(
+  <span class="Constant">'%s: Hello %s, how are you?'</span>,
+  model.id,
+  model.name,
+);
+</pre>

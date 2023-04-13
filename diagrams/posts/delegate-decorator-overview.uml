@@ -1,0 +1,32 @@
+@startuml
+
+skinparam handwritten true
+
+class MovieBaseInfo {
+  id: string
+  name: string
+  update(data: object): Promise 
+}
+
+class MovieExtraInfo {
+  id: string
+  genre: string
+  update(data: object): Promise
+}
+
+object Magic
+Magic : //Magic happens here//
+
+class MovieInfoV2 {
+  id: string
+  title: string
+  year: number
+  genre: string
+  update(data: object): Promise
+}
+
+MovieBaseInfo --> Magic
+MovieExtraInfo --> Magic
+Magic --> MovieInfoV2
+
+@enduml

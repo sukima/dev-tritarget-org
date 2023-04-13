@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Delegate Decorator &mdash; Example one</title>
+
+<script type="module">
+const MOCK_API = 'posts/delegate-decorator/example1.json';
+const $ = (id) => document.getElementById(id);
+
+class User {
+  constructor({ id, name }) {
+    this.id = id;
+    this.name = name;
+  }
+  static async fetch(id) {
+    let res = await fetch(MOCK_API);
+    let data = await res.json();
+    return new User(data);
+  }
+}
+
+class Decorator {
+  #model;
+  constructor(model) {
+    this.#model = model;
+  }
+  get firstName() {
+    return this.#model.name.split(' ')[0];
+  }
+  get lastName() {
+    return this.#model.name.split(' ')[1];
+  }
+  static wrap(model) {
+    let decorator = new Decorator(model);
+    return new Proxy(model, {
+      get(_, prop) {
+        let target = Reflect.has(decorator, prop) ? decorator : model;
+        let value = Reflect.get(target, prop);
+        return typeof value === 'function' ? value.bind(target) : value;
+      },
+    });
+  }
+}
+
+let model = Decorator.wrap(await User.fetch('bada55'));
+$('json').textContent = await (await fetch(MOCK_API)).text();
+$('greeting').value =
+  `${model.id}: Hello ${model.firstName}, `
+  + `with a last name of ${model.lastName}.`;
+</script>
+
+</head>
+<body>
+  <output id="greeting"></output>
+  <pre><code id="json"></code></pre>
+</body>
+</html>

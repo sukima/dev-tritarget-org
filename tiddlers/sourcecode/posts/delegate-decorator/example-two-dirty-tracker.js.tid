@@ -1,0 +1,25 @@
+title: sourcecode/posts/delegate-decorator/example-two-dirty-tracker.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> DirtyTracker </span>{
+  <span class="Type">static</span> BASE <span class="Statement">=</span> <span class="Constant">1</span> <span class="Statement">&lt;&lt;</span> <span class="Constant">0</span>;
+  <span class="Type">static</span> EXTRA <span class="Statement">=</span> <span class="Constant">1</span> <span class="Statement">&lt;&lt;</span> <span class="Constant">1</span>;
+  changes <span class="Statement">=</span> <span class="Constant">0</span>;
+  <span class="Identifier">base</span>() {
+    <span class="Special">this</span>.changes <span class="Statement">|=</span> DirtyTracker.BASE;
+  }
+  <span class="Identifier">extra</span>() {
+    <span class="Special">this</span>.changes <span class="Statement">|=</span> DirtyTracker.EXTRA;
+  }
+  <span class="Identifier">reset</span>() {
+    <span class="Special">this</span>.changes <span class="Statement">=</span> <span class="Constant">0</span>;
+  }
+  <span class="Type">get</span> <span class="Identifier">isDirty</span>() {
+    <span class="Statement">return</span> {
+      base: <span class="Special">this</span>.changes <span class="Statement">&amp;</span> DirtyTracker.BASE,
+      extra: <span class="Special">this</span>.changes <span class="Statement">&amp;</span> DirtyTracker.EXTRA,
+    };
+  }
+}
+</pre>

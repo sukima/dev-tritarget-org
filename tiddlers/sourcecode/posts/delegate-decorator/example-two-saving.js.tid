@@ -1,0 +1,18 @@
+title: sourcecode/posts/delegate-decorator/example-two-saving.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> Decorator </span>{
+  …
+  <span class="Statement">async</span> <span class="Identifier">save</span>() {
+    <span class="Statement">await</span> <span class="Constant">Promise</span>.<span class="Identifier">all</span>(<span class="Special">this</span>.#<span class="Identifier">saveChanges</span>());
+    <span class="Special">this</span>.#changes.<span class="Identifier">reset</span>();
+  }
+  <span class="Type">*</span>#<span class="Identifier">saveChanges</span>() {
+    <span class="Type">let</span> { isDirty } <span class="Statement">=</span> <span class="Special">this</span>.#changes;
+    <span class="Statement">if</span> (isDirty.base) <span class="Statement">yield</span> <span class="Special">this</span>.#baseInfo.<span class="Identifier">save</span>();
+    <span class="Statement">if</span> (isDirty.extra) <span class="Statement">yield</span> <span class="Special">this</span>.#extraInfo.<span class="Identifier">save</span>();
+  }
+  …
+}
+</pre>

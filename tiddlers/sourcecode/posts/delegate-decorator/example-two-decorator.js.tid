@@ -1,0 +1,72 @@
+title: sourcecode/posts/delegate-decorator/example-two-decorator.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> Decorator </span>{
+  #baseInfo;
+  #extraInfo;
+  #changes <span class="Statement">=</span> <span class="Statement">new</span> <span class="Identifier">DirtyTracker</span>();
+  <span class="Identifier">constructor</span>(baseInfo, extraInfo) {
+    <span class="Special">this</span>.#baseInfo <span class="Statement">=</span> baseInfo;
+    <span class="Special">this</span>.#extraInfo <span class="Statement">=</span> extraInfo;
+  }
+  <span class="Type">get</span> <span class="Identifier">title</span>() {
+    <span class="Statement">return</span> <span class="Special">this</span>.#<span class="Identifier">titleParts</span>()[<span class="Constant">0</span>];
+  }
+  <span class="Type">set</span> <span class="Identifier">title</span>(title) {
+    <span class="Statement">return</span> <span class="Special">this</span>.#<span class="Identifier">setName</span>({ title });
+  }
+  <span class="Type">get</span> <span class="Identifier">year</span>() {
+    <span class="Statement">return</span> <span class="Constant">Number</span>(<span class="Special">this</span>.#<span class="Identifier">titleParts</span>()[<span class="Constant">1</span>]);
+  }
+  <span class="Type">set</span> <span class="Identifier">year</span>(year) {
+    <span class="Statement">return</span> <span class="Special">this</span>.#<span class="Identifier">setName</span>({ year });
+  }
+  <span class="Statement">async</span> <span class="Identifier">save</span>() {
+    <span class="Statement">await</span> <span class="Constant">Promise</span>.<span class="Identifier">all</span>(<span class="Special">this</span>.#<span class="Identifier">saveChanges</span>());
+    <span class="Special">this</span>.#changes.<span class="Identifier">reset</span>();
+  }
+  #<span class="Identifier">titleParts</span>() {
+    <span class="Type">let</span> [, <span class="Statement">...</span>parts] <span class="Statement">=</span>
+      <span class="Constant">/</span><span class="Special">^</span><span class="Constant">(.</span><span class="Special">+</span><span class="Constant">)</span><span class="Special">\s</span><span class="Special">+</span><span class="Special">\(</span><span class="Constant">(</span><span class="Special">\d</span><span class="Special">{4}</span><span class="Constant">)</span><span class="Special">\)</span><span class="Special">$</span><span class="Constant">/</span>.<span class="Identifier">exec</span>(<span class="Special">this</span>.#baseInfo.name);
+    <span class="Statement">return</span> parts;
+  }
+  #<span class="Identifier">setName</span>({ title <span class="Statement">=</span> <span class="Special">this</span>.title, year <span class="Statement">=</span> <span class="Special">this</span>.year }) {
+    <span class="Special">this</span>.#changes.<span class="Identifier">base</span>();
+    <span class="Statement">return</span> <span class="Special">this</span>.#baseInfo.name <span class="Statement">=</span> <span class="Constant">`</span>${title}<span class="Constant"> (</span>${year}<span class="Constant">)`</span>;
+  }
+  <span class="Type">*</span>#<span class="Identifier">saveChanges</span>() {
+    <span class="Type">let</span> { isDirty } <span class="Statement">=</span> <span class="Special">this</span>.#changes;
+    <span class="Statement">if</span> (isDirty.base) <span class="Statement">yield</span> <span class="Special">this</span>.#baseInfo.<span class="Identifier">save</span>();
+    <span class="Statement">if</span> (isDirty.extra) <span class="Statement">yield</span> <span class="Special">this</span>.#extraInfo.<span class="Identifier">save</span>();
+  }
+  <span class="Type">static</span> <span class="Identifier">wrap</span>(baseInfo, extraInfo) {
+    <span class="Type">let</span> decorator <span class="Statement">=</span> <span class="Statement">new</span> <span class="Identifier">Decorator</span>(baseInfo, extraInfo);
+    <span class="Statement">return</span> <span class="Statement">new</span> <span class="Constant">Proxy</span>(baseInfo, {
+      <span class="Identifier">get</span>(_, prop) {
+        <span class="Type">const</span> maybe <span class="Statement">=</span> (target) <span class="Type">=&gt;</span>
+          <span class="Constant">Reflect</span>.<span class="Identifier">has</span>(target, prop) <span class="Statement">?</span> target <span class="Statement">:</span> <span class="Type">null</span>;
+        <span class="Type">let</span> target <span class="Statement">=</span> <span class="Identifier">maybe</span>(decorator)
+          <span class="Statement">??</span> <span class="Identifier">maybe</span>(extraInfo)
+          <span class="Statement">??</span> baseInfo;
+        <span class="Type">let</span> value <span class="Statement">=</span> <span class="Constant">Reflect</span>.<span class="Identifier">get</span>(target, prop);
+        <span class="Statement">return</span> <span class="Statement">typeof</span> value <span class="Statement">===</span> <span class="Constant">'function'</span>
+          <span class="Statement">?</span> value.<span class="Identifier">bind</span>(target)
+          <span class="Statement">:</span> value;
+      },
+      <span class="Identifier">set</span>(_, prop, value) {
+        <span class="Type">const</span> maybe <span class="Statement">=</span> (target) <span class="Type">=&gt;</span>
+          <span class="Constant">Reflect</span>.<span class="Identifier">has</span>(target, prop) <span class="Statement">?</span> target <span class="Statement">:</span> <span class="Type">null</span>;
+        <span class="Type">let</span> target <span class="Statement">=</span> <span class="Identifier">maybe</span>(decorator)
+          <span class="Statement">??</span> <span class="Identifier">maybe</span>(extraInfo)
+          <span class="Statement">??</span> baseInfo;
+        <span class="Statement">if</span> (target <span class="Statement">===</span> baseInfo)
+          decorator.#changes.<span class="Identifier">base</span>();
+        <span class="Statement">if</span> (target <span class="Statement">===</span> extraInfo)
+          decorator.#changes.<span class="Identifier">extra</span>();
+        <span class="Statement">return</span> <span class="Constant">Reflect</span>.<span class="Identifier">set</span>(target, prop, value);
+      },
+    });
+  }
+}
+</pre>

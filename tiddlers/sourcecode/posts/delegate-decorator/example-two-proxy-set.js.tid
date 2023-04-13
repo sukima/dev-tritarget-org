@@ -1,0 +1,26 @@
+title: sourcecode/posts/delegate-decorator/example-two-proxy-set.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> Decorator </span>{
+  …
+  <span class="Type">static</span> <span class="Identifier">wrap</span>(baseInfo, extraInfo) {
+    <span class="Type">let</span> decorator <span class="Statement">=</span> <span class="Statement">new</span> <span class="Identifier">Decorator</span>(baseInfo, extraInfo);
+    <span class="Statement">return</span> <span class="Statement">new</span> <span class="Constant">Proxy</span>(baseInfo, {
+      <span class="Identifier">get</span>(_, prop) { … },
+      <span class="Identifier">set</span>(_, prop, value) {
+        <span class="Type">const</span> maybe <span class="Statement">=</span> (target) <span class="Type">=&gt;</span>
+          <span class="Constant">Reflect</span>.<span class="Identifier">has</span>(target, prop) <span class="Statement">?</span> target <span class="Statement">:</span> <span class="Type">null</span>;
+        <span class="Type">let</span> target <span class="Statement">=</span> <span class="Identifier">maybe</span>(decorator)
+          <span class="Statement">??</span> <span class="Identifier">maybe</span>(extraInfo)
+          <span class="Statement">??</span> baseInfo;
+        <span class="Statement">if</span> (target <span class="Statement">===</span> baseInfo)
+          decorator.#changes.<span class="Identifier">base</span>();
+        <span class="Statement">if</span> (target <span class="Statement">===</span> extraInfo)
+          decorator.#changes.<span class="Identifier">extra</span>();
+        <span class="Statement">return</span> <span class="Constant">Reflect</span>.<span class="Identifier">set</span>(target, prop, value);
+      },
+    });
+  }
+}
+</pre>

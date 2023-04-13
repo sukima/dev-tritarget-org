@@ -1,0 +1,154 @@
+created: 20230413205302000
+creator: Sukima
+modified: 20230413205302000
+modifier: Sukima
+tags: Article Coding JavaScript
+title: The Delegate Decorator pattern
+type: text/vnd.tiddlywiki
+
+Every now and then I run across a strange situation where I need to make something look like another thing. The Object Oriented approach is the [[Decorator pattern|https://en.wikipedia.org/wiki/Decorator_pattern]]. But in JavaScript we have even more advantages because we have the [[Proxy|https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy]].
+
+It took some time to find enough use cases to warrant an understanding. But I think I found a situation where this kind of pattern shines. For example, say we have a large company with many departments. One department took on the task and responsibility to create a system that is planned to replace one of many system we have currently. The old system uses two data services which results in two different models. The new system, however, is designed to have one data service which has the same information but combined into one model. You are tasked to convert the old system to the new system but you don’t have access to change the data service instead stuck having to shim the old data into something the new system can use and in reverse.
+
+There are many ways to approach this vague set of requirements but let us assume that all options have been explored and the approach left is to use the old data service (two objects) with the new (one model) system.
+
+To make this task a little more concrete here is a contrived example of the two systems.
+
+!! Legacy System
+
+<<figure "JSON representations of the legacy system." """
+''GET'' `/v1/movies/:id/base-info`
+
+```json
+{
+  "id": "bada55",
+  "name": "The Matrix (1999)"
+}
+```
+
+''GET'' `/v1/movies/:id/extra-info`
+
+```json
+{
+  "id": "bada55",
+  "genre": "Sci-Fi",
+}
+```
+""">>
+
+!! New System
+
+<<figure "JSON representation of the new system." """
+''GET'' `/v2/movies/:id`
+
+```json
+{
+  "id": "bada55",
+  "title": "The Matrix",
+  "year": 1999,
+  "genre": "Sci-Fi"
+}
+```
+""">>
+
+And remember ''we don’t have the new system yet.'' The only part we can [[CRUD|https://en.wikipedia.org/wiki/Create,_read,_update_and_delete]] data with is the `v1` endpoints. But our new system //assumes// that the new endpoint exists and that the data looks like that. Not only do we need to combine two objects but there is also some translations between the two.
+
+<<figure
+  """The basic overview of our requirements. Our task is to implement the //magic//."""
+  {{diagrams/posts/delegate-decorator-overview.svg}}
+>>
+
+! The Magic
+
+Before we dive deeper we need to understand the basics of a decorator and how we can use a Proxy to make the situation transparent. For that example take a break from above and think of a system were we are translating values between two data objects.
+
+<<figure "JSON representations of the two example data systems. Name become first and last name." """
+```json
+{
+  "id": "bada55",
+  "name": "Alice Fancy"
+}
+```
+
+```json
+{
+  "id": "bada55",
+  "firstName": "Alice",
+  "lastName: "Fancy"
+}
+```
+""">>
+
+Start off with a data class for the original data `{ name }`:
+
+<<folded
+  "sourcecode/posts/delegate-decorator/example-one-legacy-model.js"
+  "Example legacy model"
+>>
+
+With the modern system our data class might look like:
+
+<<folded
+  "sourcecode/posts/delegate-decorator/example-one-modern-model.js"
+  "Example modern model (if it were implemented)"
+>>
+
+A decorator to merge this might look like this:
+
+<<folded
+  "sourcecode/posts/delegate-decorator/example-one-decorator.js"
+  "Example decorator"
+>>
+
+There is a lot going on in that `wrap` method. I’ll try my best to break it down a bit.
+
+# We make a decorator and give it the model so it can send messages to the model as needed
+# We use the original model as the subject for a new [[Proxy|https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy]] so that the default handlers will go to it instead of the decorator
+# In the proxy’s `get` handler we will get the subject and a property that was asked for
+# We use the `Reflect.has` to tell if the decorator has those properties, if so use the decorator, and if not use the original model. This is why we made the decorator’s `#model` property private so there is no name collision with the original model (if the original model has a `model` property)
+# We use `Reflect.get` to actually send the message to the appropriate target
+# If the result is a function we will need to bind that function to the appropriate target otherwise the dynamic nature of JavaScript would have the `this` printing to the decorator and not the target
+
+What this affords us is complete control over the message sending when the consumer needs to know nothing about the specifics of the implementation below and only has to assume that the implementation conforms to the new model duck-type.
+
+[[Demo|https://tritarget.org/fiddles/?fiddle=posts/delegate-decorator/example-one.html]]
+
+! The tale of two models
+
+We need to define a class that will know how to delegate between two models. Presuming we have the two legacy models already defined in this example the decorator:
+
+<<folded
+  "sourcecode/posts/delegate-decorator/example-two-decorator.js"
+  "Delegating Decorator example"
+>>
+
+[[Demo|https://tritarget.org/fiddles/?fiddle=posts/delegate-decorator/example-two.html]]
+
+And there is a ''lot'' going on there. But I will attempt to walk you through it.
+
+Like the original decorator example we have our getters to mimic the new model from the legacy model. We’ve chained our requests to come from the first decorator or model to satisfy the requst in the order decorator → first model → second model.
+
+Doing the reverse adds the complication of tracking which model had a change. This is because we want to avoid sending unnecessary save requests. We do that with some dirty tracking. //I wrote a utility for that.//
+
+By the way, if you are interested in the `DirtyTracker` class here you go, Just keep in mind that dirty tracking could be done any which way. Maybe each model tracks their own dirty state and we could just sned the `save` message to both without worry. But in this case as we’ve already building a contrived system I opted to put it in the decorator for fun.
+
+<<folded
+  "sourcecode/posts/delegate-decorator/example-two-dirty-tracker.js"
+  "Dirty tracking class"
+>>
+
+I'll pick out a few highlights.
+
+<<figure
+  "A concise and linear way to grab a set of promises and `Promise.all` over them"
+  {{sourcecode/posts/delegate-decorator/example-two-saving.js}}
+>>
+
+<<figure
+  "Again grabbing the likely target and setting the value. Also tracking dirty state for the appropriate target"
+  {{sourcecode/posts/delegate-decorator/example-two-proxy-set.js}}
+>>
+
+<<.warning "Always return a boolean from a Proxy set handler or things go weird. `Refelect.set()` will return the appropriate value. When in doubt `return true`">>
+
+It is worth experimenting with `Proxy` to get a feel for how it works. Though the syntax and the caveats are strange and you need to be aware of them the result is a very clean DX when using it. The ability to transparently ast like something while under the hood having full control to do what you need to do is powerful. Not every situation allows you to redesign or rewrite things to be correct or better. Some time you need to have an intermediary representation and Proxies can facilitate that transition so you can incrementally update as you go.

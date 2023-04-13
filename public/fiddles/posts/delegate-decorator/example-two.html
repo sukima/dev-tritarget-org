@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Delegate Decorator &mdash; Example Two</title>
+<script type="module">
+import { QUnit } from '/cdn/testing.js';
+const { module, test } = QUnit;
+
+class Decorator {
+  #baseInfo;
+  #extraInfo;
+  #changes = new DirtyTracker();
+  constructor(baseInfo, extraInfo) {
+    this.#baseInfo = baseInfo;
+    this.#extraInfo = extraInfo;
+  }
+  get title() {
+    return this.#titleParts()[0];
+  }
+  set title(title) {
+    return this.#setName({ title });
+  }
+  get year() {
+    return Number(this.#titleParts()[1]);
+  }
+  set year(year) {
+    return this.#setName({ year });
+  }
+  async save() {
+    await Promise.all(this.#saveChanges());
+    this.#changes.reset();
+  }
+  #titleParts() {
+    let [, ...parts] = /^(.+)\s+\((\d{4})\)$/.exec(this.#baseInfo.name);
+    return parts;
+  }
+  #setName({ title = this.title, year = this.year }) {
+    this.#changes.base();
+    return this.#baseInfo.name = `${title} (${year})`;
+  }
+  *#saveChanges() {
+    let { isDirty } = this.#changes;
+    if (isDirty.base) yield this.#baseInfo.save();
+    if (isDirty.extra) yield this.#extraInfo.save();
+  }
+  static wrap(baseInfo, extraInfo) {
+    let decorator = new Decorator(baseInfo, extraInfo);
+    return new Proxy(baseInfo, {
+      get(_, prop) {
+        const maybe = (target) => Reflect.has(target, prop) ? target : null;
+        let target = maybe(decorator) ?? maybe(extraInfo) ?? baseInfo;
+        let value = Reflect.get(target, prop);
+        return typeof value === 'function' ? value.bind(target) : value;
+      },
+      set(_, prop, value) {
+        const maybe = (target) =>
+          Reflect.has(target, prop) ? target : null;
+        let target = maybe(decorator) ?? maybe(extraInfo) ?? baseInfo;
+        if (target === baseInfo) decorator.#changes.base();
+        if (target === extraInfo) decorator.#changes.extra();
+        return Reflect.set(target, prop, value);
+      },
+    });
+  }
+}
+
+class DirtyTracker {
+  static BASE = 1 << 0;
+  static EXTRA = 1 << 1;
+  changes = 0;
+  base() {
+    this.changes |= DirtyTracker.BASE;
+  }
+  extra() {
+    this.changes |= DirtyTracker.EXTRA;
+  }
+  reset() {
+    this.changes = 0;
+  }
+  get isDirty() {
+    return {
+      base: this.changes & DirtyTracker.BASE,
+      extra: this.changes & DirtyTracker.EXTRA,
+    };
+  }
+}
+
+class MockModel {
+  constructor(data) {
+    Object.assign(this, data);
+  }
+  async save() {
+    console.log(`Saving ${JSON.stringify(this)}`);
+  }
+}
+
+module('Delegate Decorator', function (hooks) {
+  let baseInfoModel, extraInfoModel, subject;
+  hooks.beforeEach(function () {
+    baseInfoModel = new MockModel({ id: 'bada55', name: 'The Matrix (1999)', foo: 'FOO' });
+    extraInfoModel = new MockModel({ id: 'bada55', genre: 'Sci-Fi', bar: 'BAR' });
+    subject = Decorator.wrap(baseInfoModel, extraInfoModel);
+  });
+
+  test('getters delegate correctly', function (assert) {
+    assert.strictEqual(subject.id, 'bada55', 'id');
+    assert.strictEqual(subject.title, 'The Matrix', 'title');
+    assert.strictEqual(subject.year, 1999, 'year');
+    assert.strictEqual(subject.genre, 'Sci-Fi', 'genre');
+  });
+
+  test('setters delegate correctly', function (assert) {
+    subject.title = 'change-title';
+    subject.year = 2222;
+    subject.genre = 'change-genre';
+
+    assert.strictEqual(baseInfoModel.name, 'change-title (2222)', 'baseInfo name');
+    assert.strictEqual(extraInfoModel.genre, 'change-genre', 'extraInfo genre');
+  });
+
+  test('save only saves changed models', async function (assert) {
+    assert.ok('save' in baseInfoModel);
+    assert.ok('save' in extraInfoModel);
+
+    baseInfoModel.save = async () => assert.step('base');
+    extraInfoModel.save = async () => assert.step('extra');
+
+    subject.foo = 'change-foo1';
+    await subject.save();
+    assert.verifySteps(['base']);
+
+    subject.bar = 'change-bar1';
+    await subject.save();
+    assert.verifySteps(['extra']);
+
+    subject.foo = 'change-foo2';
+    subject.bar = 'change-bar2';
+    await subject.save();
+    assert.verifySteps(['base', 'extra']);
+  });
+});
+</script>
+</head>
+<body>
+</body>
+</html>

@@ -1,0 +1,41 @@
+title: sourcecode/posts/delegate-decorator/example-one-decorator.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="Statement">class</span><span class="Identifier"> Decorator </span>{
+  #model;
+  <span class="Identifier">constructor</span>(legacyModel) {
+    <span class="Special">this</span>.#model <span class="Statement">=</span> legacyModel;
+  }
+  <span class="Type">get</span> <span class="Identifier">firstName</span>() {
+    <span class="Statement">return</span> <span class="Special">this</span>.#model.name.<span class="Identifier">split</span>(<span class="Constant">' '</span>)[<span class="Constant">0</span>];
+  }
+  <span class="Type">get</span> <span class="Identifier">lastName</span>() {
+    <span class="Statement">return</span> <span class="Special">this</span>.#model.name.<span class="Identifier">split</span>(<span class="Constant">' '</span>)[<span class="Constant">1</span>];
+  }
+  <span class="Type">static</span> <span class="Identifier">wrap</span>(legacyModel) {
+    <span class="Type">let</span> decorator <span class="Statement">=</span> <span class="Statement">new</span> <span class="Identifier">Decorator</span>(legacyModel);
+    <span class="Statement">return</span> <span class="Statement">new</span> <span class="Constant">Proxy</span>(legacyModel, {
+      <span class="Identifier">get</span>(_, prop) {
+        <span class="Type">let</span> target <span class="Statement">=</span> <span class="Constant">Reflect</span>.<span class="Identifier">has</span>(decorator, prop)
+          <span class="Statement">?</span> decorator
+          <span class="Statement">:</span> legacyModel;
+        <span class="Type">let</span> value <span class="Statement">=</span> <span class="Constant">Reflect</span>.<span class="Identifier">get</span>(target, prop);
+        <span class="Statement">return</span> <span class="Statement">typeof</span> value <span class="Statement">===</span> <span class="Constant">'function'</span>
+          <span class="Statement">?</span> value.<span class="Identifier">bind</span>(target)
+          <span class="Statement">:</span> value;
+      }
+    });
+  }
+}
+
+<span class="Comment">// And the new system will use it like this:</span>
+<span class="Type">let</span> legacyModel <span class="Statement">=</span> <span class="Statement">await</span> LegacyModel.<span class="Identifier">fetch</span>(<span class="Constant">'bada55'</span>);
+<span class="Type">let</span> model <span class="Statement">=</span> Decorator.<span class="Identifier">wrap</span>(legacyModel);
+<span class="Constant">console</span>.<span class="Identifier">log</span>(
+  <span class="Constant">'%s: Hello %s, with a last name of %s.'</span>,
+  model.id,
+  model.firstName,
+  model.lastName,
+);
+</pre>
