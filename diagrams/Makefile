@@ -24,7 +24,7 @@ SRC = .
 OUTPUT = ../tiddlers/diagrams
 DEPEND = .depend
 
-SRC_FILES := $(wildcard $(SRC)/*.uml)
+SRC_FILES := $(wildcard $(SRC)/*.uml $(SRC)/**/*.uml)
 
 TIDDLER_NOW := $(shell date +%Y%m%d%H%M%S000)
 
@@ -48,17 +48,22 @@ png: $(DEPEND)
 	@$(MAKE) $(patsubst $(SRC)/%.uml,$(SRC)/%.png,$(shell ls -1t $(SRC_FILES)))
 
 %.png: $(SRC)/%.uml
-	$(PLANTUML) -tpng $< -o $(SRC)
+	$(PLANTUML) -tpng $<
+	@mkdir -p $(@D)
+	@mv $(patsubst %.uml,%.png,$<) $(@D)
 
 $(OUTPUT)/%.svg: $(SRC)/%.uml
-	$(PLANTUML) -tsvg $< -o $(OUTPUT)
+	$(PLANTUML) -tsvg $<
+	@mkdir -p $(@D)
+	@mv $(patsubst %.uml,%.svg,$<) $(@D)
 
 $(OUTPUT)/%.svg.meta:
+	@mkdir -p $(@D)
 	@echo "creator: Sukima" > $@; \
 	echo "created: $(TIDDLER_NOW)" >> $@; \
 	echo "modified: $(TIDDLER_NOW)" >> $@; \
 	echo "tags: Diagrams" >> $@; \
-	echo "title: diagrams/$(notdir $(@:.meta=))" >> $@; \
+	echo "title: diagrams$(patsubst $(OUTPUT)%.meta,%,$@)" >> $@; \
 	echo "type: image/svg+xml" >> $@; \
 	echo "Created \`$@'"
 
