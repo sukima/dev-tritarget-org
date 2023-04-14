@@ -1,9 +1,10 @@
-import $ from '../../cdn/simple-dom.js';
-import * as CodeMirror from '../../cdn/codemirror.js';
-import { createMachine, interpret } from '../../cdn/xstate.js';
+import $ from '/cdn/simple-dom.js';
+import * as CodeMirror from '/cdn/codemirror.js';
+import { editorConfig } from './editor-config.js';
+import { createMachine, interpret } from '/cdn/xstate.js';
 
-const lazyLoadLzString = () => import('../../cdn/lz-string.js');
-const lazyLoadMarked = () => import('../../cdn/marked.js');
+const lazyLoadLzString = () => import('/cdn/lz-string.js');
+const lazyLoadMarked = () => import('/cdn/marked.js');
 
 const BASE_TITLE = $.element.title;
 let suggestedFileName = 'new-fiddle.html';
@@ -406,13 +407,12 @@ class Editor { // {{{1
 
   createCodeEditor(parent, doc = defaultText) {
     const { EditorView } = CodeMirror.view;
-    const { basicSetup } = CodeMirror.codemirror;
+    const { vim, emmet, color } = CodeMirror.extensions;
     const { html, markdown } = CodeMirror.languages;
-    const { emmet, vim, color } = CodeMirror.extensions;
     const { solarized: { solarizedDark } } = CodeMirror.themes
-    const { updateListener } = EditorView;
+    const { lineWrapping, updateListener } = EditorView;
 
-    let lineWrap = new Editor.ExtensionToggle(EditorView.lineWrapping);
+    let lineWrap = new Editor.ExtensionToggle(lineWrapping);
     let vimMode = new Editor.ExtensionToggle(vim());
     let languageMode = new Editor.ExtensionChooser({
       html: html({ autoCloseTags: false }),
@@ -422,12 +422,12 @@ class Editor { // {{{1
       doc,
       parent,
       extensions: [
-        basicSetup,
+        editorConfig,
         solarizedDark,
-        updateListener.of((state) => this.chooseLanguage(state)),
-        updateListener.of((state) => this.handleEditorChangeEvent(state)),
         emmet('Ctrl-e'),
         color,
+        updateListener.of((state) => this.chooseLanguage(state)),
+        updateListener.of((state) => this.handleEditorChangeEvent(state)),
         vimMode.initial,
         lineWrap.initial,
         languageMode.initial,
