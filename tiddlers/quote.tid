@@ -1,0 +1,13 @@
+created: 20230416133232000
+creator: Sukima
+modified: 20230416133232000
+modifier: Sukima
+tags: $:/tags/AboveStory
+title: quote
+type: text/vnd.tiddlywiki
+
+<$list filter="[tag[quote]nsort[order]]">
+
+<$transclude>
+
+</$list>
