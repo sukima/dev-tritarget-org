@@ -1,0 +1,20 @@
+title: sourcecode/tips/ember-query-params-cell-pattern/controller.js
+type: text/prs.sourcecode
+
+<pre class="vimCodeElement">
+<span class="PreProc">import</span> Controller <span class="PreProc">from</span> <span class="Constant">'@ember/controller'</span>;
+<span class="PreProc">import</span> { tracked } <span class="PreProc">from</span> <span class="Constant">'@glimmer/tracking'</span>;
+
+<span class="Statement">class</span><span class="Identifier"> MyQueryParams </span>{
+<span class="Special">  @</span><span class="Identifier">tracked</span> foo <span class="Statement">=</span> <span class="Constant">''</span>;
+<span class="Special">  @</span><span class="Identifier">tracked</span> bar <span class="Statement">=</span> <span class="Constant">''</span>;
+}
+
+<span class="PreProc">export</span> <span class="Type">default</span> <span class="Statement">class</span><span class="Identifier"> MyController </span><span class="Statement">extends</span><span class="Identifier"> Controller </span>{
+  params <span class="Statement">=</span> <span class="Statement">new</span> <span class="Identifier">MyQueryParams</span>();
+  queryParams <span class="Statement">=</span> [
+    { <span class="Constant">'params.foo'</span>: <span class="Constant">'foo'</span> },
+    { <span class="Constant">'params.bar'</span>: <span class="Constant">'bar'</span> },
+  ];
+}
+</pre>

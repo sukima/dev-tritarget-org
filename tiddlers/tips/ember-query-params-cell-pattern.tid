@@ -1,0 +1,15 @@
+created: 20230509184652000
+creator: Sukima
+modified: 20230509184652000
+modifier: Sukima
+tags: Coding Tips Ember JavaScript
+title: Ember Query Params Cell pattern
+type: text/vnd.tiddlywiki
+
+When it comes to Query Params it can be frustrating to have to prop drill from a controller to components especially with the data-down actions-up paradigm doubling the prop drilling.
+
+This pattern makes this much better by pushing the properties into a ''Cell'' object.
+
+<<figure "Controller example" {{sourcecode/tips/ember-query-params-cell-pattern/controller.js}}>>
+
+With this example we have the ability to pass `this.params` to any component and within the component they can set properties and everything just works.
