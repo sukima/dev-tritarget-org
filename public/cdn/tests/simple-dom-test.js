@@ -133,28 +133,58 @@ module('simple-dom.js', function (hooks) {
       assert.verifySteps([]);
     });
 
-    test('attached events are iterable', async function (assert) {
-      async function iterationTest(events) {
-        for await (let event of events) {
-          assert.step(event.type);
-          break;
+    module('async iterator API', function () {
+      test('events are iterable', async function (assert) {
+        async function iterationTest(events) {
+          for await (let event of events) {
+            assert.step(event.type);
+            break;
+          }
+          assert.step('done');
         }
-      }
 
-      let button = this.fixture.querySelector('button');
-      let iterationWaiters = [
-        iterationTest(this.subject.button.on['foo']()),
-        iterationTest(this.subject.button.on['bar']().events()),
-      ];
+        let button = this.fixture.querySelector('button');
+        let iterationWaiters = [
+          iterationTest(this.subject.button.on.foo()),
+          iterationTest(this.subject.button.on.bar().events()),
+        ];
 
-      button.dispatchEvent(new CustomEvent('foo'));
-      button.dispatchEvent(new CustomEvent('foo'));
-      button.dispatchEvent(new CustomEvent('bar'));
-      button.dispatchEvent(new CustomEvent('bar'));
+        button.dispatchEvent(new CustomEvent('foo'));
+        button.dispatchEvent(new CustomEvent('foo'));
+        button.dispatchEvent(new CustomEvent('bar'));
+        button.dispatchEvent(new CustomEvent('bar'));
 
-      await Promise.all(iterationWaiters);
+        await Promise.all(iterationWaiters);
 
-      assert.verifySteps(['foo', 'bar']);
+        assert.verifySteps(['foo', 'bar', 'done', 'done']);
+      });
+
+      test('it can be aborted', async function (assert) {
+        async function iterationTest(events, abort) {
+          for await (let event of events) assert.step(event.type);
+          assert.step('done');
+        }
+
+        let button = this.fixture.querySelector('button');
+        let fooEvents = this.subject.button.on.foo();
+        let barEvents = this.subject.button.on.bar();
+        let iterationWaiters = [
+          iterationTest(fooEvents),
+          iterationTest(barEvents.events()),
+        ];
+
+        button.dispatchEvent(new CustomEvent('foo'));
+        fooEvents.abort();
+        button.dispatchEvent(new CustomEvent('foo'));
+
+        button.dispatchEvent(new CustomEvent('bar'));
+        barEvents.abort();
+        button.dispatchEvent(new CustomEvent('bar'));
+
+        await Promise.all(iterationWaiters);
+
+        assert.verifySteps(['foo', 'bar', 'done', 'done']);
+      });
     });
   });
 

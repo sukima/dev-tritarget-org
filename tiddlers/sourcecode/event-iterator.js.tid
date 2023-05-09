@@ -2,15 +2,32 @@ title: sourcecode/event-iterator.js
 type: text/prs.sourcecode
 
 <pre class="vimCodeElement">
-<span class="Statement">async</span> <span class="Type">function</span><span class="Type">*</span> <span class="Identifier">eventIterator</span>(element, type, options) {
-  <span class="Type">let</span> done;
-  <span class="Type">let</span> handler <span class="Statement">=</span> (event) <span class="Type">=&gt;</span> <span class="Identifier">done</span>(event);
-  <span class="Type">let</span> nextEvent <span class="Statement">=</span> <span class="Type">()</span> <span class="Type">=&gt;</span> <span class="Statement">new</span> <span class="Constant">Promise</span>(r <span class="Type">=&gt;</span> { done <span class="Statement">=</span> r; });
-  element.<span class="Identifier">addEventListener</span>(type, handler, options);
-  <span class="Statement">try</span> {
-    <span class="Statement">while</span> (<span class="Constant">true</span>) <span class="Statement">yield</span> <span class="Identifier">nextEvent</span>();
-  } <span class="Statement">finally</span> {
-    element.<span class="Identifier">removeEventListener</span>(type, handler, options);
+<span class="Type">function</span> <span class="Identifier">eventIterator</span>(element, type, options) {
+  <span class="Type">let</span> controller <span class="Statement">=</span> <span class="Statement">new</span> <span class="Identifier">AbortController</span>();
+  <span class="Type">let</span> { signal } <span class="Statement">=</span> controller;
+
+  <span class="Statement">async</span> <span class="Type">function</span><span class="Type">*</span> <span class="Identifier">events</span>() {
+    <span class="Type">let</span> done, abort;
+    <span class="Type">let</span> handler <span class="Statement">=</span> (event) <span class="Type">=&gt;</span> <span class="Identifier">done</span>(event);
+    <span class="Type">let</span> nextEvent <span class="Statement">=</span> <span class="Type">()</span> <span class="Type">=&gt;</span>
+      <span class="Statement">new</span> <span class="Constant">Promise</span>((a, b) <span class="Type">=&gt;</span> { done <span class="Statement">=</span> a; abort <span class="Statement">=</span> b; });
+
+    signal.<span class="Identifier">addEventListener</span>(<span class="Constant">'abort'</span>, <span class="Type">()</span> <span class="Type">=&gt;</span> <span class="Identifier">abort</span>());
+    element.<span class="Identifier">addEventListener</span>(type, handler, options);
+
+    <span class="Statement">try</span> {
+      <span class="Statement">while</span> (<span class="Statement">!</span>signal.aborted) <span class="Statement">yield</span> <span class="Identifier">nextEvent</span>();
+    } <span class="Statement">catch</span> (ignored) {
+      <span class="Comment">// The only way this happens is if abort was called</span>
+    } <span class="Statement">finally</span> {
+      element.<span class="Identifier">removeEventListener</span>(type, handler, options);
+    }
   }
+
+  <span class="Statement">return</span> {
+    events,
+    [<span class="Constant">Symbol</span>.asyncIterator]: events,
+    abort: <span class="Type">()</span> <span class="Type">=&gt;</span> controller.<span class="Identifier">abort</span>(),
+  };
 }
 </pre>

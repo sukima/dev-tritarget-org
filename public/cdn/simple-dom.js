@@ -1,5 +1,5 @@
 /*******************************************/
-/* Version 1.4.0                           */
+/* Version 1.5.0                           */
 /* License MIT                             */
 /* Copyright (C) 2022 Devin Weaver         */
 /* https://tritarget.org/cdn/simple-dom.js */
@@ -100,16 +100,25 @@ function attachAll(elements, eventNames, fn, options) {
 }
 
 function eventStream(elements, eventNames, options) {
+  let controller = new AbortController();
+  let { signal } = controller;
+
   async function* events() {
-    let done;
+    let done, abort;
     let handler = (event) => done(event);
-    let nextEvent = () => new Promise(r => { done = r; });
+    let nextEvent = () => new Promise((a, b) => { done = a; abort = b; });
     let detachAll = attachAll(elements, eventNames, handler, options);
-    try { while (true) yield nextEvent(); }
+    signal.addEventListener('abort', () => abort());
+    try { while (!signal.aborted) yield nextEvent(); }
+    catch (ignored) {}
     finally { detachAll(); }
   }
 
-  return { events, [Symbol.asyncIterator]: events };
+  return {
+    events,
+    [Symbol.asyncIterator]: events,
+    abort: () => controller.abort(),
+  };
 }
 
 function eventable(...elements) {

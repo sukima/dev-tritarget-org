@@ -4,10 +4,11 @@ type: text/prs.sourcecode
 <pre class="vimCodeElement">
 <span class="Statement">async</span> <span class="Type">function</span> <span class="Identifier">dispatcher</span>(signal) {
   <span class="Type">let</span> events <span class="Statement">=</span> <span class="Identifier">eventIterator</span>(<span class="Constant">window</span>, <span class="Constant">'message'</span>);
+  signal.<span class="Identifier">addEventListener</span>(<span class="Constant">'abort'</span>, events.abort);
   <span class="Statement">for</span> <span class="Statement">await</span> (<span class="Type">let</span> event <span class="Statement">of</span> events) {
-    <span class="Statement">if</span> (signal.aborted) <span class="Statement">break</span>;
     <span class="Comment">// Do something with event</span>
   }
+  signal.<span class="Identifier">removeEventListener</span>(<span class="Constant">'abort'</span>, events.abort);
 }
 
 <span class="Type">let</span> abortController <span class="Statement">=</span> <span class="Statement">new</span> <span class="Identifier">AbortController</span>();

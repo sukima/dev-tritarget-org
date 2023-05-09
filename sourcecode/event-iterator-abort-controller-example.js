@@ -1,9 +1,10 @@
 async function dispatcher(signal) {
   let events = eventIterator(window, 'message');
+  signal.addEventListener('abort', events.abort);
   for await (let event of events) {
-    if (signal.aborted) break;
     // Do something with event
   }
+  signal.removeEventListener('abort', events.abort);
 }
 
 let abortController = new AbortController();
